@@ -42,14 +42,14 @@
     <ClInclude Include="src\OGLE.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\OGLE\Core\GLIncludes.h">
+    <ClInclude Include="src\OGLE\Platform\OpenGL\GLIncludes.h">
+      <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Core\PlatformDetection.h">
       <Filter>src\OGLE\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\OGLE\Core\Window.h">
       <Filter>src\OGLE\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OGLE\Debug\Debug.h">
-      <Filter>src\OGLE\Debug</Filter>
     </ClInclude>
     <ClInclude Include="src\oglepch.h">
       <Filter>src</Filter>
@@ -1281,12 +1281,28 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\OGLE\Core\Base.h">
+      <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Core\Log.h" />
+    <ClInclude Include="src\OGLE\Core\Assert.h" />
+    <ClInclude Include="src\OGLE\Debug\Instrumentor.h" />
+    <ClInclude Include="src\OGLE\Core\Application.h" />
+    <ClInclude Include="src\OGLE\Core\LayerStack.h" />
+    <ClInclude Include="src\OGLE\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\OGLE\Events\Event.h" />
+    <ClInclude Include="src\OGLE\Core\Timestep.h" />
+    <ClInclude Include="src\OGLE\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\OGLE\Renderer\Renderer.h" />
+    <ClInclude Include="src\OGLE\Utils\PlatformUtils.h" />
+    <ClInclude Include="src\OGLE\Scripting\ScriptEngine.h" />
+    <ClInclude Include="src\OGLE\Core\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\OGLE\Core\Window.cpp">
       <Filter>src\OGLE\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\OGLE\Main.cpp">
+    <ClCompile Include="src\Main.cpp">
       <Filter>src\OGLE</Filter>
     </ClCompile>
     <ClCompile Include="src\oglepch.cpp">
@@ -1295,5 +1311,7 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\OGLE\Core\Application.cpp" />
+    <ClCompile Include="src\OGLE\Renderer\Renderer.cpp" />
   </ItemGroup>
 </Project>

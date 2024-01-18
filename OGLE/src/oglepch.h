@@ -1,26 +1,33 @@
-#ifndef GL_PRECOMPILED_HEADER
+#pragma once
 
+#include "OGLE/Core/PlatformDetection.h"
 
-// Core Includes
+#ifdef OGLE_PLATFORM_WINDOWS
+#ifndef NOMINMAX
+// See github.com/skypjack/entt/wiki/Frequently-Asked-Questions#warning-c4003-the-min-the-max-and-the-macro
+#define NOMINMAX
+#endif
+#endif
+
 #include <iostream>
-#include <sstream>
-#include <fstream>
 #include <memory>
+#include <utility>
+#include <algorithm>
 #include <functional>
 
-#include <xstring>
+#include <string>
+#include <sstream>
+#include <array>
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
 
-#include <stdexcept>
+#include "OGLE/Core/Base.h"
 
-// GL Includes
-#include <OpenGLEngine/Core/GLIncludes.h>
+#include "OGLE/Core/Log.h"
 
-// Debugging Includes
-#include <OpenGLEngine/Debug/Debug.h>
+#include "OGLE/Debug/Instrumentor.h"
 
-
-#define GL_PRECOMPILED_HEADER
-#endif 
+#ifdef OGLE_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
