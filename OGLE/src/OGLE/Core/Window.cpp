@@ -1,16 +1,19 @@
 #include "oglepch.h"
-#include "Window.h"
+#include <OGLE/Core/Window.h>
 
-Window::Window()
+#ifdef OGLE_PLATFORM_WINDOWS
+	#include <OGLE/Platform/Windows/WindowsWindow.h>
+#endif
+
+namespace OGLE
 {
-	if (!isInit) {
-		isInit = glfwInit();
-		if (!isInit)
-			throw std::runtime_error("GLFW Failed To initialize!");
+	Scope<Window> Window::Create(const WindowProps& props)
+	{
+	#ifdef OGLE_PLATFORM_WINDOWS
+		return CreateScope<WindowsWindow>(props);
+	#else
+		OGLE_CORE_ASSERT(false, "Unknown platform!");
+		return nullptr;
+	#endif
 	}
-}
-
-Window::~Window()
-{
-
 }

@@ -25,6 +25,9 @@
     <Filter Include="src\OGLE\Platform\OpenGL">
       <UniqueIdentifier>{0B9ECBC1-F7C2-1A42-200E-00D20C921960}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\OGLE\Platform\Windows">
+      <UniqueIdentifier>{F1395B53-5DFC-8EDD-A6AC-1D6A12AE67BB}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\OGLE\Renderer">
       <UniqueIdentifier>{09D0ED1A-75E6-EBB0-BE5D-77D22AB3BC38}</UniqueIdentifier>
     </Filter>
@@ -78,10 +81,19 @@
     <ClInclude Include="src\OGLE\Core\Input.h">
       <Filter>src\OGLE\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\OGLE\Core\KeyCodes.h">
+      <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Core\Layer.h">
+      <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\OGLE\Core\LayerStack.h">
       <Filter>src\OGLE\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\OGLE\Core\Log.h">
+      <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Core\MouseCodes.h">
       <Filter>src\OGLE\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\OGLE\Core\PlatformDetection.h">
@@ -105,11 +117,29 @@
     <ClInclude Include="src\OGLE\Events\Event.h">
       <Filter>src\OGLE\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\OGLE\Events\KeyEvent.h">
+      <Filter>src\OGLE\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Events\MouseEvent.h">
+      <Filter>src\OGLE\Events</Filter>
+    </ClInclude>
     <ClInclude Include="src\OGLE\ImGui\ImGuiLayer.h">
       <Filter>src\OGLE\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="src\OGLE\Platform\OpenGL\GLIncludes.h">
       <Filter>src\OGLE\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Platform\OpenGL\OpenGLContext.h">
+      <Filter>src\OGLE\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Platform\Windows\WindowsWindow.h">
+      <Filter>src\OGLE\Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Renderer\Buffer.h">
+      <Filter>src\OGLE\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Renderer\GraphicsContext.h">
+      <Filter>src\OGLE\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\OGLE\Renderer\Renderer.h">
       <Filter>src\OGLE\Renderer</Filter>
@@ -1360,6 +1390,15 @@
     </ClCompile>
     <ClCompile Include="src\OGLE\Core\Window.cpp">
       <Filter>src\OGLE\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OGLE\Platform\OpenGL\OpenGLContext.cpp">
+      <Filter>src\OGLE\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OGLE\Platform\Windows\WindowsWindow.cpp">
+      <Filter>src\OGLE\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OGLE\Renderer\GraphicsContext.cpp">
+      <Filter>src\OGLE\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\OGLE\Renderer\Renderer.cpp">
       <Filter>src\OGLE\Renderer</Filter>

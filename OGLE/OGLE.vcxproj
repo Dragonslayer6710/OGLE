@@ -150,8 +150,11 @@
     <ClInclude Include="src\OGLE\Core\Base.h" />
     <ClInclude Include="src\OGLE\Core\GLIncludes.h" />
     <ClInclude Include="src\OGLE\Core\Input.h" />
+    <ClInclude Include="src\OGLE\Core\KeyCodes.h" />
+    <ClInclude Include="src\OGLE\Core\Layer.h" />
     <ClInclude Include="src\OGLE\Core\LayerStack.h" />
     <ClInclude Include="src\OGLE\Core\Log.h" />
+    <ClInclude Include="src\OGLE\Core\MouseCodes.h" />
     <ClInclude Include="src\OGLE\Core\PlatformDetection.h" />
     <ClInclude Include="src\OGLE\Core\Timestep.h" />
     <ClInclude Include="src\OGLE\Core\Window.h" />
@@ -159,8 +162,14 @@
     <ClInclude Include="src\OGLE\Debug\Instrumentor.h" />
     <ClInclude Include="src\OGLE\Events\ApplicationEvent.h" />
     <ClInclude Include="src\OGLE\Events\Event.h" />
+    <ClInclude Include="src\OGLE\Events\KeyEvent.h" />
+    <ClInclude Include="src\OGLE\Events\MouseEvent.h" />
     <ClInclude Include="src\OGLE\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\OGLE\Platform\OpenGL\GLIncludes.h" />
+    <ClInclude Include="src\OGLE\Platform\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\OGLE\Platform\Windows\WindowsWindow.h" />
+    <ClInclude Include="src\OGLE\Renderer\Buffer.h" />
+    <ClInclude Include="src\OGLE\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\OGLE\Renderer\Renderer.h" />
     <ClInclude Include="src\OGLE\Scripting\ScriptEngine.h" />
     <ClInclude Include="src\OGLE\Utils\PlatformUtils.h" />
@@ -579,6 +588,9 @@
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\OGLE\Core\Application.cpp" />
     <ClCompile Include="src\OGLE\Core\Window.cpp" />
+    <ClCompile Include="src\OGLE\Platform\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\OGLE\Platform\Windows\WindowsWindow.cpp" />
+    <ClCompile Include="src\OGLE\Renderer\GraphicsContext.cpp" />
     <ClCompile Include="src\OGLE\Renderer\Renderer.cpp" />
     <ClCompile Include="src\oglepch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
