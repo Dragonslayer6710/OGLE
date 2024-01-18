@@ -1,26 +1,30 @@
 project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	cppdialect "C++17"
 	staticruntime "off"
 
-	targetdir ("%{wks.location}/bin/" .. outputdir .. "%/{prj.name}")
-	objdir ("%{wks.location}/bin-int/" .. outputdir .. "%/{prj.name}")
+	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 
-	files{
+	files
+	{
 		"src/**.h",
 		"src/**.cpp"
 	}
 
-	includedirs{
-		-- "%{wks.location}/OpenGLEngine/vendor/spdlog/include",
-		"%{wks.location}/OpenGLEngine/src",
-		"%{wks.location}/OpenGLEngine/vendor",
+	includedirs
+	{
+		"%{wks.location}/OGLE/vendor/spdlog/include",
+		"%{wks.location}/OGLE/src",
+		"%{wks.location}/OGLE/vendor",
 		"%{IncludeDir.glm}",
-		-- "%{IncludeDir.entt}"
+		--"%{IncludeDir.entt}"
 	}
 
-	links{
-		"OpenGLEngine"
+	links
+	{
+		"OGLE"
 	}
 
 	filter "system:windows"

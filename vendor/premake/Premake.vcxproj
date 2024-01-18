@@ -77,10 +77,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="..\..\OpenGLEngine\premake5.lua" />
-    <None Include="..\..\OpenGLEngine\vendor\GLAD\premake5.lua" />
-    <None Include="..\..\OpenGLEngine\vendor\GLFW\premake5.lua" />
-    <None Include="..\..\OpenGLEngine\vendor\imgui\premake5.lua" />
+    <None Include="..\..\OGLE\premake5.lua" />
+    <None Include="..\..\OGLE\vendor\GLAD\premake5.lua" />
+    <None Include="..\..\OGLE\vendor\GLFW\premake5.lua" />
+    <None Include="..\..\OGLE\vendor\imgui\premake5.lua" />
     <None Include="..\..\Sandbox\premake5.lua" />
     <None Include="..\..\premake5.lua" />
     <None Include="premake5.lua" />

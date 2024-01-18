@@ -4,37 +4,37 @@
     <Filter Include="..">
       <UniqueIdentifier>{61705900-4DFC-870B-B6AA-880BA255880B}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\OpenGLEngine">
-      <UniqueIdentifier>{4BC9C54A-B754-330F-C065-B6032C708F0F}</UniqueIdentifier>
+    <Filter Include="..\OGLE">
+      <UniqueIdentifier>{B7DE8247-23BE-01E3-2CD6-8CB998346844}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\OpenGLEngine\vendor">
-      <UniqueIdentifier>{489D26FF-3497-4F51-1D04-E661099DB5BD}</UniqueIdentifier>
+    <Filter Include="..\OGLE\vendor">
+      <UniqueIdentifier>{34E17FB7-20AF-73BD-0943-E4E3F5AF4F22}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\OpenGLEngine\vendor\GLAD">
-      <UniqueIdentifier>{CFE43E4C-3BF2-6C32-C4D8-681D30E538E9}</UniqueIdentifier>
+    <Filter Include="..\OGLE\vendor\GLAD">
+      <UniqueIdentifier>{3B7C5B94-A7DD-38A2-304B-7F549CAB6F61}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\OpenGLEngine\vendor\GLFW">
-      <UniqueIdentifier>{87E53E4C-F3F2-6C32-7CD9-681DE8E538E9}</UniqueIdentifier>
+    <Filter Include="..\OGLE\vendor\GLFW">
+      <UniqueIdentifier>{F37C5B94-5FDE-38A2-E84B-7F5454AC6F61}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\OpenGLEngine\vendor\imgui">
-      <UniqueIdentifier>{B28095D6-9E3B-8582-47F3-FDCC338DCF12}</UniqueIdentifier>
+    <Filter Include="..\OGLE\vendor\imgui">
+      <UniqueIdentifier>{9E054522-8A94-CEEB-33B3-E2E61F21DF91}</UniqueIdentifier>
     </Filter>
     <Filter Include="..\Sandbox">
       <UniqueIdentifier>{3F7B6B1D-2B33-AD6A-943A-86C68011485B}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\OpenGLEngine\premake5.lua">
-      <Filter>..\OpenGLEngine</Filter>
+    <None Include="..\..\OGLE\premake5.lua">
+      <Filter>..\OGLE</Filter>
     </None>
-    <None Include="..\..\OpenGLEngine\vendor\GLAD\premake5.lua">
-      <Filter>..\OpenGLEngine\vendor\GLAD</Filter>
+    <None Include="..\..\OGLE\vendor\GLAD\premake5.lua">
+      <Filter>..\OGLE\vendor\GLAD</Filter>
     </None>
-    <None Include="..\..\OpenGLEngine\vendor\GLFW\premake5.lua">
-      <Filter>..\OpenGLEngine\vendor\GLFW</Filter>
+    <None Include="..\..\OGLE\vendor\GLFW\premake5.lua">
+      <Filter>..\OGLE\vendor\GLFW</Filter>
     </None>
-    <None Include="..\..\OpenGLEngine\vendor\imgui\premake5.lua">
-      <Filter>..\OpenGLEngine\vendor\imgui</Filter>
+    <None Include="..\..\OGLE\vendor\imgui\premake5.lua">
+      <Filter>..\OGLE\vendor\imgui</Filter>
     </None>
     <None Include="..\..\Sandbox\premake5.lua">
       <Filter>..\Sandbox</Filter>
