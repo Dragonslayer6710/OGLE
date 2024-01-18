@@ -2,11 +2,10 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-*.vs
+*.vs/
 *.vsidx
 
 *.db-shm
 *.db-wal
 *.opendb
-/.vs/OGLE/v17/Browse.VC.db
-/.vs/OGLE/v17/Solution.VC.db
+
