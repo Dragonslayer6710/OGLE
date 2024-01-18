@@ -1,0 +1,16 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/OpenGLEngine/FileContentIndex/30162000-43cd-4ac8-98ad-7c2249deed79.vsidx
+/.vs/OpenGLEngine/FileContentIndex/32238361-5305-462b-b363-1587a4f9414e.vsidx
+/.vs/OpenGLEngine/FileContentIndex/41ae168e-a77c-419c-912d-055ff8a76845.vsidx
+/.vs/OpenGLEngine/FileContentIndex/82e279e8-3a3f-46f0-9b94-6bc9d8a271a5.vsidx
+*.vsidx
+/.vs/OpenGLEngine/FileContentIndex/93f3154d-8f99-4524-96f2-993ac924b502.vsidx
+/.vs/OpenGLEngine/FileContentIndex/d5ee1f75-d2e7-4533-b49f-b4328c5c7f61.vsidx
+/.vs/OpenGLEngine/v17/.suo
+/.vs/OpenGLEngine/v17/Browse.VC.db
+*.db-shm
+*.db-wal
+*.opendb
