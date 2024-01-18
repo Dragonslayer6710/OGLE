@@ -13,6 +13,27 @@
     <Filter Include="src\OGLE\Debug">
       <UniqueIdentifier>{B9392250-A507-1656-8E9B-867C7A08F2BA}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\OGLE\Events">
+      <UniqueIdentifier>{87C3F357-F34E-611C-FC5F-E410686ABD1C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\OGLE\ImGui">
+      <UniqueIdentifier>{6DA48050-5972-7456-4206-E57C2E7350BB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\OGLE\Platform">
+      <UniqueIdentifier>{B7C81040-23DF-0ED6-6C56-9AF7D8ABDF5D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\OGLE\Platform\OpenGL">
+      <UniqueIdentifier>{0B9ECBC1-F7C2-1A42-200E-00D20C921960}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\OGLE\Renderer">
+      <UniqueIdentifier>{09D0ED1A-75E6-EBB0-BE5D-77D22AB3BC38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\OGLE\Scripting">
+      <UniqueIdentifier>{C58DFB54-B171-BCAA-1AD2-B6FD06D5A62C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\OGLE\Utils">
+      <UniqueIdentifier>{A3305E51-8FFE-5157-7892-C27D64FF2DBC}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
@@ -42,14 +63,62 @@
     <ClInclude Include="src\OGLE.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\OGLE\Platform\OpenGL\GLIncludes.h">
+    <ClInclude Include="src\OGLE\Core\Application.h">
+      <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Core\Assert.h">
+      <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Core\Base.h">
+      <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Core\GLIncludes.h">
+      <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Core\Input.h">
+      <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Core\LayerStack.h">
+      <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Core\Log.h">
       <Filter>src\OGLE\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\OGLE\Core\PlatformDetection.h">
       <Filter>src\OGLE\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\OGLE\Core\Timestep.h">
+      <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\OGLE\Core\Window.h">
       <Filter>src\OGLE\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Debug\Debug.h">
+      <Filter>src\OGLE\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Debug\Instrumentor.h">
+      <Filter>src\OGLE\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Events\ApplicationEvent.h">
+      <Filter>src\OGLE\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Events\Event.h">
+      <Filter>src\OGLE\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\ImGui\ImGuiLayer.h">
+      <Filter>src\OGLE\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Platform\OpenGL\GLIncludes.h">
+      <Filter>src\OGLE\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Renderer\Renderer.h">
+      <Filter>src\OGLE\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Scripting\ScriptEngine.h">
+      <Filter>src\OGLE\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OGLE\Utils\PlatformUtils.h">
+      <Filter>src\OGLE\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\oglepch.h">
       <Filter>src</Filter>
@@ -1281,29 +1350,19 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\OGLE\Core\Base.h">
-      <Filter>src\OGLE\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OGLE\Core\Log.h" />
-    <ClInclude Include="src\OGLE\Core\Assert.h" />
-    <ClInclude Include="src\OGLE\Debug\Instrumentor.h" />
-    <ClInclude Include="src\OGLE\Core\Application.h" />
-    <ClInclude Include="src\OGLE\Core\LayerStack.h" />
-    <ClInclude Include="src\OGLE\Events\ApplicationEvent.h" />
-    <ClInclude Include="src\OGLE\Events\Event.h" />
-    <ClInclude Include="src\OGLE\Core\Timestep.h" />
-    <ClInclude Include="src\OGLE\ImGui\ImGuiLayer.h" />
-    <ClInclude Include="src\OGLE\Renderer\Renderer.h" />
-    <ClInclude Include="src\OGLE\Utils\PlatformUtils.h" />
-    <ClInclude Include="src\OGLE\Scripting\ScriptEngine.h" />
-    <ClInclude Include="src\OGLE\Core\Input.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OGLE\Core\Application.cpp">
+      <Filter>src\OGLE\Core</Filter>
+    </ClCompile>
     <ClCompile Include="src\OGLE\Core\Window.cpp">
       <Filter>src\OGLE\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Main.cpp">
-      <Filter>src\OGLE</Filter>
+    <ClCompile Include="src\OGLE\Renderer\Renderer.cpp">
+      <Filter>src\OGLE\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\oglepch.cpp">
       <Filter>src</Filter>
@@ -1311,7 +1370,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\OGLE\Core\Application.cpp" />
-    <ClCompile Include="src\OGLE\Renderer\Renderer.cpp" />
   </ItemGroup>
 </Project>

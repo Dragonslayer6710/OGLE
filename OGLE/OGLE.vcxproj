@@ -144,25 +144,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\OGLE\Core\Input.h" />
-    <ClInclude Include="src\OGLE\Renderer\Renderer.h" />
+    <ClInclude Include="src\OGLE.h" />
     <ClInclude Include="src\OGLE\Core\Application.h" />
-    <ClInclude Include="src\OGLE\ImGui\ImGuiLayer.h" />
-    <ClInclude Include="src\OGLE\Core\Timestep.h" />
-    <ClInclude Include="src\OGLE\Events\ApplicationEvent.h" />
     <ClInclude Include="src\OGLE\Core\Assert.h" />
     <ClInclude Include="src\OGLE\Core\Base.h" />
-    <ClInclude Include="src\OGLE.h" />
-    <ClInclude Include="src\OGLE\Events\Event.h" />
-    <ClInclude Include="src\OGLE\Platform\OpenGL\GLIncludes.h" />
+    <ClInclude Include="src\OGLE\Core\GLIncludes.h" />
+    <ClInclude Include="src\OGLE\Core\Input.h" />
     <ClInclude Include="src\OGLE\Core\LayerStack.h" />
     <ClInclude Include="src\OGLE\Core\Log.h" />
     <ClInclude Include="src\OGLE\Core\PlatformDetection.h" />
+    <ClInclude Include="src\OGLE\Core\Timestep.h" />
     <ClInclude Include="src\OGLE\Core\Window.h" />
-    <ClInclude Include="src\oglepch.h" />
+    <ClInclude Include="src\OGLE\Debug\Debug.h" />
     <ClInclude Include="src\OGLE\Debug\Instrumentor.h" />
+    <ClInclude Include="src\OGLE\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\OGLE\Events\Event.h" />
+    <ClInclude Include="src\OGLE\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\OGLE\Platform\OpenGL\GLIncludes.h" />
+    <ClInclude Include="src\OGLE\Renderer\Renderer.h" />
     <ClInclude Include="src\OGLE\Scripting\ScriptEngine.h" />
     <ClInclude Include="src\OGLE\Utils\PlatformUtils.h" />
+    <ClInclude Include="src\oglepch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />
@@ -574,10 +576,10 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\OGLE\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\OGLE\Core\Application.cpp" />
     <ClCompile Include="src\OGLE\Core\Window.cpp" />
-    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\OGLE\Renderer\Renderer.cpp" />
     <ClCompile Include="src\oglepch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
