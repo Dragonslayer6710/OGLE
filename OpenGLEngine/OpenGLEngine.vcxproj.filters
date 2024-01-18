@@ -4,11 +4,14 @@
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Core">
-      <UniqueIdentifier>{A5D31CCF-91A0-77DA-BAB9-6582A6E5AC68}</UniqueIdentifier>
+    <Filter Include="src\OpenGLEngine">
+      <UniqueIdentifier>{972F918E-8328-B0E0-AC5A-956598B28FEC}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Debug">
-      <UniqueIdentifier>{63A3C3B2-CF0D-7829-184C-29CF84F5557E}</UniqueIdentifier>
+    <Filter Include="src\OpenGLEngine\Core">
+      <UniqueIdentifier>{4FAA5A57-BB16-1652-840A-AEAFF03538BA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\OpenGLEngine\Debug">
+      <UniqueIdentifier>{4D4FBC42-3949-E594-22B6-7BA50E4F4B01}</UniqueIdentifier>
     </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
@@ -36,14 +39,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Core\GLIncludes.h">
-      <Filter>src\Core</Filter>
+    <ClInclude Include="src\OGLE.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\Window.h">
-      <Filter>src\Core</Filter>
+    <ClInclude Include="src\OpenGLEngine\Core\GLIncludes.h">
+      <Filter>src\OpenGLEngine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Debug\Debug.h">
-      <Filter>src\Debug</Filter>
+    <ClInclude Include="src\OpenGLEngine\Core\Window.h">
+      <Filter>src\OpenGLEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenGLEngine\Debug\Debug.h">
+      <Filter>src\OpenGLEngine\Debug</Filter>
     </ClInclude>
     <ClInclude Include="src\glepch.h">
       <Filter>src</Filter>
@@ -1277,11 +1283,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Core\Window.cpp">
-      <Filter>src\Core</Filter>
+    <ClCompile Include="src\OpenGLEngine\Core\Window.cpp">
+      <Filter>src\OpenGLEngine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Main.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="src\OpenGLEngine\Main.cpp">
+      <Filter>src\OpenGLEngine</Filter>
     </ClCompile>
     <ClCompile Include="src\glecph.cpp">
       <Filter>src</Filter>

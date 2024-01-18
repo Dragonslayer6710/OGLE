@@ -144,9 +144,10 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Core\GLIncludes.h" />
-    <ClInclude Include="src\Core\Window.h" />
-    <ClInclude Include="src\Debug\Debug.h" />
+    <ClInclude Include="src\OGLE.h" />
+    <ClInclude Include="src\OpenGLEngine\Core\GLIncludes.h" />
+    <ClInclude Include="src\OpenGLEngine\Core\Window.h" />
+    <ClInclude Include="src\OpenGLEngine\Debug\Debug.h" />
     <ClInclude Include="src\glepch.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
@@ -559,8 +560,8 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Core\Window.cpp" />
-    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\OpenGLEngine\Core\Window.cpp" />
+    <ClCompile Include="src\OpenGLEngine\Main.cpp" />
     <ClCompile Include="src\glecph.cpp" />
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
   </ItemGroup>
