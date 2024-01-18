@@ -1,7 +1,7 @@
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
-.vs/OpenGLEngine/v17/*
+
 *.vs/
 *.vsidx
 
@@ -9,3 +9,5 @@
 *.db-wal
 *.opendb
 
+/bin-int/Debug-windows-x86_64
+/bin/Debug-windows-x86_64
