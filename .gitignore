@@ -13,3 +13,5 @@
 */bin-int/*
 *bin/*
 *bin-int/*
+
+*.log
