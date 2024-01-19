@@ -11,3 +11,6 @@
 
 */bin/*
 */bin-int/*
+/OGLE/vendor/GLAD/bin-int/Debug-windows-x86_64/Glad
+/OGLE/vendor/GLFW/bin-int/Debug-windows-x86_64/GLFW/GLFW.tlog
+/OGLE/vendor/GLFW/bin-int/Debug-windows-x86_64/GLFW
