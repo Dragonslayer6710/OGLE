@@ -1,6 +1,6 @@
 #pragma once
 
-#include <OGLE/Events/Event.h>
+#include "OGLE/Events/Event.h"
 
 namespace OGLE {
 		class WindowResizeEvent : public Event

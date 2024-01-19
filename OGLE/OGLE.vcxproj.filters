@@ -19,15 +19,6 @@
     <Filter Include="src\OGLE\ImGui">
       <UniqueIdentifier>{6DA48050-5972-7456-4206-E57C2E7350BB}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\OGLE\Platform">
-      <UniqueIdentifier>{B7C81040-23DF-0ED6-6C56-9AF7D8ABDF5D}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\OGLE\Platform\OpenGL">
-      <UniqueIdentifier>{0B9ECBC1-F7C2-1A42-200E-00D20C921960}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\OGLE\Platform\Windows">
-      <UniqueIdentifier>{F1395B53-5DFC-8EDD-A6AC-1D6A12AE67BB}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\OGLE\Renderer">
       <UniqueIdentifier>{09D0ED1A-75E6-EBB0-BE5D-77D22AB3BC38}</UniqueIdentifier>
     </Filter>
@@ -37,8 +28,20 @@
     <Filter Include="src\OGLE\Utils">
       <UniqueIdentifier>{A3305E51-8FFE-5157-7892-C27D64FF2DBC}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Platform">
+      <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Platform\OpenGL">
+      <UniqueIdentifier>{35A49437-A105-7245-2A73-B8F796D3A804}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Platform\Windows">
+      <UniqueIdentifier>{5B054582-4794-CE4B-F0B2-E246DC20DFF1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\ImGuizmo">
+      <UniqueIdentifier>{73BF7F4C-DF4A-ED10-E85B-700554664911}</UniqueIdentifier>
     </Filter>
     <Filter Include="vendor\glm">
       <UniqueIdentifier>{829FC5A8-6E57-07F6-D75E-E051C335A2E6}</UniqueIdentifier>
@@ -75,9 +78,6 @@
     <ClInclude Include="src\OGLE\Core\Base.h">
       <Filter>src\OGLE\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\OGLE\Core\GLIncludes.h">
-      <Filter>src\OGLE\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\OGLE\Core\Input.h">
       <Filter>src\OGLE\Core</Filter>
     </ClInclude>
@@ -105,9 +105,6 @@
     <ClInclude Include="src\OGLE\Core\Window.h">
       <Filter>src\OGLE\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\OGLE\Debug\Debug.h">
-      <Filter>src\OGLE\Debug</Filter>
-    </ClInclude>
     <ClInclude Include="src\OGLE\Debug\Instrumentor.h">
       <Filter>src\OGLE\Debug</Filter>
     </ClInclude>
@@ -126,19 +123,7 @@
     <ClInclude Include="src\OGLE\ImGui\ImGuiLayer.h">
       <Filter>src\OGLE\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\OGLE\Platform\OpenGL\GLIncludes.h">
-      <Filter>src\OGLE\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OGLE\Platform\OpenGL\OpenGLContext.h">
-      <Filter>src\OGLE\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OGLE\Platform\Windows\WindowsWindow.h">
-      <Filter>src\OGLE\Platform\Windows</Filter>
-    </ClInclude>
     <ClInclude Include="src\OGLE\Renderer\Buffer.h">
-      <Filter>src\OGLE\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OGLE\Renderer\GraphicsContext.h">
       <Filter>src\OGLE\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\OGLE\Renderer\Renderer.h">
@@ -150,8 +135,17 @@
     <ClInclude Include="src\OGLE\Utils\PlatformUtils.h">
       <Filter>src\OGLE\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
+      <Filter>src\Platform\Windows</Filter>
+    </ClInclude>
     <ClInclude Include="src\oglepch.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\ImGuizmo\ImGuizmo.h">
+      <Filter>vendor\ImGuizmo</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1380,34 +1374,48 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\OGLE\Core\EntryPoint.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Main.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\OGLE\Core\Application.cpp">
+      <Filter>src\OGLE\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OGLE\Core\Layer.cpp">
+      <Filter>src\OGLE\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OGLE\Core\LayerStack.cpp">
+      <Filter>src\OGLE\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OGLE\Core\Log.cpp">
       <Filter>src\OGLE\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\OGLE\Core\Window.cpp">
       <Filter>src\OGLE\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\OGLE\Platform\OpenGL\OpenGLContext.cpp">
-      <Filter>src\OGLE\Platform\OpenGL</Filter>
+    <ClCompile Include="src\OGLE\ImGui\ImGuiBuild.cpp">
+      <Filter>src\OGLE\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\OGLE\Platform\Windows\WindowsWindow.cpp">
-      <Filter>src\OGLE\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="src\OGLE\Renderer\GraphicsContext.cpp">
-      <Filter>src\OGLE\Renderer</Filter>
+    <ClCompile Include="src\OGLE\ImGui\ImGuiLayer.cpp">
+      <Filter>src\OGLE\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\OGLE\Renderer\Renderer.cpp">
       <Filter>src\OGLE\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
+      <Filter>src\Platform\Windows</Filter>
+    </ClCompile>
     <ClCompile Include="src\oglepch.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\ImGuizmo\ImGuizmo.cpp">
+      <Filter>vendor\ImGuizmo</Filter>
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\OGLE\Main.cpp" />
   </ItemGroup>
 </Project>

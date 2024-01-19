@@ -1,7 +1,7 @@
 #pragma once
 
-#include <OGLE/Events/Event.h>
-#include <OGLE/Core/KeyCodes.h>
+#include "OGLE/Events/Event.h"
+#include "OGLE/Core/KeyCodes.h"
 
 namespace OGLE {
 

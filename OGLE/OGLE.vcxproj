@@ -80,7 +80,7 @@
       <PrecompiledHeaderFile>oglepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;OGLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;C:\VulkanSDK\1.3.275.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\ImGuizmo;C:\VulkanSDK\1.3.275.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -101,7 +101,7 @@
       <PrecompiledHeaderFile>oglepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;OGLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;C:\VulkanSDK\1.3.275.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\ImGuizmo;C:\VulkanSDK\1.3.275.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -125,7 +125,7 @@
       <PrecompiledHeaderFile>oglepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;OGLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;C:\VulkanSDK\1.3.275.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\ImGuizmo;C:\VulkanSDK\1.3.275.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -148,7 +148,7 @@
     <ClInclude Include="src\OGLE\Core\Application.h" />
     <ClInclude Include="src\OGLE\Core\Assert.h" />
     <ClInclude Include="src\OGLE\Core\Base.h" />
-    <ClInclude Include="src\OGLE\Core\GLIncludes.h" />
+    <ClInclude Include="src\OGLE\Core\EntryPoint.h" />
     <ClInclude Include="src\OGLE\Core\Input.h" />
     <ClInclude Include="src\OGLE\Core\KeyCodes.h" />
     <ClInclude Include="src\OGLE\Core\Layer.h" />
@@ -158,22 +158,20 @@
     <ClInclude Include="src\OGLE\Core\PlatformDetection.h" />
     <ClInclude Include="src\OGLE\Core\Timestep.h" />
     <ClInclude Include="src\OGLE\Core\Window.h" />
-    <ClInclude Include="src\OGLE\Debug\Debug.h" />
     <ClInclude Include="src\OGLE\Debug\Instrumentor.h" />
     <ClInclude Include="src\OGLE\Events\ApplicationEvent.h" />
     <ClInclude Include="src\OGLE\Events\Event.h" />
     <ClInclude Include="src\OGLE\Events\KeyEvent.h" />
     <ClInclude Include="src\OGLE\Events\MouseEvent.h" />
     <ClInclude Include="src\OGLE\ImGui\ImGuiLayer.h" />
-    <ClInclude Include="src\OGLE\Platform\OpenGL\GLIncludes.h" />
-    <ClInclude Include="src\OGLE\Platform\OpenGL\OpenGLContext.h" />
-    <ClInclude Include="src\OGLE\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\OGLE\Renderer\Buffer.h" />
-    <ClInclude Include="src\OGLE\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\OGLE\Renderer\Renderer.h" />
     <ClInclude Include="src\OGLE\Scripting\ScriptEngine.h" />
     <ClInclude Include="src\OGLE\Utils\PlatformUtils.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\oglepch.h" />
+    <ClInclude Include="vendor\ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />
@@ -585,15 +583,22 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\OGLE\Core\Application.cpp" />
+    <ClCompile Include="src\OGLE\Core\Layer.cpp" />
+    <ClCompile Include="src\OGLE\Core\LayerStack.cpp" />
+    <ClCompile Include="src\OGLE\Core\Log.cpp" />
     <ClCompile Include="src\OGLE\Core\Window.cpp" />
-    <ClCompile Include="src\OGLE\Platform\OpenGL\OpenGLContext.cpp" />
-    <ClCompile Include="src\OGLE\Platform\Windows\WindowsWindow.cpp" />
-    <ClCompile Include="src\OGLE\Renderer\GraphicsContext.cpp" />
+    <ClCompile Include="src\OGLE\ImGui\ImGuiBuild.cpp" />
+    <ClCompile Include="src\OGLE\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\OGLE\Main.cpp" />
     <ClCompile Include="src\OGLE\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\oglepch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\ImGuizmo\ImGuizmo.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
   </ItemGroup>

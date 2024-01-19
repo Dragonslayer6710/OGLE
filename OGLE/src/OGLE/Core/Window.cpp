@@ -1,8 +1,8 @@
 #include "oglepch.h"
-#include <OGLE/Core/Window.h>
+#include "OGLE/Core/Window.h"
 
 #ifdef OGLE_PLATFORM_WINDOWS
-	#include <OGLE/Platform/Windows/WindowsWindow.h>
+#include "Platform/Windows/WindowsWindow.h"
 #endif
 
 namespace OGLE

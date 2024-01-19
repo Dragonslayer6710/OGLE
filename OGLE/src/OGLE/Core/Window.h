@@ -1,7 +1,7 @@
 #pragma once
 
-#include <OGLE/Core/Base.h>
-#include <OGLE/Events/Event.h>
+#include "OGLE/Core/Base.h"
+#include "OGLE/Events/Event.h"
 
 #include <sstream>
 

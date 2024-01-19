@@ -18,8 +18,8 @@ project "OGLE"
 		"vendor/glm/glm/**.hpp",
 		"vendor/glm/glm/**.inl",
 
-		-- "vendor/ImGuizmo/ImGuizmo.h",
-		-- "vendor/ImGuizmo/ImGuizmo.cpp"
+		"vendor/ImGuizmo/ImGuizmo.h",
+		"vendor/ImGuizmo/ImGuizmo.cpp"
 	}
 
 	defines	{
@@ -42,7 +42,7 @@ project "OGLE"
 		-- "%{IncludeDir.entt}",
 		-- "%{IncludeDir.mono}",
 		-- "%{IncludeDir.yaml_cpp}",
-		-- "%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.VulkanSDK}"
 	}
 
@@ -58,8 +58,8 @@ project "OGLE"
 		-- "%{Library.mono}",
 	}
 
-	-- filter "files:vendor/ImGuizmo/**.cpp"
-		-- flags { "NoPCH" }
+	filter "files:vendor/ImGuizmo/**.cpp"
+		flags { "NoPCH" }
 
 
 	filter "system:windows"

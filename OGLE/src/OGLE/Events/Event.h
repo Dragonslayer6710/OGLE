@@ -1,7 +1,7 @@
 #pragma once
 
-#include <OGLE/Debug/Instrumentor.h>
-#include <OGLE/Core/Base.h>
+#include "OGLE/Debug/Instrumentor.h"
+#include "OGLE/Core/Base.h"
 
 #include <functional>
 
