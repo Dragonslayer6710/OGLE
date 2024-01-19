@@ -9,9 +9,5 @@
 *.db-wal
 *.opendb
 
-/bin-int/Debug-windows-x86_64
-/bin/Debug-windows-x86_64
-/OGLE/vendor/GLAD/bin/Debug-windows-x86_64/Glad
-/OGLE/vendor/ImGuizmo/bin
-/OGLE/vendor/GLFW/bin/Debug-windows-x86_64/GLFW
-/vendor/premake/bin
+*/bin/*
+*/bin-int/*
