@@ -1,5 +1,8 @@
 #pragma once
 
+const float OGLE_DEF_WIDTH = 640;
+const float OGLE_DEF_HEIGHT = 640;
+
 #include "OGLE/Core/PlatformDetection.h"
 
 #ifdef OGLE_PLATFORM_WINDOWS

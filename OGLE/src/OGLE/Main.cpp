@@ -1,6 +1,7 @@
 #include "oglepch.h"
 #include "OGLE/Core/EntryPoint.h"
 
+#include "OGLE/ExampleLayers/HelloLayer.h"
 
 namespace OGLE
 {
@@ -10,6 +11,7 @@ namespace OGLE
 		OGLEApp(const ApplicationSpecification& spec)
 			: Application(spec)
 		{
+			PushLayer(new HelloLayer());
 		}
 	};
 
