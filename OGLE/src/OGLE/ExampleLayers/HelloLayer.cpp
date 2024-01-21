@@ -128,15 +128,20 @@ namespace OGLE {
 		zRot += 0.25f;
 		if (zRot > 360)
 			zRot = 0;
-		glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
-		glm::mat4 xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(xRot), glm::vec3(1.0f, 0.0f, 0.0f));
-		glm::mat4 yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(yRot), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(zRot), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::mat4 rotation = xRotation * yRotation * zRotation;
+		
+		// Init Projection Matrix
+		glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+		// Apply Translation
+		glm::mat4 projTranslate = glm::translate(projection, glm::vec3(0.0f, 0.0f, -3.0f));
+		// Apply Rotation in x...
+		glm::mat4 xRotation = glm::rotate(projTranslate, glm::radians(xRot), glm::vec3(1.0f, 0.0f, 0.0f));
+		// In y...
+		glm::mat4 yRotation = glm::rotate(xRotation, glm::radians(yRot), glm::vec3(0.0f, 1.0f, 0.0f));
+		// And in z to give the final matrix
+		glm::mat4 finalTransform = glm::rotate(yRotation, glm::radians(zRot), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		glm::mat4 projection = glm::perspective(glm::radians(60.0f), 1.0f, 0.1f, 10.0f);
 
-		shaderProgram->SetUniformMatrix4fv("u_Transformation", projection * translation * rotation);
+		shaderProgram->SetUniformMatrix4fv("u_Transformation", finalTransform);
 
 		renderer->Clear();
 		renderer->Draw();
