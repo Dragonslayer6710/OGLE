@@ -106,6 +106,8 @@ namespace OGLE {
 		void SetUniform3f(const std::string& uName, glm::vec3 value);
 		void SetUniform4f(const std::string& uName, glm::vec4 value);
 
+		void SetUniformMatrix4fv(const std::string& uName, glm::mat4 value);
+
 	private:
 		GLuint GetUniformLocation(const std::string& uName);
 	private:

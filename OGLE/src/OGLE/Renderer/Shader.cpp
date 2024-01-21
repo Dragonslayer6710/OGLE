@@ -110,6 +110,11 @@ namespace OGLE {
 		GLCall(glUniform4f(GetUniformLocation(uName), value.x, value.y, value.z, value.w));
 	}
 
+	void ShaderProgram::SetUniformMatrix4fv(const std::string& uName, glm::mat4 value)
+	{
+		GLCall(glUniformMatrix4fv(GetUniformLocation(uName), 1, GL_FALSE, &value[0][0]));
+	}
+
 	GLuint ShaderProgram::GetUniformLocation(const std::string& uName)
 	{
 		if (m_CachedUniformLocations.find(uName.c_str()) != m_CachedUniformLocations.end())
