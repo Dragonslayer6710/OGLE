@@ -18,6 +18,7 @@ namespace OGLE {
 		GLint GetCompileStatus() const { return m_CompileStatus; }
 		GLsizei GetLogLength() const { return m_LogLength; }
 		const GLchar* GetLogMessage() { return m_LogMessage; }
+
 	protected:
 		void ParseShaderFile(const std::string shaderFile) const;
 
@@ -96,12 +97,26 @@ namespace OGLE {
 
 		void Activate();
 		void Deactivate();
+
+		void PrintStatus(const char* status) { std::cout << "Shader Program (ID " << m_ProgramID << "): " << status << std::endl; }
+		void PrintInitialized() { PrintStatus("Initialized"); }
+		void PrintActivationStatus() { PrintStatus((m_IsActive) ? "Activated" : "Deactivated"); }
+
+		void SetUniform2f(const std::string& uName, glm::vec2 value);
+		void SetUniform3f(const std::string& uName, glm::vec3 value);
+		void SetUniform4f(const std::string& uName, glm::vec4 value);
+
+	private:
+		GLuint GetUniformLocation(const std::string& uName);
 	private:
 		GLuint m_ProgramID;
 		ShaderCollection* m_ShaderCollection;
+		std::unordered_map<std::string, GLuint> m_CachedUniformLocations;
 
 		GLint m_LinkStatus;
 		GLsizei m_LogLength = 0;
 		GLchar m_LogMessage[1024];
+
+		bool m_IsActive = false;
 	};
 }

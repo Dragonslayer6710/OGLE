@@ -5,8 +5,9 @@ namespace OGLE {
 
 	// Create new shader object and get its ID
 	Shader::Shader(GLenum shaderType, std::string shaderFile)
-		: m_ShaderID(glCreateShader(shaderType)), m_ShaderType(shaderType)
+		: m_ShaderType(shaderType)
 	{
+		GLCall(m_ShaderID = glCreateShader(shaderType));
 		if (s_ParsedShaders.find(m_ShaderType) != s_ParsedShaders.end())
 			s_ParsedShaders[m_ShaderType] = std::unordered_map<std::string, std::string>();
 
@@ -43,8 +44,9 @@ namespace OGLE {
 
 	// Create Program object and refer to it using m_ProgramID
 	ShaderProgram::ShaderProgram(std::string shaderList[s_TotalShaderTypes])
-		: m_ProgramID(glCreateProgram())
 	{
+		GLCall(m_ProgramID = glCreateProgram());
+		//PrintInitialized();
 		m_ShaderCollection = new ShaderCollection(shaderList);
 		for (auto& kv : m_ShaderCollection->compiledShaders) {
 			Shader* shader = kv.second;
@@ -77,12 +79,44 @@ namespace OGLE {
 
 	void ShaderProgram::Activate()
 	{
-		glUseProgram(m_ProgramID);
+		if (m_IsActive)
+			return;
+		GLCall(glUseProgram(m_ProgramID));
+		m_IsActive = true;
+		//PrintActivationStatus();
 	}
 
 	void ShaderProgram::Deactivate()
 	{
-		glUseProgram(0);
+		if (!m_IsActive)
+			return;
+		GLCall(glUseProgram(0));
+		m_IsActive = false;
+		//PrintActivationStatus();
+	}
+
+	void ShaderProgram::SetUniform2f(const std::string& uName, glm::vec2 value)
+	{
+		GLCall(glUniform2f(GetUniformLocation(uName), value.x, value.y));
+	}
+
+	void ShaderProgram::SetUniform3f(const std::string& uName, glm::vec3 value)
+	{
+		GLCall(glUniform3f(GetUniformLocation(uName), value.x, value.y, value.z));
+	}
+
+	void ShaderProgram::SetUniform4f(const std::string& uName, glm::vec4 value)
+	{
+		GLCall(glUniform4f(GetUniformLocation(uName), value.x, value.y, value.z, value.w));
+	}
+
+	GLuint ShaderProgram::GetUniformLocation(const std::string& uName)
+	{
+		if (m_CachedUniformLocations.find(uName.c_str()) != m_CachedUniformLocations.end())
+			return m_CachedUniformLocations[uName.c_str()];
+		GLCall(m_CachedUniformLocations[uName] = glGetUniformLocation(m_ProgramID, uName.c_str()));
+		return m_CachedUniformLocations[uName];
+
 	}
 
 }

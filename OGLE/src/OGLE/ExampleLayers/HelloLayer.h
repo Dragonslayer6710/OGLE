@@ -2,6 +2,7 @@
 
 #include "OGLE/Core/Layer.h"
 
+
 namespace OGLE{
 
 	class HelloLayer : public Layer

@@ -3,41 +3,55 @@
 
 namespace OGLE {
 
-	VertexBuffer* VertexArray::GetVertexBuffer()
+	void VertexArray::Bind()
 	{
-		return m_VBO;
+		if (m_IsBound)
+			return;
+		GLCall(glBindVertexArray(m_VertexArrayID));
+		m_IsBound = true;
+		//PrintBindStatus();		
 	}
 
-	void VertexArray::SetVertexBuffer(VertexBuffer& vbo)
+	void VertexArray::Unbind()
 	{
+		if (!m_IsBound)
+			return;		
+		GLCall(glBindVertexArray(0)); 
+		m_IsBound = false; 
+		//PrintBindStatus();
+	}
+
+	void VertexArray::LinkVertexBufferToVertexArray()
+	{
+		
 		Bind();
-		m_VBO = &vbo;
-		SetAttribPointers();
+		SetVBOAttribPointers();
 		Unbind();
 	}
 
-	void VertexArray::SetAttribPointers()
+	void VertexArray::SetVBOAttribPointers()
 	{
-		m_VBO->Bind();
+		BindVertexBuffer();
 		GLuint i = 0;
 		std::unordered_map<GLuint, VertexAttribute*> vertexAttributes = m_VBO->GetAttributes();
 		VertexAttribute* vertexAttribute;
 		for (GLuint offset = 0; offset < m_VBO->GetStride(); offset)
 		{
 			vertexAttribute = vertexAttributes[offset];
-			GLCall(glVertexAttribPointer(i, vertexAttribute->Count, vertexAttribute->Type, vertexAttribute->Normalized, m_VBO->GetStride(), (void*)offset));
+			GLCall(glVertexAttribPointer(i, vertexAttribute->Count, vertexAttribute->Type, vertexAttribute->Normalized, m_VBO->GetStride(), (GLvoid*)offset));
 			GLCall(glEnableVertexAttribArray(i++));
+			//std::cout << std::endl;
+			//PrintStatus("AttribPointer set:");
+			//std::cout << " - Index: " << i - 1 << "\n - Number of elements in attribute: " << vertexAttribute->Count << "\n - Normalized: " << vertexAttribute->Normalized << "\n - Stride: " << m_VBO->GetStride() << "\n - offset: " << offset << "\n - Attribute Size: " << vertexAttribute->Size << std::endl;
 			offset += vertexAttribute->Size;
 		}
-		m_VBO->Unbind();
+		UnbindVertexBuffer();
 	}
 
-
-	void VertexArray::SetElementBuffer(ElementBuffer& vbo)
+	void VertexArray::LinkElementBufferToVertexArray()
 	{
 		Bind();
-		m_EBO = &vbo;
-		m_EBO->Bind();
+		BindElementBuffer();
 		Unbind();
 	}
 

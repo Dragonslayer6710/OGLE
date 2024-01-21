@@ -1,7 +1,7 @@
 #include "oglepch.h"
-#include "HelloLayer.h"
+#include "OGLE/ExampleLayers/HelloLayer.h"
 
-#include "OGLE/Renderer/Shader.h"
+#include "OGLE/Renderer/Renderer.h"
 
 namespace OGLE {
 
@@ -21,52 +21,48 @@ namespace OGLE {
 
 	
 
+	std::vector<Vertex> vertices =
+	{
+		Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec4(0.0f, 1.0f, 0.5f, 1.0f)},
+		Vertex{glm::vec3(0.0f,  0.5f,  0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)},
+		Vertex{glm::vec3(0.5f,  0.0f,  0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)},
+		Vertex{glm::vec3(0.0f, -0.5f,  0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}
+	};
+
+	std::vector<GLushort> indices =
+	{
+		0, 1, 2,
+		0, 3, 2
+	};
+
 	VertexBuffer* vbo;
 	ElementBuffer* ebo;
 	VertexArray* vao;
-	static bool makeBuffers = true;
+	
+	ShaderProgram* shaderProgram;
+
+
+	Renderer* renderer;
+
+	bool doInit = true;
+
 	void HelloLayer::OnUpdate(Timestep ts)
 	{
-		if (makeBuffers) {
+		if (doInit) {
+			vbo = new VertexBuffer(vertices);
+			ebo = new ElementBuffer(indices);
+			vao = new VertexArray(*vbo, *ebo);
 
-			GLfloat vertices[]{
-				-0.5f,  0.0f, 0.0f, 1.0f, 0.5f, 1.0f,
-				 0.0f,  1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-				 0.5f,  0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-				 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			};
+			shaderProgram = new ShaderProgram();
+			renderer = new Renderer(*shaderProgram, *vao);
 
-			GLushort indices[]{
-				0, 1, 2,
-				0, 3, 2
-			};
-
-			vbo = new VertexBuffer(vertices, sizeof(vertices));
-			vbo->AddVertexAttribute(VertAttribFloat2);
-			vbo->AddVertexAttribute(VertAttribFloat4);
-
-			ebo = new ElementBuffer(indices, sizeof(indices));
-
-
-			vao = new VertexArray();
-			vao->SetVertexBuffer(*vbo);
-			vao->SetElementBuffer(*ebo);
-
-			makeBuffers = false;
-
-			ShaderProgram* shader = new ShaderProgram();
-			shader->Activate();
-			//ebo->Bind();
-			//vao->Bind();
+			//shaderProgram->Activate();
+			doInit = false;
 		}
-		vao->Bind();
-		//vbo->Bind();
-		//ebo->Bind();
 		//vao->Bind();
-
-		
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr));
+		renderer->Clear();
+		renderer->Draw();
+		//GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr));
 	}
 
 }

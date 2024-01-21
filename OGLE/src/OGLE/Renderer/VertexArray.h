@@ -6,31 +6,76 @@ namespace OGLE {
 	class VertexArray
 	{
 	public:
-
-		VertexArray()
+		VertexArray(VertexBuffer& vbo, ElementBuffer& ebo)
+			
 		{
-			GLCall(glGenVertexArrays(1, &m_ID));
+			InitVertexArray(vbo, ebo);
 		}
 
-		~VertexArray() { GLCall(glDeleteVertexArrays(1, &m_ID)); }
+		~VertexArray() { GLCall(glDeleteVertexArrays(1, &m_VertexArrayID)); }
 
-		void Bind() { GLCall(glBindVertexArray(m_ID)); }
-		void Unbind() { GLCall(glBindVertexArray(0)); }
+		void PrintStatus(const char* status) { std::cout << "Vertex Array (ID " << m_VertexArrayID << "): " << status << std::endl; }
+		void PrintInitialized() { PrintStatus("Initialized"); }
+		void PrintBindStatus() { PrintStatus((m_IsBound) ? "Bound" : "Unbound"); }
 
-		VertexBuffer* GetVertexBuffer();
-		void SetVertexBuffer(VertexBuffer& vbo);
+		void Bind();
+		void Unbind();
 
-		void SetAttribPointers();
+		VertexBuffer* GetVertexBuffer()	{ return m_VBO; }
 
 		ElementBuffer* GetElementBuffer() { return m_EBO; };
-		void SetElementBuffer(ElementBuffer& vbo);;
+		GLuint GetElementCount() { return m_EBO->GetElementCount(); }
+		GLenum GetElementDataType() { return m_EBO->GetElementDataType(); }
 
 	private:
-		GLuint m_ID;
+		void InitVertexArray(VertexBuffer& vbo, ElementBuffer& ebo) {
+			GLCall(glGenVertexArrays(1, &m_VertexArrayID));
+			//PrintInitialized();
+
+			m_RetainBind = true;
+			Bind();
+			LinkNewVertexBufferToVertexArray(vbo);
+			LinkNewElementBufferToElementArray(ebo);
+			Unbind();
+			m_RetainBind = false;
+		}
+
+		void LinkNewVertexBufferToVertexArray(VertexBuffer& vbo)
+		{
+			SetVertexBuffer(vbo); LinkVertexBufferToVertexArray();
+		}
+		void SetVertexBuffer(VertexBuffer& vbo) { m_VBO = &vbo; }
+		void LinkVertexBufferToVertexArray();
+		void BindVertexBuffer() {
+			m_VBO->Bind();
+		}
+		void UnbindVertexBuffer() {
+			m_VBO->Unbind();
+		}
+		void SetVBOAttribPointers();
+
+		void LinkNewElementBufferToElementArray(ElementBuffer& ebo)
+		{
+			SetElementBuffer(ebo); LinkElementBufferToVertexArray();
+		}
+		void SetElementBuffer(ElementBuffer& ebo) { m_EBO = &ebo; }
+		void LinkElementBufferToVertexArray();
+		void BindElementBuffer() {
+			m_EBO->Bind();
+		}
+		void UnbindElementBuffer() {
+			m_EBO->Unbind();
+		}
+
+	private:
+		GLuint m_VertexArrayID;
 		GLuint m_VertexCount;
 
 		VertexBuffer* m_VBO;
 		ElementBuffer* m_EBO;
+
+		bool m_IsBound = false;
+		bool m_RetainBind = false;
 	};
 
 }

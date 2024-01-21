@@ -11,6 +11,8 @@
 
 #include "OGLE/ImGui/ImGuiLayer.h"
 
+#include "OGLE/Renderer/Renderer.h"
+
 int main(int argc, char** argv);
 
 namespace OGLE {

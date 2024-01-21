@@ -9,6 +9,7 @@
 #include "OGLE/Core/Input.h"
 #include "OGLE/Utils/PlatformUtils.h"
 
+
 namespace OGLE {
 
 	Application* Application::s_Instance = nullptr;
