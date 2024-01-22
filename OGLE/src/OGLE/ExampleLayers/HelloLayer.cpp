@@ -128,7 +128,7 @@ namespace OGLE {
 			zRot = 0;
 		
 		// Init Projection Matrix
-		glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(90.0f), m_Renderer->GetAspectRatio(), 0.1f, 10.0f);
 		// Apply Translation
 		glm::mat4 projTranslate = glm::translate(projection, glm::vec3(0.0f, 0.0f, -3.0f));
 		// Apply Rotation in x...

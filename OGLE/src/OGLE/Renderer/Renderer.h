@@ -25,6 +25,8 @@ namespace OGLE {
 		GLsizei GetWidth() { return m_Width; }
 		GLsizei GetHeight() { return m_Width; }
 
+		GLfloat GetAspectRatio() { return m_AspectRatio; }
+
 		void SetClearColor(glm::vec4 clearColor);
 
 		void ChangeShaderProgram(ShaderProgram& shaderProgram);
@@ -62,6 +64,8 @@ namespace OGLE {
 		GLint m_Bottom = 0;
 		GLsizei m_Width;
 		GLsizei m_Height;
+
+		GLfloat m_AspectRatio;
 
 		bool m_UseColorBuffer = false;
 		bool m_UseDepthBuffer = false;
