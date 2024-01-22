@@ -35,7 +35,7 @@ namespace OGLE {
 
 	void Renderer::SetClearColor(glm::vec4 clearColor = glm::vec4(0.1, 0.1, 0, 1))
 	{
-		glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+		GLCall(glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a));
 	}
 
 	void Renderer::Clear()
@@ -62,9 +62,16 @@ namespace OGLE {
 		InitVAO(vao);
 	}
 
+	void Renderer::UpdateFOV(GLfloat fovDegrees)
+	{
+		m_FOVDegrees = fovDegrees;
+		UpdateFOV();
+	}
+
 	void Renderer::InitRenderer(GLsizei width, GLsizei height)
 	{
 		OnWindowResize(width, height);
+		UpdateFOV(DefFOVDegrees);
 		EnableColorBuffer();
 		EnableDepthBuffer();
 		SetClearColor();

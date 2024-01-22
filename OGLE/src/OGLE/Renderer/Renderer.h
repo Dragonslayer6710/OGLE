@@ -1,7 +1,7 @@
 #pragma once
 
 #include "OGLE/Renderer/Shader.h"
-
+static const GLfloat DefFOVDegrees = 60.0f;
 namespace OGLE {
 
 	class Renderer
@@ -22,10 +22,20 @@ namespace OGLE {
 
 		void OnWindowResize(GLsizei newWidth, GLsizei newHeight);
 
+		void UpdateFOV(GLfloat fovDegrees);
+		
+		GLfloat GetFOV() { return m_FOVRadians; }
+
+		GLint GetLeft() { return m_Left; }
+		GLint GetBottom() { return m_Bottom; }
+
 		GLsizei GetWidth() { return m_Width; }
 		GLsizei GetHeight() { return m_Width; }
 
 		GLfloat GetAspectRatio() { return m_AspectRatio; }
+
+		GLfloat GetNearPlane() { return m_NearPlane; }
+		GLfloat GetFarPlane() { return m_FarPlane; }
 
 		void SetClearColor(glm::vec4 clearColor);
 
@@ -36,6 +46,8 @@ namespace OGLE {
 		void Clear();
 		
 	private:
+
+		void UpdateFOV() { m_FOVRadians = glm::radians(m_FOVDegrees); }
 
 		void EnableColorBuffer() { m_UseColorBuffer = true; }
 		void DisableColorBuffer() { m_UseColorBuffer = false; }
@@ -60,12 +72,19 @@ namespace OGLE {
 		void UnbindVAO();
 		void ClearVAO();
 	private:
+
+		GLfloat m_FOVDegrees;
+		GLfloat m_FOVRadians;
+
 		GLint m_Left = 0;
 		GLint m_Bottom = 0;
+
 		GLsizei m_Width;
 		GLsizei m_Height;
-
 		GLfloat m_AspectRatio;
+
+		GLfloat m_NearPlane = 0.1f;
+		GLfloat m_FarPlane = 10.0f;
 
 		bool m_UseColorBuffer = false;
 		bool m_UseDepthBuffer = false;
