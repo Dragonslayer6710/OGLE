@@ -16,17 +16,14 @@ namespace OGLE {
 			AttributeData = new std::vector<VertexAttributeData>();
 			for (VertexAttributeType attribType : attributeTypes)
 				AttributeData->push_back(VertexAttributeData(attribType));
+			AttribCount = AttributeData->size();
 		}
 	};
 
 
 	static const VertexLayout DefVertLayout = VertexLayout
 	(
-		std::vector<VertexAttributeType>
-	{
-		VertAttribFloat3,
-			VertAttribFloat4
-	}
+		std::vector<VertexAttributeType> {	VertAttribFloat3, VertAttribFloat4 }
 	);
 
 
