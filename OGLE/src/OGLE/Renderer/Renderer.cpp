@@ -3,16 +3,27 @@
 
 namespace OGLE {
 
-	Renderer::Renderer(GLsizei width, GLsizei height)
+
+	Renderer::Renderer(GLsizei width, GLsizei height, GLfloat fovDeg/*=DefFOVDegrees*/, GLfloat nearPlane/*=DefNearPlane*/, GLfloat farPlane/*=DefFarPlane*/)
 	{
-		InitRenderer(width, height);
+		InitRenderer(width, height, fovDeg, nearPlane, farPlane);
 	}
 
-	Renderer::Renderer(GLsizei width, GLsizei height, ShaderProgram& shaderProgram, VertexArray& vao)
+	Renderer::Renderer(ShaderProgram& shaderProgram, VertexArray& vao, GLsizei width, GLsizei height, GLfloat fovDeg /*= DefFOVDegrees*/, GLfloat nearPlane /*= DefNearPlane*/, GLfloat farPlane /*= DefFarPlane*/)
 	{
-		InitRenderer(width, height);
+		InitRenderer(width, height, fovDeg, nearPlane, farPlane);
 		InitShaderProgram(shaderProgram);
 		InitVAO(vao);
+	}
+
+	void Renderer::InitRenderer(GLsizei width, GLsizei height, GLfloat fovDeg, GLfloat nearPlane, GLfloat farPlane)
+	{
+		OnWindowResize(width, height);
+		UpdateFOV(DefFOVDegrees);
+		UpdateClipPlanes(nearPlane, farPlane);
+		EnableColorBuffer();
+		EnableDepthBuffer();
+		SetClearColor();
 	}
 
 	void Renderer::SetViewPort(GLint left, GLint bottom, GLsizei width, GLsizei height)
@@ -33,10 +44,14 @@ namespace OGLE {
 		GLCall(glDrawElements(GL_TRIANGLES, m_CurrentVAO->GetElementCount(), m_CurrentVAO->GetElementDataType(), nullptr));
 	}
 
-	void Renderer::SetClearColor(glm::vec4 clearColor = glm::vec4(0.1, 0.1, 0, 1))
+	void Renderer::UpdateClipPlanes(GLfloat nearPlane /*= NULL*/, GLfloat farPlane /*= NULL*/)
 	{
-		GLCall(glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a));
+		if (nearPlane != NULL)
+			SetNearPlane(nearPlane);
+		if (farPlane != NULL)
+			SetFarPlane(farPlane);
 	}
+
 
 	void Renderer::Clear()
 	{
@@ -48,6 +63,11 @@ namespace OGLE {
 		if (m_UseStencilBuffer)
 			mask = mask | GL_STENCIL_BUFFER_BIT;
 		GLCall(glClear(mask));
+	}
+
+	void Renderer::SetClearColor(glm::vec4 clearColor /*= glm::vec4(0.1, 0.1, 0, 1)*/)
+	{
+		GLCall(glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a));
 	}
 
 	void Renderer::ChangeShaderProgram(ShaderProgram& shaderProgram)
@@ -68,14 +88,6 @@ namespace OGLE {
 		UpdateFOV();
 	}
 
-	void Renderer::InitRenderer(GLsizei width, GLsizei height)
-	{
-		OnWindowResize(width, height);
-		UpdateFOV(DefFOVDegrees);
-		EnableColorBuffer();
-		EnableDepthBuffer();
-		SetClearColor();
-	}
 
 	void Renderer::InitShaderProgram(ShaderProgram& shaderProgam)
 	{

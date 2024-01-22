@@ -1,6 +1,13 @@
 #include "oglepch.h"
 #include "OGLE/ExampleLayers/HelloLayer.h"
 
+#include <imgui.h>
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "ImGuizmo.h"
+
 namespace OGLE {
 
 	HelloLayer::HelloLayer(Renderer& renderer)
@@ -17,6 +24,20 @@ namespace OGLE {
 	{
 	}
 
+
+	void HelloLayer::OnImGuiRender()
+	{
+		GLfloat FOVDegrees = m_Renderer->GetFOVDegrees();
+		GLfloat NearPlane = m_Renderer->GetNearPlane();
+		GLfloat FarPlane = m_Renderer->GetFarPlane();
+
+		ImGui::SliderFloat("FOV", &FOVDegrees, 0.0f, 180.0f);
+		m_Renderer->UpdateFOV(FOVDegrees);
+
+		ImGui::SliderFloat("Near Plane", &NearPlane, -10.0f, 10.0f);
+		ImGui::SliderFloat("Far Plane", &FarPlane, -10.0f, 10.0f);
+		m_Renderer->UpdateClipPlanes(NearPlane, FarPlane);
+	}
 
 	std::vector<Vertex> cubeVertices =
 	{

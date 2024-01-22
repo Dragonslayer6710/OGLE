@@ -15,6 +15,7 @@ namespace OGLE{
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
+		virtual void OnImGuiRender() override;
 
 		virtual void OnUpdate(Timestep ts) override;
 	private:
