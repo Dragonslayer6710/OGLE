@@ -78,7 +78,7 @@ namespace OGLE {
 
 	void VertexBuffer::AddVertexAttribute(VertexAttributeType attribType, GLboolean normalized /*= GL_FALSE*/)
 	{
-		m_VertexAttributes[m_Stride] = GetNewVertexAttribute(m_AttribCount, attribType, normalized);
+		m_VertexAttributes[m_Stride] = GetNewVertexAttribute(m_AttribCount++, attribType, normalized);
 		m_Stride += m_VertexAttributes[m_Stride]->Size;
 	}
 

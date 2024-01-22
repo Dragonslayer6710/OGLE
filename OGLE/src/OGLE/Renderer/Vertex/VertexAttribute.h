@@ -55,7 +55,6 @@ namespace OGLE {
 			: VertexAttribute(attribID, normalized) {}
 	};
 
-
 	struct VertexInt : VertexAttribute
 	{
 		VertexInt(GLuint attribID, GLboolean normalized = GL_FALSE)
@@ -79,9 +78,6 @@ namespace OGLE {
 		VertexUShort(GLuint attribID, GLboolean normalized = GL_FALSE)
 			: VertexAttribute(attribID, normalized, GL_UNSIGNED_SHORT) {}
 	};
-
-
-	
 
 	struct VertexAttributeData {
 		VertexAttributeType Type;
