@@ -1,12 +1,10 @@
 #include "oglepch.h"
 #include "OGLE/ExampleLayers/HelloLayer.h"
 
-#include "OGLE/Renderer/Renderer.h"
-
 namespace OGLE {
 
-	HelloLayer::HelloLayer()
-		:Layer("Hello Layer!")
+	HelloLayer::HelloLayer(Renderer& renderer)
+		: Layer("Hello Layer!"), m_Renderer(&renderer)
 	{
 		
 	}
@@ -96,10 +94,10 @@ namespace OGLE {
 	
 	ShaderProgram* shaderProgram;
 
-
-	Renderer* renderer;
-
 	bool doInit = true;
+
+
+
 	float xRot = 0.0f;
 	float yRot = 0.0f;
 	float zRot = 0.0f;
@@ -112,13 +110,13 @@ namespace OGLE {
 			vao = new VertexArray(*vbo, *ebo);
 
 			shaderProgram = new ShaderProgram();
-			renderer = new Renderer(*shaderProgram, *vao);
 
-			//shaderProgram->Activate();
+			m_Renderer->ChangeShaderProgram(*shaderProgram);
+			m_Renderer->ChangeVAO(*vao);
+
 			doInit = false;
-			glViewport(0, 0, 640, 640);
 		}
-		//vao->Bind();
+
 		xRot += 1.0f;
 		if (xRot > 360)
 			xRot = 0;
@@ -143,8 +141,8 @@ namespace OGLE {
 
 		shaderProgram->SetUniformMatrix4fv("u_Transformation", finalTransform);
 
-		renderer->Clear();
-		renderer->Draw();
+		m_Renderer->Clear();
+		m_Renderer->Draw();
 		//GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr));
 	}
 

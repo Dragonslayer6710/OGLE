@@ -11,7 +11,7 @@ namespace OGLE
 		OGLEApp(const ApplicationSpecification& spec)
 			: Application(spec)
 		{
-			PushLayer(new HelloLayer());
+			PushLayer(new HelloLayer(*m_Renderer));
 		}
 	};
 

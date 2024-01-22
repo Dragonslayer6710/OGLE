@@ -8,22 +8,30 @@ namespace OGLE {
 	{
 	public:
 
-		Renderer() { }
+		Renderer(GLsizei width, GLsizei height);
 
-		Renderer(ShaderProgram& shaderProgram, VertexArray& vao) { InitRenderer(shaderProgram, vao); }
+		Renderer(GLsizei width, GLsizei height, ShaderProgram& shaderProgram, VertexArray& vao);
 
 		~Renderer(){
 			DeactivateShaderProgram();
 			UnbindVAO();
 		}
 
-		void Draw();
+		// left/bottom = lower left corner of viewport rect (initial is 0,0), width/height is the dims of the rect
+		void SetViewPort(GLint left, GLint bottom, GLsizei width, GLsizei height);
+
+		void OnWindowResize(GLsizei newWidth, GLsizei newHeight);
+
+		GLsizei GetWidth() { return m_Width; }
+		GLsizei GetHeight() { return m_Width; }
 
 		void SetClearColor(glm::vec4 clearColor);
-		void Clear();
 
 		void ChangeShaderProgram(ShaderProgram& shaderProgram);
 		void ChangeVAO(VertexArray& vao);
+
+		void Draw();
+		void Clear();
 		
 	private:
 
@@ -36,7 +44,7 @@ namespace OGLE {
 		void EnableStencilBuffer(){ m_UseStencilBuffer = true; }
 		void DisableStencilBuffer() { m_UseStencilBuffer = false; }
 
-		void InitRenderer(ShaderProgram& shaderProgram, VertexArray& vao);
+		void InitRenderer(GLsizei width, GLsizei height);
 
 		void InitShaderProgram(ShaderProgram& shaderProgam);
 		void SetShaderProgram(ShaderProgram& shaderProgram);
@@ -50,6 +58,11 @@ namespace OGLE {
 		void UnbindVAO();
 		void ClearVAO();
 	private:
+		GLint m_Left = 0;
+		GLint m_Bottom = 0;
+		GLsizei m_Width;
+		GLsizei m_Height;
+
 		bool m_UseColorBuffer = false;
 		bool m_UseDepthBuffer = false;
 		bool m_UseStencilBuffer = false;

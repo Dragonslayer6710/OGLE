@@ -29,7 +29,7 @@ namespace OGLE {
 		m_Window = Window::Create(WindowProps(m_Specification.Name));
 		m_Window->SetEventCallback(OGLE_BIND_EVENT_FN(Application::OnEvent));
 
-		// TODO:Init Renderer
+		m_Renderer = new Renderer(m_Window->GetWidth(), m_Window->GetHeight());
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
@@ -141,7 +141,7 @@ namespace OGLE {
 
 		m_Minimized = false;
 		
-		// TODO: Handle Renderer changes on Window Resize
+		m_Renderer->OnWindowResize(e.GetWidth(), e.GetHeight());
 
 		return false;
 	}

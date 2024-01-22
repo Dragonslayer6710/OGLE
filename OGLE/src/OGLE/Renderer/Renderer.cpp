@@ -3,12 +3,36 @@
 
 namespace OGLE {
 
+	Renderer::Renderer(GLsizei width, GLsizei height)
+	{
+		InitRenderer(width, height);
+	}
+
+	Renderer::Renderer(GLsizei width, GLsizei height, ShaderProgram& shaderProgram, VertexArray& vao)
+	{
+		InitRenderer(width, height);
+		InitShaderProgram(shaderProgram);
+		InitVAO(vao);
+	}
+
+	void Renderer::SetViewPort(GLint left, GLint bottom, GLsizei width, GLsizei height)
+	{
+		GLCall(glViewport(left, bottom, width, height));
+	}
+
+	void Renderer::OnWindowResize(GLsizei newWidth, GLsizei newHeight)
+	{
+		m_Width = newWidth;
+		m_Height = newHeight;
+		SetViewPort(m_Left, m_Bottom, m_Width, m_Height);
+	}
+
 	void Renderer::Draw()
 	{
 		GLCall(glDrawElements(GL_TRIANGLES, m_CurrentVAO->GetElementCount(), m_CurrentVAO->GetElementDataType(), nullptr));
 	}
 
-	void Renderer::SetClearColor(glm::vec4 clearColor = glm::vec4(0.1,0.1,0,1))
+	void Renderer::SetClearColor(glm::vec4 clearColor = glm::vec4(0.1, 0.1, 0, 1))
 	{
 		glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 	}
@@ -37,11 +61,10 @@ namespace OGLE {
 		InitVAO(vao);
 	}
 
-	void Renderer::InitRenderer(ShaderProgram& shaderProgram, VertexArray& vao)
+	void Renderer::InitRenderer(GLsizei width, GLsizei height)
 	{
-		InitShaderProgram(shaderProgram); 
-		InitVAO(vao);
-		EnableColorBuffer(); 
+		OnWindowResize(width, height);
+		EnableColorBuffer();
 		EnableDepthBuffer();
 		SetClearColor();
 	}
@@ -59,12 +82,14 @@ namespace OGLE {
 
 	void Renderer::ActivateShaderProgram()
 	{
-		m_CurrentShaderProgram->Activate();
+		if (!(m_CurrentShaderProgram == nullptr))
+			m_CurrentShaderProgram->Activate();
 	}
 
 	void Renderer::DeactivateShaderProgram()
 	{
-		m_CurrentShaderProgram->Deactivate();
+		if (!(m_CurrentShaderProgram == nullptr))
+			m_CurrentShaderProgram->Deactivate();
 	}
 
 	void Renderer::ClearShaderProgram()
@@ -85,12 +110,14 @@ namespace OGLE {
 
 	void Renderer::BindVAO()
 	{
-		m_CurrentVAO->Bind();
+		if (!(m_CurrentVAO == nullptr))
+			m_CurrentVAO->Bind();
 	}
 
 	void Renderer::UnbindVAO()
 	{
-		m_CurrentVAO->Unbind();
+		if (!(m_CurrentVAO == nullptr))
+			m_CurrentVAO->Unbind();
 	}
 
 	void Renderer::ClearVAO()
