@@ -1,5 +1,5 @@
 #pragma once
-#include "OGLE/Renderer/Vertex.h"
+#include "OGLE/Renderer/Vertex/Vertex.h"
 
 namespace OGLE{
 	class Buffer
