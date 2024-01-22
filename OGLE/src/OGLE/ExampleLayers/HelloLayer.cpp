@@ -34,8 +34,8 @@ namespace OGLE {
 		ImGui::SliderFloat("FOV", &FOVDegrees, 0.0f, 180.0f);
 		m_Renderer->UpdateFOV(FOVDegrees);
 
-		ImGui::SliderFloat("Near Plane", &NearPlane, -10.0f, 10.0f);
-		ImGui::SliderFloat("Far Plane", &FarPlane, -10.0f, 10.0f);
+		ImGui::SliderFloat("Near Plane", &NearPlane, 0.1f, 10.0f);
+		ImGui::SliderFloat("Far Plane", &FarPlane, 0.1f, 10.0f);
 		m_Renderer->UpdateClipPlanes(NearPlane, FarPlane);
 	}
 
