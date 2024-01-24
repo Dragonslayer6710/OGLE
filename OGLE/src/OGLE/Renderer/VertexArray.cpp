@@ -42,7 +42,7 @@ namespace OGLE {
 			GLCall(glEnableVertexAttribArray(i++));
 			//std::cout << std::endl;
 			//PrintStatus("AttribPointer set:");
-			//std::cout << " - Index: " << i - 1 << "\n - Number of elements in attribute: " << vertexAttribute->Count << "\n - Normalized: " << vertexAttribute->Normalized << "\n - Stride: " << m_VBO->GetStride() << "\n - offset: " << offset << "\n - Attribute Size: " << vertexAttribute->Size << std::endl;
+			std::cout << " - Index: " << i - 1 << "\n - Number of elements in attribute: " << vertexAttribute->Count << "\n - Normalized: " << vertexAttribute->Normalized << "\n - Stride: " << m_VBO->GetStride() << "\n - offset: " << offset << "\n - Attribute Size: " << vertexAttribute->Size << std::endl;
 			offset += vertexAttribute->Size;
 		}
 		UnbindVertexBuffer();

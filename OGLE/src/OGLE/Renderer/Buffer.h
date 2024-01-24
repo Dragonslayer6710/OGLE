@@ -90,4 +90,18 @@ namespace OGLE{
 		GLuint m_ElementCount;
 		GLenum m_ElementDataType;
 	};
+
+	class InstanceBuffer : public Buffer
+	{
+	public:
+		InstanceBuffer(VertexBuffer& vbo, std::vector<float> offsets) : Buffer(GL_ARRAY_BUFFER, sizeof(float)* offsets.size(), offsets.data(), "Instance ", GL_STATIC_DRAW)
+		{
+			GLuint index = vbo.GetAttribCount();
+			Bind();
+			glVertexAttribPointer(index, 1, GL_FLOAT, GL_FALSE, 0, 0);
+			glEnableVertexAttribArray(index);
+			glVertexAttribDivisor(index, 1);
+			Unbind();
+		}
+	};
 }

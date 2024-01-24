@@ -1,5 +1,6 @@
 #include "oglepch.h"
 #include "OGLE/Renderer/Shader.h"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace OGLE {
 
@@ -69,6 +70,12 @@ namespace OGLE {
 			OGLE_CORE_ERROR("Shader linking failed ({0}):\n{1}", m_LogMessage);
 			GLCall(glDeleteProgram(m_ProgramID));
 		}
+		else {
+			for (auto& kv : m_ShaderCollection->compiledShaders) {
+				Shader* shader = kv.second;
+				delete shader;
+			}
+		}
 		
 	}
 
@@ -95,24 +102,24 @@ namespace OGLE {
 		//PrintActivationStatus();
 	}
 
-	void ShaderProgram::SetUniform2f(const std::string& uName, glm::vec2 value)
+	void ShaderProgram::SetUniform2fv(const std::string& uName, glm::vec2 value)
 	{
-		GLCall(glUniform2f(GetUniformLocation(uName), value.x, value.y));
+		GLCall(glUniform2fv(GetUniformLocation(uName), 1, glm::value_ptr(value)));
 	}
 
-	void ShaderProgram::SetUniform3f(const std::string& uName, glm::vec3 value)
+	void ShaderProgram::SetUniform3fv(const std::string& uName, glm::vec3 value)
 	{
-		GLCall(glUniform3f(GetUniformLocation(uName), value.x, value.y, value.z));
+		GLCall(glUniform3fv(GetUniformLocation(uName), 1, glm::value_ptr(value)));
 	}
 
-	void ShaderProgram::SetUniform4f(const std::string& uName, glm::vec4 value)
+	void ShaderProgram::SetUniform4fv(const std::string& uName, glm::vec4 value)
 	{
-		GLCall(glUniform4f(GetUniformLocation(uName), value.x, value.y, value.z, value.w));
+		GLCall(glUniform4fv(GetUniformLocation(uName), 1, glm::value_ptr(value)));
 	}
 
 	void ShaderProgram::SetUniformMatrix4fv(const std::string& uName, glm::mat4 value)
 	{
-		GLCall(glUniformMatrix4fv(GetUniformLocation(uName), 1, GL_FALSE, &value[0][0]));
+		GLCall(glUniformMatrix4fv(GetUniformLocation(uName), 1, GL_FALSE, glm::value_ptr(value)));
 	}
 
 	GLuint ShaderProgram::GetUniformLocation(const std::string& uName)

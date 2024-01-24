@@ -39,77 +39,10 @@ namespace OGLE {
 		m_Renderer->UpdateClipPlanes(NearPlane, FarPlane);
 	}
 
-	std::vector<Vertex> cubeVertices =
-	{
-		Vertex{glm::vec3( 1.0f,-1.0f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //0 Right
-		Vertex{glm::vec3( 1.0f,-1.0f,-1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //1
-		Vertex{glm::vec3( 1.0f, 1.0f,-1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //2
-		Vertex{glm::vec3( 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //3
-
-		Vertex{glm::vec3(-1.0f,-1.0f,-1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //4 Left
-		Vertex{glm::vec3(-1.0f,-1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //5
-		Vertex{glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //6
-		Vertex{glm::vec3(-1.0f, 1.0f,-1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //7
-
-		Vertex{glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //8 Top
-		Vertex{glm::vec3( 1.0f, 1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //9
-		Vertex{glm::vec3( 1.0f, 1.0f,-1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //10
-		Vertex{glm::vec3(-1.0f, 1.0f,-1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //11
-
-		Vertex{glm::vec3(-1.0f,-1.0f,-1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //12 Bottom
-		Vertex{glm::vec3( 1.0f,-1.0f,-1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //13
-		Vertex{glm::vec3( 1.0f,-1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //14
-		Vertex{glm::vec3(-1.0f,-1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //15
-
-		Vertex{glm::vec3(-1.0f,-1.0f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //16 Front
-		Vertex{glm::vec3( 1.0f,-1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //17
-		Vertex{glm::vec3( 1.0f, 1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //18
-		Vertex{glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //19
-
-		Vertex{glm::vec3( 1.0f,-1.0f, -1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //20 Back
-		Vertex{glm::vec3(-1.0f,-1.0f, -1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //21
-		Vertex{glm::vec3(-1.0f, 1.0f, -1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //22
-		Vertex{glm::vec3( 1.0f, 1.0f, -1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //23
-	};
-
-	std::vector<GLushort> cubeIndices =
-	{
-		 0,  1,  2,
-		 2,  3,  0,
-
-		 4,  5,  6,
-		 6,  7,  4,
-		
-		8,  9, 10,
-		10, 11,  8,
-		
-		12, 13, 14,
-		14, 15, 12,
-		
-		16, 17, 18,
-		18, 19, 16,
-
-		20, 21, 22,
-		22, 23, 20,
-
-	};
 	
 
-	std::vector<Vertex> triVertices =
-	{
-		Vertex{glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)},
-		Vertex{glm::vec3(-1.0f, -1.0f,  0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)},
-		Vertex{glm::vec3( 1.0f, -1.0f,  0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)},
-		//Vertex{glm::vec3( 0.0f, -0.5f,  0.0f), glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f)}
-	};
-
-	std::vector<GLushort> triIndices =
-	{
-		0, 1, 2,
-		//0, 3, 2
-	};
-
 	VertexBuffer* vbo;
+	InstanceBuffer* instances;
 	ElementBuffer* ebo;
 	VertexArray* vao;
 	
@@ -126,9 +59,83 @@ namespace OGLE {
 	void HelloLayer::OnUpdate(Timestep ts)
 	{
 		if (doInit) {
-			vbo = new VertexBuffer(cubeVertices);
-			ebo = new ElementBuffer(cubeIndices);
+			std::vector<Vertex> cubeVertices =
+			{
+				Vertex{glm::vec3(1.0f,-1.0f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //0 Right
+				Vertex{glm::vec3(1.0f,-1.0f,-1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //1
+				Vertex{glm::vec3(1.0f, 1.0f,-1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //2
+				Vertex{glm::vec3(1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //3
+
+				Vertex{glm::vec3(-1.0f,-1.0f,-1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //4 Left
+				Vertex{glm::vec3(-1.0f,-1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //5
+				Vertex{glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //6
+				Vertex{glm::vec3(-1.0f, 1.0f,-1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //7
+
+				Vertex{glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //8 Top
+				Vertex{glm::vec3(1.0f, 1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //9
+				Vertex{glm::vec3(1.0f, 1.0f,-1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //10
+				Vertex{glm::vec3(-1.0f, 1.0f,-1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //11
+
+				Vertex{glm::vec3(-1.0f,-1.0f,-1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //12 Bottom
+				Vertex{glm::vec3(1.0f,-1.0f,-1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //13
+				Vertex{glm::vec3(1.0f,-1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //14
+				Vertex{glm::vec3(-1.0f,-1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //15
+
+				Vertex{glm::vec3(-1.0f,-1.0f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //16 Front
+				Vertex{glm::vec3(1.0f,-1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //17
+				Vertex{glm::vec3(1.0f, 1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //18
+				Vertex{glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //19
+
+				Vertex{glm::vec3(1.0f,-1.0f, -1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //20 Back
+				Vertex{glm::vec3(-1.0f,-1.0f, -1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //21
+				Vertex{glm::vec3(-1.0f, 1.0f, -1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //22
+				Vertex{glm::vec3(1.0f, 1.0f, -1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //23
+			};
+
+			std::vector<GLushort> cubeIndices =
+			{
+				 0,  1,  2,
+				 2,  3,  0,
+
+				 4,  5,  6,
+				 6,  7,  4,
+
+				8,  9, 10,
+				10, 11,  8,
+
+				12, 13, 14,
+				14, 15, 12,
+
+				16, 17, 18,
+				18, 19, 16,
+
+				20, 21, 22,
+				22, 23, 20,
+
+			};
+
+
+			std::vector<Vertex> triVertices =
+			{
+				Vertex{glm::vec3(-1.0f,  1.0f,  0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)},
+				Vertex{glm::vec3(-1.0f, -1.0f,  0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)},
+				Vertex{glm::vec3(-0.75f, -1.0f,  0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)},
+				//Vertex{glm::vec3( 0.0f, -0.5f,  0.0f), glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f)}
+			};
+
+			std::vector<GLushort> triIndices =
+			{
+				0, 1, 2,
+				//0, 3, 2
+			};
+			std::vector<float> offsets = { 0.0f, 0.5f, 1.0f };
+
+			vbo = new VertexBuffer(triVertices);
+			ebo = new ElementBuffer(triIndices);
 			vao = new VertexArray(*vbo, *ebo);
+			vao->Bind();
+			instances = new InstanceBuffer(*vbo, offsets);
+			vao->Unbind();
 
 			shaderProgram = new ShaderProgram();
 
@@ -138,13 +145,13 @@ namespace OGLE {
 			doInit = false;
 		}
 
-		xRot += 1.0f;
+		//xRot += 1.0f;
 		if (xRot > 360)
 			xRot = 0;
-		yRot += 0.5f;
+		//yRot += 0.5f;
 		if (yRot > 360)
 			yRot = 0;
-		zRot += 0.25f;
+		//zRot += 0.25f;
 		if (zRot > 360)
 			zRot = 0;
 		
@@ -163,7 +170,8 @@ namespace OGLE {
 		shaderProgram->SetUniformMatrix4fv("u_Transformation", finalTransform);
 
 		m_Renderer->Clear();
-		m_Renderer->Draw();
+		GLCall(glDrawElementsInstanced(GL_TRIANGLES, ebo->GetElementCount(), GL_UNSIGNED_SHORT, 0, 3));
+		//m_Renderer->Draw();
 		//GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr));
 	}
 

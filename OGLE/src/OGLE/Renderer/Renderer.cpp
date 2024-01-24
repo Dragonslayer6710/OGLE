@@ -44,6 +44,14 @@ namespace OGLE {
 		GLCall(glDrawElements(GL_TRIANGLES, m_CurrentVAO->GetElementCount(), m_CurrentVAO->GetElementDataType(), nullptr));
 	}
 
+
+	static const std::vector<glm::vec3> positions{
+	};
+	void Renderer::DrawInstanced()
+	{
+
+	}
+
 	void Renderer::UpdateClipPlanes(GLfloat nearPlane /*= NULL*/, GLfloat farPlane /*= NULL*/)
 	{
 		if (nearPlane != NULL)

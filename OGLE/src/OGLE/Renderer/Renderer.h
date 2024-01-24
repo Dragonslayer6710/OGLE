@@ -35,7 +35,7 @@ namespace OGLE {
 		GLint GetBottom() { return m_Bottom; }
 
 		GLsizei GetWidth() { return m_Width; }
-		GLsizei GetHeight() { return m_Width; }
+		GLsizei GetHeight() { return m_Height; }
 
 		GLfloat GetAspectRatio() { return m_AspectRatio; }
 
@@ -50,6 +50,9 @@ namespace OGLE {
 		void ChangeVAO(VertexArray& vao);
 
 		void Draw();
+
+		void DrawInstanced();
+
 		void Clear();
 		
 	private:
@@ -99,8 +102,8 @@ namespace OGLE {
 		bool m_UseColorBuffer = false;
 		bool m_UseDepthBuffer = false;
 		bool m_UseStencilBuffer = false;
-		ShaderProgram* m_CurrentShaderProgram = nullptr;
 
+		ShaderProgram* m_CurrentShaderProgram = nullptr;
 		VertexArray* m_CurrentVAO = nullptr;
 	};
 

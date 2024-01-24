@@ -35,7 +35,7 @@ namespace OGLE {
 			m_RetainBind = true;
 			Bind();
 			LinkNewVertexBufferToVertexArray(vbo);
-			LinkNewElementBufferToElementArray(ebo);
+			LinkNewElementBufferToVertexArray(ebo);
 			Unbind();
 			m_RetainBind = false;
 		}
@@ -54,7 +54,7 @@ namespace OGLE {
 		}
 		void SetVBOAttribPointers();
 
-		void LinkNewElementBufferToElementArray(ElementBuffer& ebo)
+		void LinkNewElementBufferToVertexArray(ElementBuffer& ebo)
 		{
 			SetElementBuffer(ebo); LinkElementBufferToVertexArray();
 		}

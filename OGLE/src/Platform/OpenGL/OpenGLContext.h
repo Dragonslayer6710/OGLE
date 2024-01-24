@@ -5,7 +5,7 @@
 #ifndef GL_LOG_CALL
 #define GL_LOG_CALL
 static void GLClearError() {
-	//while (glGetError() != GL_NO_ERROR);
+	while (glGetError());
 }
 
 #define GLCall(x) GLClearError();\
