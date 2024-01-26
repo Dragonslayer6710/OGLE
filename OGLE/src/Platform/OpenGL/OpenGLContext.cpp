@@ -23,7 +23,7 @@ namespace OGLE
 		OGLE_CORE_INFO("  Renderer: {0}", glGetString(GL_RENDERER));
 		OGLE_CORE_INFO("  Version: {0}", glGetString(GL_VERSION));
 
-		OGLE_CORE_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5), "Hazel requires at least OpenGL version 4.5!");
+		OGLE_CORE_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5), "OGLE requires at least OpenGL version 4.5!");
 	}
 
 	void OpenGLContext::SwapBuffers()

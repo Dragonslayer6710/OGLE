@@ -47,6 +47,7 @@ inline OStream& operator<<(OStream& os, glm::qua<T, Q> quaternion)
 
 // Core log macros
 #define OGLE_CORE_TRACE(...)    ::OGLE::Log::GetCoreLogger()->trace(__VA_ARGS__)
+#define OGLE_CORE_DEBUG(...)    ::OGLE::Log::GetCoreLogger()->debug(__VA_ARGS__)
 #define OGLE_CORE_INFO(...)     ::OGLE::Log::GetCoreLogger()->info(__VA_ARGS__)
 #define OGLE_CORE_WARN(...)     ::OGLE::Log::GetCoreLogger()->warn(__VA_ARGS__)
 #define OGLE_CORE_ERROR(...)    ::OGLE::Log::GetCoreLogger()->error(__VA_ARGS__)
@@ -54,6 +55,7 @@ inline OStream& operator<<(OStream& os, glm::qua<T, Q> quaternion)
 
 // Client log macros
 #define OGLE_TRACE(...)         ::OGLE::Log::GetClientLogger()->trace(__VA_ARGS__)
+#define OGLE_DEBUG(...)			::OGLE::Log::GetClientLogger()->debug(__VA_ARGS__)
 #define OGLE_INFO(...)          ::OGLE::Log::GetClientLogger()->info(__VA_ARGS__)
 #define OGLE_WARN(...)          ::OGLE::Log::GetClientLogger()->warn(__VA_ARGS__)
 #define OGLE_ERROR(...)         ::OGLE::Log::GetClientLogger()->error(__VA_ARGS__)

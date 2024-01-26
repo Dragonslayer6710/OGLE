@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OGLE/Renderer/Shader.h"
+#include "OGLE/Renderer/Camera.h"
 
 static const GLfloat DefFOVDegrees = 60.0f;
 static const GLfloat DefNearPlane = 0.1f;
@@ -105,6 +106,11 @@ namespace OGLE {
 
 		ShaderProgram* m_CurrentShaderProgram = nullptr;
 		VertexArray* m_CurrentVAO = nullptr;
+
+		GLuint m_ElementCount;
+		GLenum m_ElementDataType;
+		GLuint m_InstanceCount;
+		bool m_IsInstanced;
 	};
 
 }

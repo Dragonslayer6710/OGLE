@@ -11,12 +11,12 @@ namespace OGLE {
 	struct WindowProps
 	{
 		std::string Title;
-		uint32_t Width;
-		uint32_t Height;
+		GLsizei Width;
+		GLsizei Height;
 
 		WindowProps(const std::string& title = "OGLE",
-			uint32_t width = OGLE_DEF_WIDTH,
-			uint32_t height = OGLE_DEF_HEIGHT)
+			GLsizei width = OGLE_DEF_WIDTH,
+			GLsizei height = OGLE_DEF_HEIGHT)
 			: Title(title), Width(width), Height(height)
 		{
 		}
@@ -33,8 +33,8 @@ namespace OGLE {
 
 		void OnUpdate();
 
-		unsigned int GetWidth() const { return m_Data.Width; }
-		unsigned int GetHeight() const { return m_Data.Height; }
+		GLsizei GetWidth() const { return m_Data.Width; }
+		GLsizei GetHeight() const { return m_Data.Height; }
 
 		// Window attributes
 		void SetEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
@@ -54,7 +54,7 @@ namespace OGLE {
 		struct WindowData
 		{
 			std::string Title;
-			unsigned int Width, Height;
+			GLsizei Width, Height;
 			bool VSync;
 
 			EventCallbackFn EventCallback;

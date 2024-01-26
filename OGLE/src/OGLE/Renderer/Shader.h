@@ -1,5 +1,5 @@
 #pragma once
-#include "OGLE/Renderer/VertexArray.h"
+#include "OGLE/Geometry/VertexArray.h"
 
 namespace OGLE {
 

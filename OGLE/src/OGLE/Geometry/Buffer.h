@@ -1,5 +1,5 @@
 #pragma once
-#include "OGLE/Renderer/Vertex/Vertex.h"
+#include "OGLE/Geometry/Vertex/Vertex.h"
 
 namespace OGLE{
 	class Buffer
@@ -11,6 +11,8 @@ namespace OGLE{
 			InitBuffer();
 			AllocateBuffer();
 		}
+		Buffer(const Buffer& other); // Copy Constructor
+
 
 		// Buffer referenced by m_ID no longer needed, so deleted
 		~Buffer() { GLCall(glDeleteBuffers(1, &m_BufferID)); }
@@ -40,10 +42,13 @@ namespace OGLE{
 		void AllocateBuffer();
 		void BufferData() const;
 		void BufferSubData(GLintptr offset=0, GLsizeiptr size=0, const GLvoid* data=NULL);
+		void ExtendBuffer(GLsizeiptr additionalSize);
 
 	protected:
 		GLuint m_BufferID;
 		GLsizeiptr m_Size;
+		bool m_Resizable = false;
+
 		const GLvoid* m_Data;
 
 		const char* m_Prefix;
@@ -58,21 +63,50 @@ namespace OGLE{
 	class VertexBuffer : public Buffer
 	{
 	public:
+		class InstanceBuffer : public Buffer
+		{
+		public:
+			InstanceBuffer(const VertexBuffer& vbo, std::vector<glm::mat4>& instanceMatrices);
+			GLuint GetInstanceCount() { return m_InstanceCount; }
+		private:
+			GLuint m_InstanceCount;
+		};
+
+	public:
 		VertexBuffer(std::vector<Vertex>& vertices, VertexLayout layout = DefVertLayout);
+		VertexBuffer(std::vector<Vertex>& vertices, std::vector<glm::mat4>& instanceMatrices, VertexLayout layout = DefVertLayout);
+		VertexBuffer(const VertexBuffer& other);
+
+		void BindInstanceBuffer() { if (m_IBO) m_IBO->Bind(); }
+		void UnbindInstanceBuffer() { if (m_IBO) m_IBO->Unbind(); }	
 
 		GLuint GetStride() const { return m_Stride; }
 		GLuint GetAttribCount() const { return m_AttribCount; }
 
-		std::unordered_map<GLuint, VertexAttribute*> GetAttributes() { return m_VertexAttributes; }
+		std::unordered_map<GLuint, VertexAttribute*> GetVertexAttributes() { return m_VertexAttributes; }
+		//std::unordered_map<GLuint, MatrixAttribute*> GetMatrixAttributes() { return m_MatrixAttributes; }
 
+		InstanceBuffer& GetInstanceBuffer() { return *m_IBO; }
+		void SetInstanceBuffer(std::vector<glm::mat4> instanceMatrices);
+
+		GLuint GetInstanceCount() { return m_InstanceCount; }
+		bool CheckInstanced() { return m_IsInstanced; }
 	protected:
-		void AddVertexAttribute(VertexAttributeType attribType, GLboolean normalized = GL_FALSE);
+		void SetIntanceCount();
 
+		void AddVertexAttribute(VertexAttributeType attribType, GLboolean normalized = GL_FALSE);
+	private:
+		void InitVertexBuffer(VertexLayout layout);
+	protected:
+		GLuint m_InstanceCount;
+		bool m_IsInstanced;
+		InstanceBuffer* m_IBO;
 	private:
 		GLuint m_Stride = 0;
 		GLuint m_AttribCount = 0;
 
 		std::unordered_map<GLuint, VertexAttribute*> m_VertexAttributes = std::unordered_map<GLuint, VertexAttribute*>();
+		//std::unordered_map<GLuint, MatrixAttribute*> m_MatrixAttributes = std::unordered_map<GLuint, MatrixAttribute*>();
 	};
 
 	// Buffer to hold the order in which to use the vertices in the vertexbuffer
@@ -80,7 +114,8 @@ namespace OGLE{
 	{
 	public:
 		ElementBuffer(std::vector<GLushort>& indices, GLenum elementDataType = GL_UNSIGNED_SHORT);
-		
+		ElementBuffer(const ElementBuffer& other);
+
 		GLuint GetElementCount() const { return m_ElementCount; }
 		GLenum GetElementDataType() const { return m_ElementDataType; }
 
@@ -91,17 +126,6 @@ namespace OGLE{
 		GLenum m_ElementDataType;
 	};
 
-	class InstanceBuffer : public Buffer
-	{
-	public:
-		InstanceBuffer(VertexBuffer& vbo, std::vector<float> offsets) : Buffer(GL_ARRAY_BUFFER, sizeof(float)* offsets.size(), offsets.data(), "Instance ", GL_STATIC_DRAW)
-		{
-			GLuint index = vbo.GetAttribCount();
-			Bind();
-			glVertexAttribPointer(index, 1, GL_FLOAT, GL_FALSE, 0, 0);
-			glEnableVertexAttribArray(index);
-			glVertexAttribDivisor(index, 1);
-			Unbind();
-		}
-	};
+	
+
 }

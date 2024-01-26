@@ -15455,15 +15455,15 @@ void ImGui::ShowMetricsWindow(bool* p_open)
             fg_draw_list->Flags &= ~ImDrawListFlags_AntiAliasedLines; // Disable AA on triangle outlines is more readable for very large and thin triangles.
             for (unsigned int base_idx = elem_offset; base_idx < (elem_offset + draw_cmd->ElemCount); base_idx += 3)
             {
-                ImVec2 triangle[3];
+                ImVec2 instShape[3];
                 for (int n = 0; n < 3; n++)
                 {
                     ImVec2 p = draw_list->VtxBuffer[idx_buffer ? idx_buffer[base_idx + n] : (base_idx + n)].pos;
-                    triangle[n] = p;
+                    instShape[n] = p;
                     vtxs_rect.Add(p);
                 }
                 if (show_mesh)
-                    fg_draw_list->AddPolyline(triangle, 3, IM_COL32(255, 255, 0, 255), true, 1.0f); // In yellow: mesh triangles
+                    fg_draw_list->AddPolyline(instShape, 3, IM_COL32(255, 255, 0, 255), true, 1.0f); // In yellow: mesh triangles
             }
             // Draw bounding boxes
             if (show_aabb)
@@ -15522,10 +15522,10 @@ void ImGui::ShowMetricsWindow(bool* p_open)
                 float total_area = 0.0f;
                 for (unsigned int base_idx = elem_offset; base_idx < (elem_offset + pcmd->ElemCount); base_idx += 3)
                 {
-                    ImVec2 triangle[3];
+                    ImVec2 instShape[3];
                     for (int n = 0; n < 3; n++)
-                        triangle[n] = draw_list->VtxBuffer[idx_buffer ? idx_buffer[base_idx + n] : (base_idx + n)].pos;
-                    total_area += ImTriangleArea(triangle[0], triangle[1], triangle[2]);
+                        instShape[n] = draw_list->VtxBuffer[idx_buffer ? idx_buffer[base_idx + n] : (base_idx + n)].pos;
+                    total_area += ImTriangleArea(instShape[0], instShape[1], instShape[2]);
                 }
 
                 // Display vertex information summary. Hover to get all triangles drawn in wire-frame
@@ -15540,11 +15540,11 @@ void ImGui::ShowMetricsWindow(bool* p_open)
                     for (int prim = clipper.DisplayStart, idx_i = elem_offset + clipper.DisplayStart * 3; prim < clipper.DisplayEnd; prim++)
                     {
                         char* buf_p = buf, *buf_end = buf + IM_ARRAYSIZE(buf);
-                        ImVec2 triangle[3];
+                        ImVec2 instShape[3];
                         for (int n = 0; n < 3; n++, idx_i++)
                         {
                             ImDrawVert& v = draw_list->VtxBuffer[idx_buffer ? idx_buffer[idx_i] : idx_i];
-                            triangle[n] = v.pos;
+                            instShape[n] = v.pos;
                             buf_p += ImFormatString(buf_p, buf_end - buf_p, "%s %04d: pos (%8.2f,%8.2f), uv (%.6f,%.6f), col %08X\n",
                                 (n == 0) ? "Vert:" : "     ", idx_i, v.pos.x, v.pos.y, v.uv.x, v.uv.y, v.col);
                         }
@@ -15554,7 +15554,7 @@ void ImGui::ShowMetricsWindow(bool* p_open)
                         {
                             ImDrawListFlags backup_flags = fg_draw_list->Flags;
                             fg_draw_list->Flags &= ~ImDrawListFlags_AntiAliasedLines; // Disable AA on triangle outlines is more readable for very large and thin triangles.
-                            fg_draw_list->AddPolyline(triangle, 3, IM_COL32(255,255,0,255), true, 1.0f);
+                            fg_draw_list->AddPolyline(instShape, 3, IM_COL32(255,255,0,255), true, 1.0f);
                             fg_draw_list->Flags = backup_flags;
                         }
                     }

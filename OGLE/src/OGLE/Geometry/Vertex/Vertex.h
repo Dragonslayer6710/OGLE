@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OGLE/Renderer/Vertex/VertexAttributeArray.h"
+#include "OGLE/Geometry/Vertex/VertexAttributeArray.h"
 
 namespace OGLE {
 

@@ -20,6 +20,7 @@ namespace OGLE{
 		virtual void OnUpdate(Timestep ts) override;
 	private:
 		Renderer* m_Renderer;
+		Camera* m_Camera;
 	};
 
 }

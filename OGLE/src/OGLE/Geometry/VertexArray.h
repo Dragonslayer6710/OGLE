@@ -1,5 +1,5 @@
 #pragma once
-#include "OGLE/Renderer/Buffer.h"
+#include "OGLE/Geometry/Buffer.h"
 
 namespace OGLE {
 
@@ -7,7 +7,6 @@ namespace OGLE {
 	{
 	public:
 		VertexArray(VertexBuffer& vbo, ElementBuffer& ebo)
-			
 		{
 			InitVertexArray(vbo, ebo);
 		}
@@ -26,6 +25,9 @@ namespace OGLE {
 		ElementBuffer* GetElementBuffer() { return m_EBO; };
 		GLuint GetElementCount() { return m_EBO->GetElementCount(); }
 		GLenum GetElementDataType() { return m_EBO->GetElementDataType(); }
+
+		GLuint GetInstanceCount() { return m_VBO->GetInstanceCount(); }
+		bool CheckInstanced() { return  m_VBO->CheckInstanced(); }
 
 	private:
 		void InitVertexArray(VertexBuffer& vbo, ElementBuffer& ebo) {
@@ -52,6 +54,14 @@ namespace OGLE {
 		void UnbindVertexBuffer() {
 			m_VBO->Unbind();
 		}
+
+		void BindInstanceBuffer() {
+			m_VBO->BindInstanceBuffer();
+		}
+		void UnbindInstanceBuffer() {
+			m_VBO->UnbindInstanceBuffer();
+		}
+
 		void SetVBOAttribPointers();
 
 		void LinkNewElementBufferToVertexArray(ElementBuffer& ebo)

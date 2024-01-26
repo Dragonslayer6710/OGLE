@@ -1,5 +1,7 @@
 #include "oglepch.h"
 #include "OGLE/ExampleLayers/HelloLayer.h"
+#include "OGLE/Geometry/Shape/Cube.h"
+#include "OGLE/Geometry/Shape/Triangle.h"
 
 #include <imgui.h>
 
@@ -13,7 +15,7 @@ namespace OGLE {
 	HelloLayer::HelloLayer(Renderer& renderer)
 		: Layer("Hello Layer!"), m_Renderer(&renderer)
 	{
-		
+		m_Camera = new Camera();
 	}
 
 	void HelloLayer::OnAttach()
@@ -37,107 +39,64 @@ namespace OGLE {
 		ImGui::SliderFloat("Near Plane", &NearPlane, 0.1f, 10.0f);
 		ImGui::SliderFloat("Far Plane", &FarPlane, 0.1f, 10.0f);
 		m_Renderer->UpdateClipPlanes(NearPlane, FarPlane);
+
+		ImGui::SliderFloat3("Camera Position", &(m_Camera->m_Pos[0]), -10.0f, 10.0f);
+		//ImGui::SliderFloat3("Far Plane", &FarPlane, 0.1f, 10.0f);
 	}
 
 	
+	Cube* cube;
+	Triangle* triangle;
+	InstancedShape* instShape;
 
-	VertexBuffer* vbo;
-	InstanceBuffer* instances;
-	ElementBuffer* ebo;
-	VertexArray* vao;
-	
 	ShaderProgram* shaderProgram;
 
 	bool doInit = true;
 
 
 
-	float xRot = 0.0f;
-	float yRot = 0.0f;
+	float xRot = 45.0f;
+	float yRot = 45.0f;
 	float zRot = 0.0f;
-
+	VertexBuffer* vbo;
+	ElementBuffer* ebo;
+	VertexArray* vao;
+	Camera* camera;
 	void HelloLayer::OnUpdate(Timestep ts)
 	{
 		if (doInit) {
-			std::vector<Vertex> cubeVertices =
+			glm::mat4 projMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
+
+			// Apply Translation
+			glm::mat4 transMatrixA = glm::translate(glm::mat4(1.0), glm::vec3(-0.5f, 0.0f, -3.0f));
+			glm::mat4 transMatrixB = glm::translate(glm::mat4(1.0), glm::vec3( 0.5f, 0.0f, -3.0f));
+
+			// Apply Rotation...
+			// ...in x
+			glm::mat4 xRotMatrix = glm::rotate(glm::mat4(1.0), glm::radians(xRot), glm::vec3(1.0f, 0.0f, 0.0f));
+			// ...in y
+			glm::mat4 xyRotMatrix = glm::rotate(xRotMatrix, glm::radians(yRot), glm::vec3(0.0f, 1.0f, 0.0f));
+			// ...in z
+			glm::mat4 xyzRotMatrix = glm::rotate(xyRotMatrix, glm::radians(zRot), glm::vec3(0.0f, 0.0f, 1.0f));
+
+			std::vector<GLfloat> offsets = { -2.0f,0.f, 2.0f };
+			std::vector<glm::mat4> instanceMatrices =
 			{
-				Vertex{glm::vec3(1.0f,-1.0f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //0 Right
-				Vertex{glm::vec3(1.0f,-1.0f,-1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //1
-				Vertex{glm::vec3(1.0f, 1.0f,-1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //2
-				Vertex{glm::vec3(1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //3
-
-				Vertex{glm::vec3(-1.0f,-1.0f,-1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //4 Left
-				Vertex{glm::vec3(-1.0f,-1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //5
-				Vertex{glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //6
-				Vertex{glm::vec3(-1.0f, 1.0f,-1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //7
-
-				Vertex{glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //8 Top
-				Vertex{glm::vec3(1.0f, 1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //9
-				Vertex{glm::vec3(1.0f, 1.0f,-1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //10
-				Vertex{glm::vec3(-1.0f, 1.0f,-1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //11
-
-				Vertex{glm::vec3(-1.0f,-1.0f,-1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //12 Bottom
-				Vertex{glm::vec3(1.0f,-1.0f,-1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //13
-				Vertex{glm::vec3(1.0f,-1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //14
-				Vertex{glm::vec3(-1.0f,-1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //15
-
-				Vertex{glm::vec3(-1.0f,-1.0f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //16 Front
-				Vertex{glm::vec3(1.0f,-1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //17
-				Vertex{glm::vec3(1.0f, 1.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //18
-				Vertex{glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //19
-
-				Vertex{glm::vec3(1.0f,-1.0f, -1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //20 Back
-				Vertex{glm::vec3(-1.0f,-1.0f, -1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //21
-				Vertex{glm::vec3(-1.0f, 1.0f, -1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)}, //22
-				Vertex{glm::vec3(1.0f, 1.0f, -1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //23
+				// Shape A
+				transMatrixA * xyzRotMatrix,// glm::translate(projMatrix, glm::vec3(0.0f, 0.0f, -3.0f)),
+				// Shape B
+				transMatrixB * xyzRotMatrix,
 			};
-
-			std::vector<GLushort> cubeIndices =
-			{
-				 0,  1,  2,
-				 2,  3,  0,
-
-				 4,  5,  6,
-				 6,  7,  4,
-
-				8,  9, 10,
-				10, 11,  8,
-
-				12, 13, 14,
-				14, 15, 12,
-
-				16, 17, 18,
-				18, 19, 16,
-
-				20, 21, 22,
-				22, 23, 20,
-
-			};
-
-
-			std::vector<Vertex> triVertices =
-			{
-				Vertex{glm::vec3(-1.0f,  1.0f,  0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)},
-				Vertex{glm::vec3(-1.0f, -1.0f,  0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)},
-				Vertex{glm::vec3(-0.75f, -1.0f,  0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)},
-				//Vertex{glm::vec3( 0.0f, -0.5f,  0.0f), glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f)}
-			};
-
-			std::vector<GLushort> triIndices =
-			{
-				0, 1, 2,
-				//0, 3, 2
-			};
-			std::vector<float> offsets = { 0.0f, 0.5f, 1.0f };
-
-			vbo = new VertexBuffer(triVertices);
-			ebo = new ElementBuffer(triIndices);
-			vao = new VertexArray(*vbo, *ebo);
-			vao->Bind();
-			instances = new InstanceBuffer(*vbo, offsets);
-			vao->Unbind();
 
 			shaderProgram = new ShaderProgram();
+
+			//cube = new Cube();
+			//triangle = new Triangle();
+			vbo= new VertexBuffer(cubeVertices, instanceMatrices);
+			ebo=  new ElementBuffer(cubeIndices);
+			vao = new VertexArray(*vbo, *ebo);
+			//instShape = new InstancedShape(*cube,offsets);
+			//instShape = new InstancedShape(*triangle, instanceMatrices);
 
 			m_Renderer->ChangeShaderProgram(*shaderProgram);
 			m_Renderer->ChangeVAO(*vao);
@@ -145,33 +104,42 @@ namespace OGLE {
 			doInit = false;
 		}
 
-		//xRot += 1.0f;
+		xRot += 1.0f;
 		if (xRot > 360)
 			xRot = 0;
-		//yRot += 0.5f;
+		yRot += 0.5f;
 		if (yRot > 360)
 			yRot = 0;
-		//zRot += 0.25f;
+		zRot += 0.25f;
 		if (zRot > 360)
 			zRot = 0;
 		
 		// Init Projection Matrix
-		glm::mat4 projection = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(),m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
+		glm::mat4 projMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
+
 		// Apply Translation
-		glm::mat4 projTranslate = glm::translate(projection, glm::vec3(0.0f, 0.0f, -3.0f));
-		// Apply Rotation in x...
-		glm::mat4 xRotation = glm::rotate(projTranslate, glm::radians(xRot), glm::vec3(1.0f, 0.0f, 0.0f));
-		// In y...
-		glm::mat4 yRotation = glm::rotate(xRotation, glm::radians(yRot), glm::vec3(0.0f, 1.0f, 0.0f));
-		// And in z to give the final matrix
-		glm::mat4 finalTransform = glm::rotate(yRotation, glm::radians(zRot), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 transMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));
+		
+		// Apply Rotation...
+		// ...in x
+		glm::mat4 xRotMatrix = glm::rotate(glm::mat4(1.0), glm::radians(xRot), glm::vec3(1.0f, 0.0f, 0.0f));
+		// ...in y
+		glm::mat4 xyRotMatrix = glm::rotate(xRotMatrix, glm::radians(yRot), glm::vec3(0.0f, 1.0f, 0.0f));
+		// ...in z
+		glm::mat4 xyzRotMatrix = glm::rotate(xyRotMatrix, glm::radians(zRot), glm::vec3(0.0f, 0.0f, 1.0f));
 
 
-		shaderProgram->SetUniformMatrix4fv("u_Transformation", finalTransform);
+
+		shaderProgram->SetUniformMatrix4fv("u_Projection", projMatrix);
+
+		shaderProgram->SetUniformMatrix4fv("u_WorldToView", m_Camera->GetWorldToViewMatrix());
+
+		shaderProgram->SetUniformMatrix4fv("u_Translation", transMatrix);
+		shaderProgram->SetUniformMatrix4fv("u_Rotation", xyzRotMatrix);
 
 		m_Renderer->Clear();
-		GLCall(glDrawElementsInstanced(GL_TRIANGLES, ebo->GetElementCount(), GL_UNSIGNED_SHORT, 0, 3));
-		//m_Renderer->Draw();
+		//GLCall(glDrawElementsInstanced(GL_TRIANGLES, ebo->GetElementCount(), GL_UNSIGNED_SHORT, 0, 3));
+		m_Renderer->Draw();
 		//GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr));
 	}
 
