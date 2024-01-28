@@ -1,7 +1,7 @@
 #include "oglepch.h"
 #include "OGLE/Core/EntryPoint.h"
 
-#include "OGLE/ExampleLayers/HelloLayer.h"
+#include "OGLE/Display/Layer/HelloLayer.h"
 
 namespace OGLE
 {

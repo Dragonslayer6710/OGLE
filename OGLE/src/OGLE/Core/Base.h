@@ -1,8 +1,7 @@
 #pragma once
+#include <memory>
 
 #include "OGLE/Core/PlatformDetection.h"
-
-#include <memory>
 
 #ifdef OGLE_DEBUG
 #if defined(OGLE_PLATFORM_WINDOWS)
@@ -45,5 +44,4 @@ namespace OGLE {
 
 }
 
-#include "OGLE/Core/Log.h"
-#include "OGLE/Core/Assert.h"
+#include "OGLE/Debug/Assert.h"

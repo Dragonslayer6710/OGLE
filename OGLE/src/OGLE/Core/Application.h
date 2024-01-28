@@ -2,16 +2,16 @@
 
 #include "OGLE/Core/Base.h"
 
-#include "OGLE/Core/Window.h"
-#include "OGLE/Core/LayerStack.h"
-#include "OGLE/Events/Event.h"
-#include "OGLE/Events/ApplicationEvent.h"
+#include "OGLE/Display/Window.h"
+#include "OGLE/Display/Layer/LayerStack.h"
+#include "OGLE/Event/Event.h"
+#include "OGLE/Event/ApplicationEvent.h"
 
 #include "OGLE/Core/Timestep.h"
 
-#include "OGLE/ImGui/ImGuiLayer.h"
+#include "OGLE/Display/Layer/ImGui/ImGuiLayer.h"
 
-#include "OGLE/Renderer/Renderer.h"
+#include "OGLE/Display/Renderer/Renderer.h"
 
 int main(int argc, char** argv);
 

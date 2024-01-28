@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OGLE/Core/Log.h"
+#include "OGLE/Debug/Log.h"
 
 #include <algorithm>
 #include <chrono>

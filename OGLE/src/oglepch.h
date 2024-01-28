@@ -27,7 +27,7 @@ const float OGLE_DEF_HEIGHT = 640;
 
 #include "OGLE/Core/Base.h"
 
-#include "OGLE/Core/Log.h"
+#include "OGLE/Debug/Log.h"
 
 #include "OGLE/Debug/Instrumentor.h"
 
