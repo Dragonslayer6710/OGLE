@@ -23,6 +23,11 @@ namespace OGLE {
 #endif
 	}
 
+	void Window::RecalculateCentrePos()
+	{
+		m_CentrePos = glm::vec2(GetWidth() / 2, GetHeight() / 2);
+	}
+
 	static uint8_t s_GLFWWindowCount = 0;
 
 	static void GLFWErrorCallback(int error, const char* description)
@@ -51,7 +56,7 @@ namespace OGLE {
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
-
+		RecalculateCentrePos();
 		OGLE_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 		if (s_GLFWWindowCount == 0)
 		{
@@ -81,7 +86,6 @@ namespace OGLE {
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 				data.Width = width;
 				data.Height = height;
-
 				WindowResizeEvent event(width, height);
 				data.EventCallback(event);
 			}
@@ -204,4 +208,27 @@ namespace OGLE {
 	{
 		return m_Data.VSync;
 	}
+
+	void Window::HideCursor()
+	{
+		if (!m_CursorHidden) {
+			glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			m_CursorHidden = true;
+		}
+	}
+
+	void Window::RevealCursor()
+	{
+		if (m_CursorHidden) {
+			glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			CentreCursor();
+			m_CursorHidden = false;
+		}
+	}
+
+	void Window::CentreCursor()
+	{		
+		glfwSetCursorPos(m_Window, m_CentrePos.x, m_CentrePos.y);
+	}
+
 }

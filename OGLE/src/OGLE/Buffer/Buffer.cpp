@@ -143,7 +143,7 @@ namespace OGLE {
 	{
 		SetIntanceCount();
 		for (VertexAttributeData attribData : *layout.AttributeData)
-			AddVertexAttribute(attribData.Type, attribData.Normalized);
+			AddVertexAttribute(attribData.m_ControlType, attribData.Normalized);
 	}
 
 	ElementBuffer::ElementBuffer(std::vector<GLushort>& indices, GLenum elementDataType /*= GL_UNSIGNED_SHORT*/)

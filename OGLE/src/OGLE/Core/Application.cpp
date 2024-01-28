@@ -143,7 +143,7 @@ namespace OGLE {
 		m_Minimized = false;
 		
 		m_Renderer->OnWindowResize(e.GetWidth(), e.GetHeight());
-
+		GetWindow().RecalculateCentrePos();
 		return false;
 	}
 

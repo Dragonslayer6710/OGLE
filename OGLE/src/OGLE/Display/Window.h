@@ -43,6 +43,14 @@ namespace OGLE {
 
 		virtual void* GetNativeWindow() const { return m_Window; }
 
+		void RecalculateCentrePos();
+
+		void HideCursor();
+
+		void RevealCursor();
+
+		void CentreCursor();
+
 		static Scope<Window> Create(const WindowProps& props = WindowProps());
 	private:
 		virtual void Init(const WindowProps& props);
@@ -61,6 +69,8 @@ namespace OGLE {
 		};
 
 		WindowData m_Data;
+		bool m_CursorHidden = false;
+		glm::vec2 m_CentrePos;
 	};
 
 }

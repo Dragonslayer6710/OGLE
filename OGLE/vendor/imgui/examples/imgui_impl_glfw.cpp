@@ -362,7 +362,7 @@ static void ImGui_ImplGlfw_UpdateMousePosAndButtons()
         glfwSetWindowAttrib(window, GLFW_MOUSE_PASSTHROUGH, window_no_input);
 #endif
         if (glfwGetWindowAttrib(window, GLFW_HOVERED) && !window_no_input)
-            io.MouseHoveredViewport = viewport->ID;
+            io.MouseHoveredViewport = viewport->m_ControlID;
 #endif
     }
 }

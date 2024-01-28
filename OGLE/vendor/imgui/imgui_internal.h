@@ -859,7 +859,7 @@ struct IMGUI_API ImGuiMenuColumns
 // For a given item ID, access with ImGui::GetInputTextState()
 struct IMGUI_API ImGuiInputTextState
 {
-    ImGuiID                 ID;                     // widget id owning the text state
+    ImGuiID                 m_ControlID;                     // widget id owning the text state
     int                     CurLenW, CurLenA;       // we need to maintain our buffer length in both UTF-8 and wchar format. UTF-8 length is valid even if TextA is not.
     ImVector<ImWchar>       TextW;                  // edit buffer, we need to persist but can't guarantee the persistence of the user-provided buffer. so we copy into own buffer.
     ImVector<char>          TextA;                  // temporary UTF8 buffer for callbacks and other operations. this is not updated in every code-path! size=capacity.
@@ -908,7 +908,7 @@ struct ImGuiPopupData
 struct ImGuiNavMoveResult
 {
     ImGuiWindow*    Window;             // Best candidate window
-    ImGuiID         ID;                 // Best candidate ID
+    ImGuiID         m_ControlID;                 // Best candidate ID
     ImGuiID         FocusScopeId;       // Best candidate focus scope ID
     float           DistBox;            // Best candidate box distance to current NavId
     float           DistCenter;         // Best candidate center distance to current NavId
@@ -916,7 +916,7 @@ struct ImGuiNavMoveResult
     ImRect          RectRel;            // Best candidate bounding box in window relative space
 
     ImGuiNavMoveResult() { Clear(); }
-    void Clear()         { Window = NULL; ID = FocusScopeId = 0; DistBox = DistCenter = DistAxial = FLT_MAX; RectRel = ImRect(); }
+    void Clear()         { Window = NULL; m_ControlID = FocusScopeId = 0; DistBox = DistCenter = DistAxial = FLT_MAX; RectRel = ImRect(); }
 };
 
 enum ImGuiNextWindowDataFlags_
@@ -1024,7 +1024,7 @@ struct ImGuiColumnData
 
 struct ImGuiColumns
 {
-    ImGuiID             ID;
+    ImGuiID             m_ControlID;
     ImGuiColumnsFlags   Flags;
     bool                IsFirstFrame;
     bool                IsBeingResized;
@@ -1043,7 +1043,7 @@ struct ImGuiColumns
     ImGuiColumns()      { Clear(); }
     void Clear()
     {
-        ID = 0;
+        m_ControlID = 0;
         Flags = ImGuiColumnsFlags_None;
         IsFirstFrame = false;
         IsBeingResized = false;
@@ -1114,7 +1114,7 @@ enum ImGuiDockNodeState
 // sizeof() 116~160
 struct ImGuiDockNode
 {
-    ImGuiID                 ID;
+    ImGuiID                 m_ControlID;
     ImGuiDockNodeFlags      SharedFlags;                // Flags shared by all nodes of a same dockspace hierarchy (inherited from the root node)
     ImGuiDockNodeFlags      LocalFlags;                 // Flags specific to this node
     ImGuiDockNode*          ParentNode;
@@ -1127,7 +1127,7 @@ struct ImGuiDockNode
     ImGuiAxis               SplitAxis;                  // [Split node only] Split axis (X or Y)
     ImGuiWindowClass        WindowClass;                // [Root node only]
 
-    ImGuiDockNodeState      State;
+    ImGuiDockNodeState      m_ControlState;
     ImGuiWindow*            HostWindow;
     ImGuiWindow*            VisibleWindow;              // Generally point to window which is ID is == SelectedTabID, but when CTRL+Tabbing this can be a different window.
     ImGuiDockNode*          CentralNode;                // [Root node only] Pointer to central node.
@@ -1227,7 +1227,7 @@ struct ImGuiViewportP : public ImGuiViewport
 // (this is designed to be stored in a ImChunkStream buffer, with the variable-length Name following our structure)
 struct ImGuiWindowSettings
 {
-    ImGuiID     ID;
+    ImGuiID     m_ControlID;
     ImVec2ih    Pos;            // NB: Settings position are stored RELATIVE to the viewport! Whereas runtime ones are absolute positions.
     ImVec2ih    Size;
     ImVec2ih    ViewportPos;
@@ -1238,7 +1238,7 @@ struct ImGuiWindowSettings
     bool        Collapsed;
     bool        WantApply;      // Set when loaded from .ini data (to enable merging/loading .ini data into an already running context)
 
-    ImGuiWindowSettings()       { ID = 0; Pos = Size = ViewportPos = ImVec2ih(0, 0); ViewportId = DockId = ClassId = 0; DockOrder = -1; Collapsed = WantApply = false; }
+    ImGuiWindowSettings()       { m_ControlID = 0; Pos = Size = ViewportPos = ImVec2ih(0, 0); ViewportId = DockId = ClassId = 0; DockOrder = -1; Collapsed = WantApply = false; }
     char* GetName()             { return (char*)(this + 1); }
 };
 
@@ -1749,7 +1749,7 @@ struct IMGUI_API ImGuiWindowTempData
 struct IMGUI_API ImGuiWindow
 {
     char*                   Name;                               // Window name, owned by the window.
-    ImGuiID                 ID;                                 // == ImHashStr(Name)
+    ImGuiID                 m_ControlID;                                 // == ImHashStr(Name)
     ImGuiWindowFlags        Flags, FlagsPreviousFrame;          // See enum ImGuiWindowFlags_
     ImGuiWindowClass        WindowClass;                        // Advanced users only. Set with SetNextWindowClass()
     ImGuiViewportP*         Viewport;                           // Always set in Begin(), only inactive windows may have a NULL value here
@@ -1911,7 +1911,7 @@ enum ImGuiTabItemFlagsPrivate_
 // Storage for one active tab item (sizeof() 32~40 bytes)
 struct ImGuiTabItem
 {
-    ImGuiID             ID;
+    ImGuiID             m_ControlID;
     ImGuiTabItemFlags   Flags;
     ImGuiWindow*        Window;                 // When TabItem is part of a DockNode's TabBar, we hold on to a window.
     int                 LastFrameVisible;
@@ -1922,14 +1922,14 @@ struct ImGuiTabItem
     ImS16               NameOffset;             // When Window==NULL, offset to name within parent ImGuiTabBar::TabsNames
     bool                WantClose;              // Marked as closed by SetTabItemClosed()
 
-    ImGuiTabItem()      { ID = 0; Flags = ImGuiTabItemFlags_None; Window = NULL; LastFrameVisible = LastFrameSelected = -1; NameOffset = -1; Offset = Width = ContentWidth = 0.0f; WantClose = false; }
+    ImGuiTabItem()      { m_ControlID = 0; Flags = ImGuiTabItemFlags_None; Window = NULL; LastFrameVisible = LastFrameSelected = -1; NameOffset = -1; Offset = Width = ContentWidth = 0.0f; WantClose = false; }
 };
 
 // Storage for a tab bar (sizeof() 92~96 bytes)
 struct ImGuiTabBar
 {
     ImVector<ImGuiTabItem> Tabs;
-    ImGuiID             ID;                     // Zero for tab-bars used by docking
+    ImGuiID             m_ControlID;                     // Zero for tab-bars used by docking
     ImGuiID             SelectedTabId;          // Selected tab/window
     ImGuiID             NextSelectedTabId;
     ImGuiID             VisibleTabId;           // Can occasionally be != SelectedTabId (e.g. when previewing contents for CTRL+TAB preview)
@@ -2275,7 +2275,7 @@ namespace ImGui
     IMGUI_API bool          TempInputText(const ImRect& bb, ImGuiID id, const char* label, char* buf, int buf_size, ImGuiInputTextFlags flags);
     IMGUI_API bool          TempInputScalar(const ImRect& bb, ImGuiID id, const char* label, ImGuiDataType data_type, void* p_data, const char* format, const void* p_clamp_min = NULL, const void* p_clamp_max = NULL);
     inline bool             TempInputIsActive(ImGuiID id)       { ImGuiContext& g = *GImGui; return (g.ActiveId == id && g.TempInputId == id); }
-    inline ImGuiInputTextState* GetInputTextState(ImGuiID id)   { ImGuiContext& g = *GImGui; return (g.InputTextState.ID == id) ? &g.InputTextState : NULL; } // Get input text state if active
+    inline ImGuiInputTextState* GetInputTextState(ImGuiID id)   { ImGuiContext& g = *GImGui; return (g.InputTextState.m_ControlID == id) ? &g.InputTextState : NULL; } // Get input text state if active
 
     // Color
     IMGUI_API void          ColorTooltip(const char* text, const float* col, ImGuiColorEditFlags flags);

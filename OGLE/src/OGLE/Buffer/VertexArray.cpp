@@ -40,7 +40,7 @@ namespace OGLE {
 		for (GLuint offset = 0; offset < m_VBO->GetStride(); offset)
 		{
 			vertexAttribute = vertexAttributes[offset];
-			GLCall(glVertexAttribPointer(attributeIndex, vertexAttribute->Count, vertexAttribute->Type, vertexAttribute->Normalized, m_VBO->GetStride(), (GLvoid*)offset));
+			GLCall(glVertexAttribPointer(attributeIndex, vertexAttribute->Count, vertexAttribute->m_ControlType, vertexAttribute->Normalized, m_VBO->GetStride(), (GLvoid*)offset));
 			GLCall(glEnableVertexAttribArray(attributeIndex++));
 			//std::cout << std::endl;
 			//PrintStatus("AttribPointer set:");

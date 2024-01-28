@@ -35,7 +35,7 @@ namespace OGLE {
 	{
 		GLuint AttribID; // Identifier for this attribute
 		GLboolean Normalized; // Data needs to be normalised between -1/1 0/1 etc.
-		GLenum Type; // Data type
+		GLenum m_ControlType; // Data type
 		GLuint Count; // Number of elements this attribute covers
 		GLsizei Size; // Size of Attribute in bytes
 		VertexAttribute
@@ -45,8 +45,8 @@ namespace OGLE {
 			GLenum type = GL_FLOAT,
 			GLuint count = 1
 		)
-			: AttribID(attribID), Normalized(normalized), Type(type),
-			Count(count), Size(sizeof(Type)) {}
+			: AttribID(attribID), Normalized(normalized), m_ControlType(type),
+			Count(count), Size(sizeof(m_ControlType)) {}
 	};
 
 	struct VertexFloat : VertexAttribute
@@ -80,10 +80,10 @@ namespace OGLE {
 	};
 
 	struct VertexAttributeData {
-		VertexAttributeType Type;
+		VertexAttributeType m_ControlType;
 		GLboolean Normalized;
 		VertexAttributeData(VertexAttributeType type, GLboolean normalized = GL_FALSE)
-			: Type(type), Normalized(normalized) {}
+			: m_ControlType(type), Normalized(normalized) {}
 	};
 
 

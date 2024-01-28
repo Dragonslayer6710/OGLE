@@ -3648,7 +3648,7 @@ void ImGuiInputTextCallbackData::InsertChars(int pos, const char* new_text, cons
         // Contrary to STB_TEXTEDIT_INSERTCHARS() this is working in the UTF8 buffer, hence the mildly similar code (until we remove the U16 buffer altogether!)
         ImGuiContext& g = *GImGui;
         ImGuiInputTextState* edit_state = &g.InputTextState;
-        IM_ASSERT(edit_state->ID != 0 && g.ActiveId == edit_state->ID);
+        IM_ASSERT(edit_state->m_ControlID != 0 && g.ActiveId == edit_state->m_ControlID);
         IM_ASSERT(Buf == edit_state->TextA.Data);
         int new_buf_size = BufTextLen + ImClamp(new_text_len * 4, 32, ImMax(256, new_text_len)) + 1;
         edit_state->TextA.reserve(new_buf_size + 1);
@@ -3861,7 +3861,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
 
         // Preserve cursor position and undo/redo stack if we come back to same widget
         // FIXME: For non-readonly widgets we might be able to require that TextAIsValid && TextA == buf ? (untested) and discard undo stack if user buffer has changed.
-        const bool recycle_state = (state->ID == id);
+        const bool recycle_state = (state->m_ControlID == id);
         if (recycle_state)
         {
             // Recycle existing cursor/selection/undo stack but clamp position
@@ -3870,7 +3870,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         }
         else
         {
-            state->ID = id;
+            state->m_ControlID = id;
             state->ScrollX = 0.0f;
             stb_textedit_initialize_state(&state->Stb, !is_multiline);
             if (!is_multiline && focus_requested_by_code)
@@ -3884,7 +3884,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
 
     if (g.ActiveId != id && init_make_active)
     {
-        IM_ASSERT(state && state->ID == id);
+        IM_ASSERT(state && state->m_ControlID == id);
         SetActiveID(id, window);
         SetFocusID(id, window);
         FocusWindow(window);
@@ -6498,7 +6498,7 @@ bool ImGui::BeginMainMenuBar()
     }
 
     // Create window
-    SetNextWindowViewport(viewport->ID); // Enforce viewport so we don't create our own viewport when ImGuiConfigFlags_ViewportsNoMerge is set.
+    SetNextWindowViewport(viewport->m_ControlID); // Enforce viewport so we don't create our own viewport when ImGuiConfigFlags_ViewportsNoMerge is set.
     PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0, 0));    // Lift normal size constraint, however the presence of a menu-bar will give us the minimum height we want.
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_MenuBar;
@@ -6805,7 +6805,7 @@ namespace ImGui
 
 ImGuiTabBar::ImGuiTabBar()
 {
-    ID = 0;
+    m_ControlID = 0;
     SelectedTabId = NextSelectedTabId = VisibleTabId = 0;
     CurrFrameVisible = PrevFrameVisible = -1;
     LastTabContentHeight = 0.0f;
@@ -6849,7 +6849,7 @@ bool    ImGui::BeginTabBar(const char* str_id, ImGuiTabBarFlags flags)
     ImGuiID id = window->GetID(str_id);
     ImGuiTabBar* tab_bar = g.TabBars.GetOrAddByKey(id);
     ImRect tab_bar_bb = ImRect(window->DC.CursorPos.x, window->DC.CursorPos.y, window->WorkRect.Max.x, window->DC.CursorPos.y + g.FontSize + g.Style.FramePadding.y * 2);
-    tab_bar->ID = id;
+    tab_bar->m_ControlID = id;
     return BeginTabBarEx(tab_bar, tab_bar_bb, flags | ImGuiTabBarFlags_IsFocused, NULL);
 }
 
@@ -6861,7 +6861,7 @@ bool    ImGui::BeginTabBarEx(ImGuiTabBar* tab_bar, const ImRect& tab_bar_bb, ImG
         return false;
 
     if ((flags & ImGuiTabBarFlags_DockNode) == 0)
-        PushOverrideID(tab_bar->ID);
+        PushOverrideID(tab_bar->m_ControlID);
 
     // Add to stack
     g.CurrentTabBarStack.push_back(GetTabBarRefFromTabBar(tab_bar));
@@ -6957,9 +6957,9 @@ static void ImGui::TabBarLayout(ImGuiTabBar* tab_bar)
         if (tab->LastFrameVisible < tab_bar->PrevFrameVisible || tab->WantClose)
         {
             // Remove tab
-            if (tab_bar->VisibleTabId == tab->ID) { tab_bar->VisibleTabId = 0; }
-            if (tab_bar->SelectedTabId == tab->ID) { tab_bar->SelectedTabId = 0; }
-            if (tab_bar->NextSelectedTabId == tab->ID) { tab_bar->NextSelectedTabId = 0; }
+            if (tab_bar->VisibleTabId == tab->m_ControlID) { tab_bar->VisibleTabId = 0; }
+            if (tab_bar->SelectedTabId == tab->m_ControlID) { tab_bar->SelectedTabId = 0; }
+            if (tab_bar->NextSelectedTabId == tab->m_ControlID) { tab_bar->NextSelectedTabId = 0; }
             continue;
         }
         if (tab_dst_n != tab_src_n)
@@ -6991,8 +6991,8 @@ static void ImGui::TabBarLayout(ImGuiTabBar* tab_bar)
                 ImGuiTabItem item_tmp = *tab1;
                 *tab1 = *tab2;
                 *tab2 = item_tmp;
-                if (tab2->ID == tab_bar->SelectedTabId)
-                    scroll_track_selected_tab_id = tab2->ID;
+                if (tab2->m_ControlID == tab_bar->SelectedTabId)
+                    scroll_track_selected_tab_id = tab2->m_ControlID;
                 tab1 = tab2 = NULL;
             }
             if (tab_bar->Flags & ImGuiTabBarFlags_SaveSettings)
@@ -7005,7 +7005,7 @@ static void ImGui::TabBarLayout(ImGuiTabBar* tab_bar)
     const bool tab_list_popup_button = (tab_bar->Flags & ImGuiTabBarFlags_TabListPopupButton) != 0;
     if (tab_list_popup_button)
         if (ImGuiTabItem* tab_to_select = TabBarTabListPopupButton(tab_bar)) // NB: Will alter BarRect.Max.x!
-            scroll_track_selected_tab_id = tab_bar->SelectedTabId = tab_to_select->ID;
+            scroll_track_selected_tab_id = tab_bar->SelectedTabId = tab_to_select->m_ControlID;
 
     // Compute ideal widths
     g.ShrinkWidthBuffer.resize(tab_bar->Tabs.Size);
@@ -7019,7 +7019,7 @@ static void ImGui::TabBarLayout(ImGuiTabBar* tab_bar)
 
         if (most_recently_selected_tab == NULL || most_recently_selected_tab->LastFrameSelected < tab->LastFrameSelected)
             most_recently_selected_tab = tab;
-        if (tab->ID == tab_bar->SelectedTabId)
+        if (tab->m_ControlID == tab_bar->SelectedTabId)
             found_selected_tab_id = true;
 
         // Refresh tab width immediately, otherwise changes of style e.g. style.FramePadding.x would noticeably lag in the tab bar.
@@ -7066,8 +7066,8 @@ static void ImGui::TabBarLayout(ImGuiTabBar* tab_bar)
     {
         ImGuiTabItem* tab = &tab_bar->Tabs[tab_n];
         tab->Offset = offset_x;
-        if (scroll_track_selected_tab_id == 0 && g.NavJustMovedToId == tab->ID)
-            scroll_track_selected_tab_id = tab->ID;
+        if (scroll_track_selected_tab_id == 0 && g.NavJustMovedToId == tab->m_ControlID)
+            scroll_track_selected_tab_id = tab->m_ControlID;
         offset_x += tab->Width + g.Style.ItemInnerSpacing.x;
         offset_x_ideal += tab->ContentWidth + g.Style.ItemInnerSpacing.x;
     }
@@ -7078,13 +7078,13 @@ static void ImGui::TabBarLayout(ImGuiTabBar* tab_bar)
     const bool scrolling_buttons = (tab_bar->OffsetMax > tab_bar->BarRect.GetWidth() && tab_bar->Tabs.Size > 1) && !(tab_bar->Flags & ImGuiTabBarFlags_NoTabListScrollingButtons) && (tab_bar->Flags & ImGuiTabBarFlags_FittingPolicyScroll);
     if (scrolling_buttons)
         if (ImGuiTabItem* tab_to_select = TabBarScrollingButtons(tab_bar)) // NB: Will alter BarRect.Max.x!
-            scroll_track_selected_tab_id = tab_bar->SelectedTabId = tab_to_select->ID;
+            scroll_track_selected_tab_id = tab_bar->SelectedTabId = tab_to_select->m_ControlID;
 
     // If we have lost the selected tab, select the next most recently active one
     if (found_selected_tab_id == false)
         tab_bar->SelectedTabId = 0;
     if (tab_bar->SelectedTabId == 0 && tab_bar->NextSelectedTabId == 0 && most_recently_selected_tab != NULL)
-        scroll_track_selected_tab_id = tab_bar->SelectedTabId = most_recently_selected_tab->ID;
+        scroll_track_selected_tab_id = tab_bar->SelectedTabId = most_recently_selected_tab->m_ControlID;
 
     // Lock in visible tab
     tab_bar->VisibleTabId = tab_bar->SelectedTabId;
@@ -7092,7 +7092,7 @@ static void ImGui::TabBarLayout(ImGuiTabBar* tab_bar)
 
     // CTRL+TAB can override visible tab temporarily
     if (g.NavWindowingTarget != NULL && g.NavWindowingTarget->DockNode && g.NavWindowingTarget->DockNode->TabBar == tab_bar)
-        tab_bar->VisibleTabId = scroll_track_selected_tab_id = g.NavWindowingTarget->ID;
+        tab_bar->VisibleTabId = scroll_track_selected_tab_id = g.NavWindowingTarget->m_ControlID;
 
     // Update scrolling
     if (scroll_track_selected_tab_id)
@@ -7150,7 +7150,7 @@ ImGuiTabItem* ImGui::TabBarFindTabByID(ImGuiTabBar* tab_bar, ImGuiID tab_id)
 {
     if (tab_id != 0)
         for (int n = 0; n < tab_bar->Tabs.Size; n++)
-            if (tab_bar->Tabs[n].ID == tab_id)
+            if (tab_bar->Tabs[n].m_ControlID == tab_id)
                 return &tab_bar->Tabs[n];
     return NULL;
 }
@@ -7174,11 +7174,11 @@ ImGuiTabItem* ImGui::TabBarFindMostRecentlySelectedTabForActiveWindow(ImGuiTabBa
 void ImGui::TabBarAddTab(ImGuiTabBar* tab_bar, ImGuiTabItemFlags tab_flags, ImGuiWindow* window)
 {
     ImGuiContext& g = *GImGui;
-    IM_ASSERT(TabBarFindTabByID(tab_bar, window->ID) == NULL);
+    IM_ASSERT(TabBarFindTabByID(tab_bar, window->m_ControlID) == NULL);
     IM_ASSERT(g.CurrentTabBar != tab_bar);  // Can't work while the tab bar is active as our tab doesn't have an X offset yet, in theory we could/should test something like (tab_bar->CurrFrameVisible < g.FrameCount) but we'd need to solve why triggers the commented early-out assert in BeginTabBarEx() (probably dock node going from implicit to explicit in same frame)
 
     ImGuiTabItem new_tab;
-    new_tab.ID = window->ID;
+    new_tab.m_ControlID = window->m_ControlID;
     new_tab.Flags = tab_flags;
     new_tab.LastFrameVisible = tab_bar->CurrFrameVisible;   // Required so BeginTabBar() doesn't ditch the tab
     if (new_tab.LastFrameVisible == -1)
@@ -7200,17 +7200,17 @@ void ImGui::TabBarRemoveTab(ImGuiTabBar* tab_bar, ImGuiID tab_id)
 // Called on manual closure attempt
 void ImGui::TabBarCloseTab(ImGuiTabBar* tab_bar, ImGuiTabItem* tab)
 {
-    if ((tab_bar->VisibleTabId == tab->ID) && !(tab->Flags & ImGuiTabItemFlags_UnsavedDocument))
+    if ((tab_bar->VisibleTabId == tab->m_ControlID) && !(tab->Flags & ImGuiTabItemFlags_UnsavedDocument))
     {
         // This will remove a frame of lag for selecting another tab on closure.
         // However we don't run it in the case where the 'Unsaved' flag is set, so user gets a chance to fully undo the closure
         tab->LastFrameVisible = -1;
         tab_bar->SelectedTabId = tab_bar->NextSelectedTabId = 0;
     }
-    else if ((tab_bar->VisibleTabId != tab->ID) && (tab->Flags & ImGuiTabItemFlags_UnsavedDocument))
+    else if ((tab_bar->VisibleTabId != tab->m_ControlID) && (tab->Flags & ImGuiTabItemFlags_UnsavedDocument))
     {
         // Actually select before expecting closure
-        tab_bar->NextSelectedTabId = tab->ID;
+        tab_bar->NextSelectedTabId = tab->m_ControlID;
     }
 }
 
@@ -7244,7 +7244,7 @@ void ImGui::TabBarQueueChangeTabOrder(ImGuiTabBar* tab_bar, const ImGuiTabItem* 
 {
     IM_ASSERT(dir == -1 || dir == +1);
     IM_ASSERT(tab_bar->ReorderRequestTabId == 0);
-    tab_bar->ReorderRequestTabId = tab->ID;
+    tab_bar->ReorderRequestTabId = tab->m_ControlID;
     tab_bar->ReorderRequestDir = (ImS8)dir;
 }
 
@@ -7327,7 +7327,7 @@ static ImGuiTabItem* ImGui::TabBarTabListPopupButton(ImGuiTabBar* tab_bar)
         {
             ImGuiTabItem* tab = &tab_bar->Tabs[tab_n];
             const char* tab_name = tab_bar->GetTabName(tab);
-            if (Selectable(tab_name, tab_bar->SelectedTabId == tab->ID))
+            if (Selectable(tab_name, tab_bar->SelectedTabId == tab->m_ControlID))
                 tab_to_select = tab;
         }
         EndCombo();
@@ -7366,7 +7366,7 @@ bool    ImGui::BeginTabItem(const char* label, bool* p_open, ImGuiTabItemFlags f
     if (ret && !(flags & ImGuiTabItemFlags_NoPushId))
     {
         ImGuiTabItem* tab = &tab_bar->Tabs[tab_bar->LastTabItemIdx];
-        PushOverrideID(tab->ID); // We already hashed 'label' so push into the ID stack directly instead of doing another hash through PushID(label)
+        PushOverrideID(tab->m_ControlID); // We already hashed 'label' so push into the ID stack directly instead of doing another hash through PushID(label)
     }
     return ret;
 }
@@ -7431,7 +7431,7 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
     {
         tab_bar->Tabs.push_back(ImGuiTabItem());
         tab = &tab_bar->Tabs.back();
-        tab->ID = id;
+        tab->m_ControlID = id;
         tab->Width = size.x;
         tab_is_new = true;
     }
@@ -7848,7 +7848,7 @@ static float GetDraggedColumnOffset(ImGuiColumns* columns, int column_index)
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
     IM_ASSERT(column_index > 0); // We are not supposed to drag column 0.
-    IM_ASSERT(g.ActiveId == columns->ID + ImGuiID(column_index));
+    IM_ASSERT(g.ActiveId == columns->m_ControlID + ImGuiID(column_index));
 
     float x = g.IO.MousePos.x - g.ActiveIdClickOffset.x + COLUMNS_HIT_RECT_HALF_WIDTH - window->Pos.x;
     x = ImMax(x, ImGui::GetColumnOffset(column_index - 1) + g.Style.ColumnsMinSpacing);
@@ -7974,12 +7974,12 @@ ImGuiColumns* ImGui::FindOrCreateColumns(ImGuiWindow* window, ImGuiID id)
 {
     // We have few columns per window so for now we don't need bother much with turning this into a faster lookup.
     for (int n = 0; n < window->ColumnsStorage.Size; n++)
-        if (window->ColumnsStorage[n].ID == id)
+        if (window->ColumnsStorage[n].m_ControlID == id)
             return &window->ColumnsStorage[n];
 
     window->ColumnsStorage.push_back(ImGuiColumns());
     ImGuiColumns* columns = &window->ColumnsStorage.back();
-    columns->ID = id;
+    columns->m_ControlID = id;
     return columns;
 }
 
@@ -8007,7 +8007,7 @@ void ImGui::BeginColumns(const char* str_id, int columns_count, ImGuiColumnsFlag
     // Acquire storage for the columns set
     ImGuiID id = GetColumnsID(str_id, columns_count);
     ImGuiColumns* columns = FindOrCreateColumns(window, id);
-    IM_ASSERT(columns->ID == id);
+    IM_ASSERT(columns->m_ControlID == id);
     columns->Current = 0;
     columns->Count = columns_count;
     columns->Flags = flags;
@@ -8161,7 +8161,7 @@ void ImGui::EndColumns()
         {
             ImGuiColumnData* column = &columns->Columns[n];
             float x = window->Pos.x + GetColumnOffset(n);
-            const ImGuiID column_id = columns->ID + ImGuiID(n);
+            const ImGuiID column_id = columns->m_ControlID + ImGuiID(n);
             const float column_hit_hw = COLUMNS_HIT_RECT_HALF_WIDTH;
             const ImRect column_hit_rect(ImVec2(x - column_hit_hw, y1), ImVec2(x + column_hit_hw, y2));
             KeepAliveID(column_id);

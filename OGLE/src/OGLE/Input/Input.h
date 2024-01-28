@@ -6,59 +6,66 @@
 #include "OGLE/Display/Window.h"
 namespace OGLE {
 
-	static enum InputState {
-		INPUT_RELEASE,
-		INPUT_PRESS
+	enum InputState {
+		INPUT_STATE_RELEASE,
+		INPUT_STATE_PRESS
 	};
 
-	namespace Key {
-		static std::unordered_map<KeyCode, InputState> s_KeyStates = {
-				{W, INPUT_RELEASE},
-				{A, INPUT_RELEASE},
-				{S, INPUT_RELEASE},
-				{D, INPUT_RELEASE},
-				{Space, INPUT_RELEASE},
-				{LeftControl, INPUT_RELEASE}
-		};
+	enum InputType {
+		INPUT_TYPE_KEY,
+		INPUT_TYPE_MOUSE
+	};
+
+	class Input {
+	public:
+		Input();
+		static void ResetInputs();
+
+		static void New(unsigned int inputID);
+
+		static Input* GetInput(unsigned int inputID);
+
+		unsigned int GetInputID();
+
+		InputState GetInputState();
+		void SetInputState(InputState state);
+
+		InputType GetInputType();
+
+	protected:
+
+		static void InitInputs();
+
+		static void NewInput(Input* input);
+
+		Input(unsigned int inputID, InputType inputType);
+
+	private:
+		static std::unordered_map<unsigned int, Input*>* s_Inputs;
+		static std::unordered_map<unsigned int, InputState>* s_InputStates;
+
+		unsigned int m_InputID;
+		InputType m_InputType;
+		KeyCode m_KeyCode;
+		MouseCode m_MouseButton;
+	};
+
+	static void SetInputState(unsigned int inputID, InputState state) {
+		Input::GetInput(inputID)->SetInputState(state);
 	}
 
-	namespace Mouse {
-		static std::unordered_map<MouseCode, InputState> s_MouseBtnStates = {
-						{ButtonLeft, INPUT_RELEASE},
-						{ButtonRight, INPUT_RELEASE},
-						{ButtonMiddle, INPUT_RELEASE},
-						{Button3, INPUT_RELEASE},
-						{Button4, INPUT_RELEASE},
-						{Button5, INPUT_RELEASE},
-						{Button6, INPUT_RELEASE},
-						{ButtonLast, INPUT_RELEASE}
-		};
-	}
+	inline glm::vec2 s_MousePos = glm::vec2(0.0f, 0.0f);
+	inline glm::vec2 s_MouseDelta = glm::vec2(0.0f, 0.0f);
+	inline glm::vec2 s_ScrollOffset = glm::vec2(0.0f, 0.0f);
 
-	static void SetKeyState(KeyCode key, InputState state) { if (Key::s_KeyStates[key] != state) Key::s_KeyStates[key] = state; }
-
-	static InputState* GetKeyState(KeyCode key) { return &Key::s_KeyStates[key]; }
-
-	static void SetMouseBtnState(MouseCode btn, InputState state) { if (Mouse::s_MouseBtnStates[btn] != state) Mouse::s_MouseBtnStates[btn] = state; }
-
-	static InputState* GetMouseBtnState(MouseCode btn) { return &Mouse::s_MouseBtnStates[btn]; }
-
-	
-	static glm::vec2 s_MousePos = glm::vec2(0.0f, 0.0f);
-	static glm::vec2 s_MouseDelta = glm::vec2(0.0f, 0.0f);
-	static glm::vec2 s_ScrollOffset = glm::vec2(0.0f, 0.0f);
-
-
-	static void SetMousePos(GLFWwindow* window, glm::vec2 newMousePos) {
+	static void SetMousePos(glm::vec2 newMousePos) {
 		s_MousePos = newMousePos;
-		if (window)
-			glfwSetCursorPos(window, s_MousePos.x, s_MousePos.y);
 	}
 
 	static void MoveMousePos(glm::vec2 newMousePos)
 	{
 		s_MouseDelta = newMousePos - s_MousePos;
-		SetMousePos(nullptr, newMousePos);
+		SetMousePos(newMousePos);
 	}
 
 	static void ResetScrollOffset() {

@@ -17,14 +17,7 @@ namespace OGLE {
 
 	void HelloLayer::OnAttach()
 	{
-		ControlBinds = std::unordered_map<ControlID,ControlBind*>();
-		s_ControlStates = new std::unordered_map<ControlID, ControlState*>();
-		NewKeyBind(CTRL_MOVE_FORWARD, Key::W);
-		NewKeyBind(CTRL_MOVE_LEFT, Key::A);
-		NewKeyBind(CTRL_MOVE_BACKWARD, Key::S);
-		NewKeyBind(CTRL_MOVE_RIGHT, Key::D);		
-
-		NewMouseButtonBind(CTRL_ENABLE_ROTATE, Mouse::ButtonLeft);
+		InitControls();
 	}
 
 	void HelloLayer::OnEvent(Event& event)
@@ -34,18 +27,19 @@ namespace OGLE {
 		case EventType::MouseButtonPressed:
 		{
 			MouseButtonPressedEvent mbpevent = (MouseButtonPressedEvent&)event;
-			SetMouseBtnState(mbpevent.GetMouseButton(), INPUT_PRESS);
+			SetInputState(mbpevent.GetMouseButton(), INPUT_STATE_PRESS);
 			break;
 		}
 		case EventType::MouseButtonReleased:
 		{
 			MouseButtonReleasedEvent mbrevent = (MouseButtonReleasedEvent&)event;
-			SetMouseBtnState(mbrevent.GetMouseButton(), INPUT_RELEASE);
+			SetInputState(mbrevent.GetMouseButton(), INPUT_STATE_RELEASE);
 			break;
 		}
 		case EventType::MouseMoved:
 		{
 			MouseMovedEvent mmevent = (MouseMovedEvent&)event;
+			MoveMousePos(glm::vec2(mmevent.GetX(), mmevent.GetY()));
 			break;
 		}
 		case EventType::MouseScrolled:
@@ -56,12 +50,12 @@ namespace OGLE {
 		case EventType::KeyPressed:
 		{
 			KeyPressedEvent kpevent = ((KeyPressedEvent&)event);
-			SetKeyState(kpevent.GetKeyCode(), INPUT_PRESS);
+			SetInputState(kpevent.GetKeyCode(), INPUT_STATE_PRESS);
 			break;
 		}
 		case EventType::KeyReleased:
 			KeyReleasedEvent krevent = ((KeyReleasedEvent&)event);
-			SetKeyState(krevent.GetKeyCode(), INPUT_RELEASE);
+			SetInputState(krevent.GetKeyCode(), INPUT_STATE_RELEASE);
 			break;
 		}
 	}
@@ -108,7 +102,7 @@ namespace OGLE {
 	Camera* camera;
 	void HelloLayer::OnUpdate(Timestep ts)
 	{
-		if (m_Camera->GetControlState())
+		if (m_Camera->IsControlBound())
 			glfwSetInputMode((GLFWwindow*)Application::Get().GetWindow().GetNativeWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		if (doInit) {
@@ -185,10 +179,9 @@ namespace OGLE {
 		shaderProgram->SetUniformMatrix4fv("u_Rotation", xyzRotMatrix);
 
 
-		for (auto& kv : ControlBinds) {
-			ControlBind* ctrlBind = (ControlBind*)kv.second;
-			if (ctrlBind->GetState())
-				switch (ctrlBind->GetID())
+		for (Control* boundCtrl : Control::GetBoundControls()) {
+			if (boundCtrl->GetInputState())
+				switch (boundCtrl->GetControlID())
 				{
 				case CTRL_MOVE_FORWARD:
 					m_Camera->MoveForward();
@@ -202,11 +195,27 @@ namespace OGLE {
 				case CTRL_MOVE_RIGHT:
 					m_Camera->StrafeRight();
 					break;
-				case CTRL_ENABLE_ROTATE:
-					m_Camera->Rotate(Application::Get().GetWindow());
+				case CTRL_MOVE_UP:
+					m_Camera->MoveUp();
+					break;
+				case CTRL_MOVE_DOWN:
+					m_Camera->MoveDown();
+					break;
+				case CTRL_CFG_CAMERA_CONTROL_TOGGLE:				
+					Application::Get().GetWindow().HideCursor();
+					m_Camera->Rotate();
+				}
+			else
+				switch (boundCtrl->GetControlID())
+				{
+				case CTRL_CFG_CAMERA_CONTROL_TOGGLE:
+					Application::Get().GetWindow().RevealCursor();
+					break;
+				default:
+					break;
 				}
 		}
-
+		s_MouseDelta = glm::vec2(0.0f);
 
 		m_Renderer->Clear();
 		//GLCall(glDrawElementsInstanced(GL_TRIANGLES, ebo->GetElementCount(), GL_UNSIGNED_SHORT, 0, 3));
