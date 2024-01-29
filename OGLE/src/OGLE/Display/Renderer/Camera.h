@@ -1,11 +1,13 @@
 #pragma once
 #include "OGLE/Input/Control.h"
+#include "OGLE/Maths/glm.h"
+
 namespace OGLE {
 
 	class Camera {
 	public:
 
-		Camera(glm::vec2 initMousePos);
+		Camera();
 
 		bool IsControlBound();
 		void EnablControls();

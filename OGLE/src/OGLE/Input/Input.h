@@ -3,7 +3,7 @@
 
 #include "OGLE/Input/KeyCodes.h"
 #include "OGLE/Input/MouseCodes.h"
-#include "OGLE/Display/Window.h"
+
 namespace OGLE {
 
 	enum InputState {
@@ -54,26 +54,13 @@ namespace OGLE {
 		Input::GetInput(inputID)->SetInputState(state);
 	}
 
-	inline glm::vec2 s_MousePos = glm::vec2(0.0f, 0.0f);
-	inline glm::vec2 s_MouseDelta = glm::vec2(0.0f, 0.0f);
-	inline glm::vec2 s_ScrollOffset = glm::vec2(0.0f, 0.0f);
-
-	static void SetMousePos(glm::vec2 newMousePos) {
-		s_MousePos = newMousePos;
-	}
-
-	static void MoveMousePos(glm::vec2 newMousePos)
-	{
-		s_MouseDelta = newMousePos - s_MousePos;
-		SetMousePos(newMousePos);
-	}
-
-	static void ResetScrollOffset() {
-		s_ScrollOffset = glm::vec2(0.0f, 0.0f);
-	}
-
-	static void SetScrollOffset(glm::vec2 newScrollOffset)
-	{
-		s_ScrollOffset = newScrollOffset;
-	}
+	
+	inline double s_MousePosX;
+	inline double s_MousePosY;
+	inline double s_NextMousePosX;
+	inline double s_NextMousePosY;
+	inline double s_MouseDeltaX;
+	inline double s_MouseDeltaY;
+	inline double s_ScrollOffsetX;
+	inline double s_ScrollOffsetY;
 }

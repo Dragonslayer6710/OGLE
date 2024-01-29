@@ -1,5 +1,4 @@
 #pragma once
-#include "OGLE/Maths/glm.h"
 namespace OGLE 
 {
 	using MouseCode = uint16_t;

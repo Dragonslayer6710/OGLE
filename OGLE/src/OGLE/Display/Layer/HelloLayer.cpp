@@ -10,9 +10,8 @@ namespace OGLE {
 	HelloLayer::HelloLayer(Renderer& renderer)
 		: Layer("Hello Layer!"), m_Renderer(&renderer)
 	{
-		double initMouseX, initMouseY;
-		glfwGetCursorPos((GLFWwindow*)(Application::Get().GetWindow().GetNativeWindow()),&initMouseX, &initMouseY);
-		m_Camera = new Camera(glm::vec2(initMouseX, initMouseY));
+		glfwGetCursorPos((GLFWwindow*)(Application::Get().GetWindow().GetNativeWindow()),&s_MousePosX, &s_MousePosY);
+		m_Camera = new Camera();
 	}
 
 	void HelloLayer::OnAttach()
@@ -39,13 +38,15 @@ namespace OGLE {
 		case EventType::MouseMoved:
 		{
 			MouseMovedEvent mmevent = (MouseMovedEvent&)event;
-			MoveMousePos(glm::vec2(mmevent.GetX(), mmevent.GetY()));
+			s_NextMousePosX = mmevent.GetX();
+			s_NextMousePosY = mmevent.GetY();
 			break;
 		}
 		case EventType::MouseScrolled:
 		{
 			MouseScrolledEvent msevent = (MouseScrolledEvent&)event;
-			SetScrollOffset(glm::vec2(msevent.GetXOffset(), msevent.GetYOffset()));
+			s_ScrollOffsetX = msevent.GetXOffset();
+			s_ScrollOffsetY = msevent.GetYOffset();
 		}
 		case EventType::KeyPressed:
 		{
@@ -178,7 +179,10 @@ namespace OGLE {
 		shaderProgram->SetUniformMatrix4fv("u_Translation", transMatrix);
 		shaderProgram->SetUniformMatrix4fv("u_Rotation", xyzRotMatrix);
 
-
+		
+		s_MouseDeltaX = s_NextMousePosX - s_MousePosX;
+		s_MouseDeltaY = s_NextMousePosY - s_MousePosY;
+		
 		for (Control* boundCtrl : Control::GetBoundControls()) {
 			if (boundCtrl->GetInputState())
 				switch (boundCtrl->GetControlID())
@@ -201,7 +205,7 @@ namespace OGLE {
 				case CTRL_MOVE_DOWN:
 					m_Camera->MoveDown();
 					break;
-				case CTRL_CFG_CAMERA_CONTROL_TOGGLE:				
+				case CTRL_CFG_CAMERA_CONTROL_TOGGLE:
 					Application::Get().GetWindow().HideCursor();
 					m_Camera->Rotate();
 				}
@@ -215,7 +219,8 @@ namespace OGLE {
 					break;
 				}
 		}
-		s_MouseDelta = glm::vec2(0.0f);
+		s_MousePosX = s_NextMousePosX;
+		s_MousePosY = s_NextMousePosY;
 
 		m_Renderer->Clear();
 		//GLCall(glDrawElementsInstanced(GL_TRIANGLES, ebo->GetElementCount(), GL_UNSIGNED_SHORT, 0, 3));

@@ -2,7 +2,7 @@
 #include "OGLE/Display/Renderer/Camera.h"
 namespace OGLE {
 
-	Camera::Camera(glm::vec2 initMousePos) : m_Pos(0.0f, 0.0f, 0.0f), m_Orientation(0.0f, 0.0f, -1.0f), m_Up(0.0f, 1.0f, 0.0f)
+	Camera::Camera() : m_Pos(0.0f, 0.0f, 0.0f), m_Orientation(0.0f, 0.0f, -1.0f), m_Up(0.0f, 1.0f, 0.0f)
 	{
 
 	}
@@ -26,8 +26,8 @@ namespace OGLE {
 	{
 		glm::vec3 rotY = glm::cross(m_Orientation, m_Up);
 		glm::mat4 rotation =
-			glm::rotate(glm::radians(-s_MouseDelta.x * m_CameraSensitivity), m_Up) *
-			glm::rotate(glm::radians(-s_MouseDelta.y * m_CameraSensitivity), rotY);
+			glm::rotate(glm::radians(-(float)s_MouseDeltaX * m_CameraSensitivity), m_Up) *
+			glm::rotate(glm::radians(-(float)s_MouseDeltaY * m_CameraSensitivity), rotY);
 		m_Orientation = glm::mat3(rotation) * m_Orientation;
 	}
 

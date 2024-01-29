@@ -69,5 +69,4 @@ namespace OGLE {
 	{
 		return m_InputType;
 	}
-
 }
