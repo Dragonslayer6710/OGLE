@@ -35,7 +35,7 @@ namespace OGLE {
 	{
 		m_Width = newWidth;
 		m_Height = newHeight;
-		m_AspectRatio = m_Width / m_Height;
+		m_AspectRatio = (double)m_Width / (double)m_Height;
 		SetViewPort(m_Left, m_Bottom, m_Width, m_Height);
 	}
 

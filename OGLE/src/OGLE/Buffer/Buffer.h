@@ -5,21 +5,16 @@ namespace OGLE{
 	class Buffer
 	{
 	public:
-		Buffer(GLenum bufferTarget, GLsizeiptr size, const GLvoid* data, const char* prefix = "", GLenum bufferUsage = GL_STATIC_DRAW)
-			: m_BufferTarget(bufferTarget), m_Size(size), m_Data(data), m_BufferUsage(bufferUsage), m_Prefix(prefix)
-		{
-			InitBuffer();
-			AllocateBuffer();
-		}
+		Buffer(GLenum bufferTarget, GLsizeiptr size, const GLvoid* data, const char* prefix = "", GLenum bufferUsage = GL_STATIC_DRAW);
 		Buffer(const Buffer& other); // Copy Constructor
 
 
 		// Buffer referenced by m_ID no longer needed, so deleted
-		~Buffer() { GLCall(glDeleteBuffers(1, &m_BufferID)); }
+		~Buffer();
 
-		void PrintStatus(const char* status) { std::cout << m_Prefix << "Buffer (ID " << m_BufferID << "): " << status << std::endl; }
-		void PrintInitialized() { PrintStatus("Initialized"); }
-		void PrintBindStatus() { PrintStatus((m_IsBound) ? "Bound" : "Unbound"); }
+		void PrintStatus(const char* status);
+		void PrintInitialized();
+		void PrintBindStatus();
 
 		// Buffer referenced by m_ID is bound to the usage location (GL_ARRAY_BUFFER, GL_ELEMENT_BUFFER etc.)
 		virtual void Bind();
@@ -27,7 +22,7 @@ namespace OGLE{
 		// Buffer usage location (GL_ARRAY_BUFFER, GL_ELEMENT_BUFFER etc.) is unbound from any pointer
 		virtual void Unbind();
 
-		GLsizeiptr GetSize() const { return m_Size; }
+		GLsizeiptr GetSize() const;
 		
 		virtual void UpdateData(GLintptr offset, GLsizeiptr size, const GLvoid* data);
 
@@ -66,8 +61,8 @@ namespace OGLE{
 		class InstanceBuffer : public Buffer
 		{
 		public:
-			InstanceBuffer(const VertexBuffer& vbo, std::vector<glm::mat4>& instanceMatrices);
-			GLuint GetInstanceCount() { return m_InstanceCount; }
+			InstanceBuffer(std::vector<glm::mat4>& instanceMatrices);
+			GLuint GetInstanceCount();
 		private:
 			GLuint m_InstanceCount;
 		};
@@ -77,22 +72,23 @@ namespace OGLE{
 		VertexBuffer(std::vector<Vertex>& vertices, std::vector<glm::mat4>& instanceMatrices, VertexLayout layout = DefVertLayout);
 		VertexBuffer(const VertexBuffer& other);
 
-		void BindInstanceBuffer() { if (m_IBO) m_IBO->Bind(); }
-		void UnbindInstanceBuffer() { if (m_IBO) m_IBO->Unbind(); }	
+		void BindInstanceBuffer();
+		void UnbindInstanceBuffer();	
 
-		GLuint GetStride() const { return m_Stride; }
-		GLuint GetAttribCount() const { return m_AttribCount; }
+		GLuint GetStride() const;
+		GLuint GetAttribCount() const;
 
-		std::unordered_map<GLuint, VertexAttribute*> GetVertexAttributes() { return m_VertexAttributes; }
+		std::unordered_map<GLuint, VertexAttribute*> GetVertexAttributes();
 		//std::unordered_map<GLuint, MatrixAttribute*> GetMatrixAttributes() { return m_MatrixAttributes; }
 
-		InstanceBuffer& GetInstanceBuffer() { return *m_IBO; }
-		void SetInstanceBuffer(std::vector<glm::mat4> instanceMatrices);
+		InstanceBuffer& GetInstanceBuffer();
 
-		GLuint GetInstanceCount() { return m_InstanceCount; }
-		bool CheckInstanced() { return m_IsInstanced; }
+		GLuint GetInstanceCount();
+		bool CheckInstanced();
 	protected:
-		void SetIntanceCount();
+		void InitInstanceBuffer(std::vector<glm::mat4> instanceMatrices);
+
+		void InitInstanceCount();
 
 		void AddVertexAttribute(VertexAttributeType attribType, GLboolean normalized = GL_FALSE);
 	private:
@@ -106,18 +102,16 @@ namespace OGLE{
 		GLuint m_AttribCount = 0;
 
 		std::unordered_map<GLuint, VertexAttribute*> m_VertexAttributes = std::unordered_map<GLuint, VertexAttribute*>();
-		//std::unordered_map<GLuint, MatrixAttribute*> m_MatrixAttributes = std::unordered_map<GLuint, MatrixAttribute*>();
 	};
 
-	// Buffer to hold the order in which to use the vertices in the vertexbuffer
 	class ElementBuffer : public Buffer
 	{
 	public:
 		ElementBuffer(std::vector<GLushort>& indices, GLenum elementDataType = GL_UNSIGNED_SHORT);
 		ElementBuffer(const ElementBuffer& other);
 
-		GLuint GetElementCount() const { return m_ElementCount; }
-		GLenum GetElementDataType() const { return m_ElementDataType; }
+		GLuint GetElementCount() const;
+		GLenum GetElementDataType() const;
 
 	protected:
 

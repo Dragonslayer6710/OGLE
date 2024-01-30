@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OGLE/OpenGL/OpenGLContext.h"
+#include "OGLE/OGL/OpenGLContext.h"
 
 namespace OGLE {
 

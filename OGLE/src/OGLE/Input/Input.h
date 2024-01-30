@@ -18,31 +18,21 @@ namespace OGLE {
 
 	class Input {
 	public:
-		Input();
-		static void ResetInputs();
-
 		static void New(unsigned int inputID);
+		static Input* Get(unsigned int inputID);
 
-		static Input* GetInput(unsigned int inputID);
+		static void SetState(unsigned int inputID, InputState state);
+		static InputState GetState(unsigned int inputID);
 
-		unsigned int GetInputID();
+		unsigned int GetID();
 
-		InputState GetInputState();
-		void SetInputState(InputState state);
+		void SetState(InputState state);
+		InputState GetState();
 
-		InputType GetInputType();
+		InputType GetType();
 
 	protected:
-
-		static void InitInputs();
-
-		static void NewInput(Input* input);
-
 		Input(unsigned int inputID, InputType inputType);
-
-	private:
-		static std::unordered_map<unsigned int, Input*>* s_Inputs;
-		static std::unordered_map<unsigned int, InputState>* s_InputStates;
 
 		unsigned int m_InputID;
 		InputType m_InputType;
@@ -50,11 +40,22 @@ namespace OGLE {
 		MouseCode m_MouseButton;
 	};
 
-	static void SetInputState(unsigned int inputID, InputState state) {
-		Input::GetInput(inputID)->SetInputState(state);
+	
+	namespace p_Input {
+		static std::unordered_map<unsigned int, Input*>* s_Inputs;
+		static std::unordered_map<unsigned int, InputState>* s_InputStates;	
+		void InitInputs();
+		void ResetInputs();
+
+		void NewInput(Input* input);
+
+
 	}
 
+
+
 	
+
 	inline double s_MousePosX;
 	inline double s_MousePosY;
 	inline double s_NextMousePosX;

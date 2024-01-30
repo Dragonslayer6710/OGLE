@@ -1,5 +1,5 @@
 #pragma once
-#include "OGLE/OpenGL/OpenGL.h"
+#include "OGLE/OGL/OpenGL.h"
 
 #ifndef GL_LOG_CALL
 #define GL_LOG_CALL

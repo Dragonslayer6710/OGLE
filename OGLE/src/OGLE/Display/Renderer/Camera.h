@@ -9,11 +9,6 @@ namespace OGLE {
 
 		Camera();
 
-		bool IsControlBound();
-		void EnablControls();
-		void DisableControls();
-
-
 		void Rotate();
 
 		void MoveForward();
@@ -31,7 +26,6 @@ namespace OGLE {
 
 		glm::mat4 GetWorldToViewMatrix() const;
 	private:
-		bool m_ControlEnabled = false;
 		float m_CameraSensitivity = 0.5f;
 		float m_MoveSpeed = 0.1f;
 

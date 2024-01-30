@@ -1,14 +1,6 @@
 #include "oglepch.h"
 #include "OGLE/Display/Window.h"
 
-#include "OGLE/Event/ApplicationEvent.h"
-#include "OGLE/Event/MouseEvent.h"
-#include "OGLE/Event/KeyEvent.h"
-
-#include "OGLE/Display/Renderer/Renderer.h"
-
-#include "OGLE/OpenGL/OpenGLContext.h"
-
 namespace OGLE {
 
 	Scope<Window> Window::Create(const WindowProps& props)

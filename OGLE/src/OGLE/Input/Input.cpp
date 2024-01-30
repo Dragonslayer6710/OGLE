@@ -2,71 +2,91 @@
 #include "OGLE/Input/Input.h"
 
 namespace OGLE {
-	std::unordered_map<unsigned int, Input*>* Input::s_Inputs;
-	std::unordered_map<unsigned int, InputState>* Input::s_InputStates;
-
-	void Input::InitInputs()
-	{
-		s_Inputs = new std::unordered_map<unsigned int, Input*>();
-		s_InputStates = new std::unordered_map<unsigned int, InputState>();
-	}
-
-	void Input::NewInput(Input* input)
-	{
-		s_Inputs->operator[](input->GetInputID()) = input;
-	}
-
-	Input::Input(unsigned int inputID, InputType inputType) : m_InputID(inputID), m_InputType(inputType)
-	{
-		if (m_InputType)
-			m_KeyCode = m_InputID;
-		else
-			m_MouseButton = m_InputID;
-		SetInputState(INPUT_STATE_RELEASE);
-	}
-
-	Input::Input()
-	{
-
-	}
-
-	void Input::ResetInputs()
-	{
-		InitInputs();
-	}
+	
 
 	void Input::New(unsigned int inputID)
 	{
 		if (inputID < 8)
-			NewInput(new Input(inputID, INPUT_TYPE_MOUSE));
+			p_Input::NewInput(new Input(inputID, INPUT_TYPE_MOUSE));
 		else
-			NewInput(new Input(inputID, INPUT_TYPE_KEY));
+			p_Input::NewInput(new Input(inputID, INPUT_TYPE_KEY));
 	}
 
-	OGLE::Input* Input::GetInput(unsigned int inputID)
+	Input* Input::Get(unsigned int inputID)
 	{
-		if (s_Inputs->find(inputID) == s_Inputs->end())
+		if (p_Input::s_Inputs->find(inputID) == p_Input::s_Inputs->end())
 			New(inputID);
-		return s_Inputs->operator[](inputID);
+		return p_Input::s_Inputs->operator[](inputID);
 	}
 
-	unsigned int Input::GetInputID()
+
+	void Input::SetState(unsigned int inputID, InputState state)
+	{
+		Input::Get(inputID)->SetState(state);
+	}
+
+	InputState Input::GetState(unsigned int inputID)
+	{
+		return Input::Get(inputID)->GetState();
+	}
+
+
+	unsigned int Input::GetID()
 	{
 		return m_InputID;
 	}
 
-	OGLE::InputState Input::GetInputState()
+
+	void Input::SetState(InputState state)
 	{
-		return s_InputStates->operator[](m_InputID);
+		p_Input::s_InputStates->operator[](m_InputID) = state;
 	}
 
-	void Input::SetInputState(InputState state)
+	InputState Input::GetState()
 	{
-		s_InputStates->operator[](m_InputID) = state;
+		return p_Input::s_InputStates->operator[](m_InputID);
 	}
 
-	OGLE::InputType Input::GetInputType()
+
+	InputType Input::GetType()
 	{
 		return m_InputType;
 	}
+
+
+	Input::Input(unsigned int inputID, InputType inputType) : m_InputID(inputID), m_InputType(inputType)
+	{
+		if (m_InputType)
+			m_MouseButton = m_InputID;
+		else
+			m_KeyCode = m_InputID;
+
+		SetState(INPUT_STATE_RELEASE);
+	}
+	
+	namespace p_Input {
+					
+
+		void InitInputs()
+		{
+			s_Inputs = new std::unordered_map<unsigned int, Input*>();
+			s_InputStates = new std::unordered_map<unsigned int, InputState>();
+		}
+
+		void ResetInputs()
+		{
+			InitInputs();
+		}
+
+		void NewInput(Input* input)
+		{
+			s_Inputs->operator[](input->GetID()) = input;
+		}
+
+		
+
+	}
+
+
+
 }

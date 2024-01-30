@@ -7,21 +7,6 @@ namespace OGLE {
 
 	}
 
-	bool Camera::IsControlBound()
-	{
-		return m_ControlEnabled;
-	}
-
-	void Camera::EnablControls()
-	{
-		m_ControlEnabled = true;
-	}
-
-	void Camera::DisableControls()
-	{
-		m_ControlEnabled = false;
-	}
-
 	void Camera::Rotate()
 	{
 		glm::vec3 rotY = glm::cross(m_Orientation, m_Up);

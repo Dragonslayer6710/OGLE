@@ -3,8 +3,6 @@
 #include "OGLE/Maths/Geometry/Shape/Cube.h"
 #include "OGLE/Maths/Geometry/Shape/Triangle.h"
 
-#include "OGLE/Input/Control.h"
-#include "OGLE/Core/Application.h"
 namespace OGLE {
 
 	HelloLayer::HelloLayer(Renderer& renderer)
@@ -26,13 +24,13 @@ namespace OGLE {
 		case EventType::MouseButtonPressed:
 		{
 			MouseButtonPressedEvent mbpevent = (MouseButtonPressedEvent&)event;
-			SetInputState(mbpevent.GetMouseButton(), INPUT_STATE_PRESS);
+			Input::SetState(mbpevent.GetMouseButton(), INPUT_STATE_PRESS);
 			break;
 		}
 		case EventType::MouseButtonReleased:
 		{
 			MouseButtonReleasedEvent mbrevent = (MouseButtonReleasedEvent&)event;
-			SetInputState(mbrevent.GetMouseButton(), INPUT_STATE_RELEASE);
+			Input::SetState(mbrevent.GetMouseButton(), INPUT_STATE_RELEASE);
 			break;
 		}
 		case EventType::MouseMoved:
@@ -51,12 +49,12 @@ namespace OGLE {
 		case EventType::KeyPressed:
 		{
 			KeyPressedEvent kpevent = ((KeyPressedEvent&)event);
-			SetInputState(kpevent.GetKeyCode(), INPUT_STATE_PRESS);
+			Input::SetState(kpevent.GetKeyCode(), INPUT_STATE_PRESS);
 			break;
 		}
 		case EventType::KeyReleased:
 			KeyReleasedEvent krevent = ((KeyReleasedEvent&)event);
-			SetInputState(krevent.GetKeyCode(), INPUT_STATE_RELEASE);
+			Input::SetState(krevent.GetKeyCode(), INPUT_STATE_RELEASE);
 			break;
 		}
 	}
@@ -81,6 +79,7 @@ namespace OGLE {
 
 		//ImGui::SliderFloat3("Camera Position", &(m_Camera->m_Pos[0]), -10.0f, 10.0f);
 		//ImGui::SliderFloat3("Far Plane", &FarPlane, 0.1f, 10.0f);
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 
 	
@@ -94,8 +93,8 @@ namespace OGLE {
 
 
 
-	float xRot = 45.0f;
-	float yRot = 45.0f;
+	float xRot = 0.0f;
+	float yRot = 0.0f;
 	float zRot = 0.0f;
 	VertexBuffer* vbo;
 	ElementBuffer* ebo;
@@ -103,9 +102,6 @@ namespace OGLE {
 	Camera* camera;
 	void HelloLayer::OnUpdate(Timestep ts)
 	{
-		if (m_Camera->IsControlBound())
-			glfwSetInputMode((GLFWwindow*)Application::Get().GetWindow().GetNativeWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 		if (doInit) {
 			glm::mat4 projMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
 
@@ -134,8 +130,8 @@ namespace OGLE {
 
 			//cube = new Cube();
 			//triangle = new Triangle();
-			vbo= new VertexBuffer(cubeVertices, instanceMatrices);
-			ebo=  new ElementBuffer(cubeIndices);
+			vbo= new VertexBuffer(s_CubeVertices, instanceMatrices);
+			ebo=  new ElementBuffer(s_CubeIndices);
 			vao = new VertexArray(*vbo, *ebo);
 			//instShape = new InstancedShape(*cube,offsets);
 			//instShape = new InstancedShape(*triangle, instanceMatrices);
@@ -164,10 +160,13 @@ namespace OGLE {
 		
 		// Apply Rotation...
 		// ...in x
+		float rotRadX = glm::radians(xRot);
 		glm::mat4 xRotMatrix = glm::rotate(glm::mat4(1.0), glm::radians(xRot), glm::vec3(1.0f, 0.0f, 0.0f));
 		// ...in y
+		float rotRadY = glm::radians(yRot);
 		glm::mat4 xyRotMatrix = glm::rotate(xRotMatrix, glm::radians(yRot), glm::vec3(0.0f, 1.0f, 0.0f));
 		// ...in z
+		float rotRadZ = glm::radians(zRot);
 		glm::mat4 xyzRotMatrix = glm::rotate(xyRotMatrix, glm::radians(zRot), glm::vec3(0.0f, 0.0f, 1.0f));
 
 
@@ -183,9 +182,9 @@ namespace OGLE {
 		s_MouseDeltaX = s_NextMousePosX - s_MousePosX;
 		s_MouseDeltaY = s_NextMousePosY - s_MousePosY;
 		
-		for (Control* boundCtrl : Control::GetBoundControls()) {
+		for (Control* boundCtrl : GetBoundControls()) {
 			if (boundCtrl->GetInputState())
-				switch (boundCtrl->GetControlID())
+				switch (boundCtrl->GetID())
 				{
 				case CTRL_MOVE_FORWARD:
 					m_Camera->MoveForward();
@@ -210,7 +209,7 @@ namespace OGLE {
 					m_Camera->Rotate();
 				}
 			else
-				switch (boundCtrl->GetControlID())
+				switch (boundCtrl->GetID())
 				{
 				case CTRL_CFG_CAMERA_CONTROL_TOGGLE:
 					Application::Get().GetWindow().RevealCursor();
@@ -219,6 +218,7 @@ namespace OGLE {
 					break;
 				}
 		}
+
 		s_MousePosX = s_NextMousePosX;
 		s_MousePosY = s_NextMousePosY;
 

@@ -3,7 +3,7 @@
 #include "OGLE/Maths/Geometry/Shape/Shape.h"
 namespace OGLE {
 
-	static std::vector<Vertex> cubeVertices =
+	static std::vector<Vertex> s_CubeVertices =
 	{
 		Vertex{glm::vec3(1.0f,-1.0f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)}, //0 Right
 		Vertex{glm::vec3(1.0f,-1.0f,-1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)}, //1
@@ -36,7 +36,7 @@ namespace OGLE {
 		Vertex{glm::vec3(1.0f, 1.0f, -1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)}, //23
 	};
 
-	static std::vector<GLushort> cubeIndices =
+	static std::vector<GLushort> s_CubeIndices =
 	{
 		 0,  1,  2,
 		 2,  3,  0,
@@ -63,7 +63,7 @@ namespace OGLE {
 	{
 	public:
 		Cube()
-			: Shape(cubeVertices, cubeIndices) {}
+			: Shape(s_CubeVertices, s_CubeIndices) {}
 	};
 }
 

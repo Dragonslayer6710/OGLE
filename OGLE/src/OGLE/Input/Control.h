@@ -24,7 +24,34 @@ namespace OGLE {
 		CTRL_TYPE_CONFIG,
 	};	
 
-	static std::unordered_map<ControlID, ControlType> s_ControlTypes = {
+	class Control {
+	public:		
+		static void New(ControlID ctrlID);
+		static Control* Get(ControlID ctrlID);
+
+		void BindInput(Input* input);
+		void UnbindInput();
+
+		ControlID GetID() const;
+		ControlType GetType() const;
+		InputState GetInputState() const;
+
+	private:
+		Control(ControlID ctrlID);
+		Control(ControlID ctrlID, Input* input);
+		void InitControl();
+		void UpdateControlBind();
+
+	private:
+		ControlID m_ControlID;
+		Input* m_BoundInput = nullptr;
+	};
+
+	namespace p_Control {
+		static std::unordered_map<ControlID, Control*>* s_Controls;
+		static std::vector<Control*>* s_BoundControls;
+
+		static std::unordered_map<ControlID, ControlType> s_ControlTypes = {
 		{CTRL_MOVE_FORWARD, CTRL_TYPE_MOVEMENT},
 		{CTRL_MOVE_LEFT, CTRL_TYPE_MOVEMENT},
 		{CTRL_MOVE_BACKWARD, CTRL_TYPE_MOVEMENT},
@@ -33,9 +60,15 @@ namespace OGLE {
 		{CTRL_MOVE_DOWN, CTRL_TYPE_MOVEMENT},
 
 		{CTRL_CFG_CAMERA_CONTROL_TOGGLE, CTRL_TYPE_CONFIG}
-	};
+		};
 
-	
+		static void InitControls(std::unordered_map<ControlID, unsigned int>* initialControls = nullptr);
+		static void ResetControls(std::unordered_map<ControlID, unsigned int>* initialControls = nullptr);
+		
+		static void NewControl(Control* ctrl);
+
+	}
+
 	static std::unordered_map<ControlID, unsigned int> s_InitialControls =
 	{
 		{CTRL_MOVE_FORWARD, Key::W},
@@ -48,58 +81,11 @@ namespace OGLE {
 		{CTRL_CFG_CAMERA_CONTROL_TOGGLE, Mouse::ButtonLeft}
 	};
 
+	void InitControls(std::unordered_map<ControlID, unsigned int> initialControls = s_InitialControls);
 
-	class Control {
-	public:		
-		static std::vector<Control*>& GetBoundControls();
+	std::vector<Control*>& GetBoundControls();
 
-		static void ResetControls(std::unordered_map<ControlID, unsigned int>* initialControls = nullptr);
-
-		static void BindInput(ControlID ctrlID, unsigned int inputID);
-
-		static void New(ControlID ctrlID);
-
-		static Control* GetControl(ControlID ctrlID);
-
-		Control();
-
-		Control(ControlID ctrlID);
-
-		Control(ControlID ctrlID, Input* input);
-
-		ControlID GetControlID() const;
-
-		void UpdateControlBind();
-
-		ControlType GetControlType() const;
-
-		InputState GetInputState() const;
-
-
-	private:
-
-		static void BindInput(Control* ctrl, Input* input);
-
-		void BindInput(Input* input);
-		void UnbindInput();
-
-		static void InitControls();
-
-		static void NewControl(Control* ctrl);
-
-		void InitControl();
-
-	private:
-		static std::unordered_map<ControlID, Control*>* s_Controls;
-		static std::vector<Control*>* s_BoundControls;
-
-		ControlID m_ControlID;
-		Input* m_BoundInput = nullptr;
-	};
-
-	static void InitControls(std::unordered_map<ControlID, unsigned int> initialControls = s_InitialControls) {
-		Input::ResetInputs();
-		Control::ResetControls(&initialControls);
-	}
+	void BindInput(ControlID ctrlID, unsigned int inputID);
+	void BindInput(Control* ctrl, Input* input);
 }
 

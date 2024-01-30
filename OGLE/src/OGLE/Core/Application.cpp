@@ -3,7 +3,6 @@
 
 #include "OGLE/Debug/Log.h"
 
-#include "OGLE/Display/Renderer/Renderer.h"
 #include "OGLE/Scripting/ScriptEngine.h"
 
 #include "OGLE/Input/Input.h"

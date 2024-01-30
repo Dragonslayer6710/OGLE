@@ -1,8 +1,14 @@
 #pragma once
 
 #include "OGLE/Core/Base.h"
-#include "OGLE/Event/Event.h"
-#include "OGLE/OpenGL/OpenGLContext.h"
+
+#include "OGLE/Event/ApplicationEvent.h"
+#include "OGLE/Event/MouseEvent.h"
+#include "OGLE/Event/KeyEvent.h"
+
+#include "OGLE/OGL/OpenGLContext.h"
+
+#include "OGLE/Display/Renderer/Renderer.h"
 
 #include <sstream>
 
@@ -45,11 +51,11 @@ namespace OGLE {
 
 		void RecalculateCentrePos();
 
+		void CentreCursor();
+
 		void HideCursor();
 
 		void RevealCursor();
-
-		void CentreCursor();
 
 		static Scope<Window> Create(const WindowProps& props = WindowProps());
 	private:

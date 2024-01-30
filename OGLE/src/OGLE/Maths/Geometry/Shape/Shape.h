@@ -6,17 +6,16 @@ namespace OGLE{
 	class Shape
 	{
 	public:
-		Shape(std::vector<Vertex>& vertices, std::vector<GLushort>& indices, GLuint instances=1)
-			: m_Vertices(&vertices), m_Indices(&indices) { InitShape(); }
+		Shape(std::vector<Vertex>& vertices, std::vector<GLushort>& indices, GLuint instances=1);
 		Shape(const Shape& other);
 		Shape(const Shape& other, std::vector<glm::mat4>& instanceMatrices);
 
-		std::vector<Vertex>& GetVertices() { return *m_Vertices; }
-		std::vector <GLushort>& GetIndices() { return *m_Indices; }
+		std::vector<Vertex>& GetVertices();
+		std::vector <GLushort>& GetIndices();
 
-		VertexBuffer& GetVBO() { return *m_VBO; }
-		ElementBuffer& GetEBO() { return *m_EBO; }
-		VertexArray& GetVAO() { return *m_VAO; }
+		VertexBuffer& GetVBO();
+		ElementBuffer& GetEBO();
+		VertexArray& GetVAO();
 		
 	private:
 		void InitShape();
@@ -32,10 +31,9 @@ namespace OGLE{
 	class InstancedShape : public Shape
 	{
 	public:
-		InstancedShape(Shape& shape, std::vector<glm::mat4>& instanceMatrices) : m_InstanceMatrices(instanceMatrices), Shape(shape, instanceMatrices) {}
+		InstancedShape(Shape& shape, std::vector<glm::mat4>& instanceMatrices);
 
-		InstancedShape(std::vector<Vertex>& vertices, std::vector<GLushort>& indices, std::vector<glm::mat4>& instanceMatrices)
-			: m_InstanceMatrices(instanceMatrices), Shape(vertices, indices, m_InstanceMatrices.size()) {}
+		InstancedShape(std::vector<Vertex>& vertices, std::vector<GLushort>& indices, std::vector<glm::mat4>& instanceMatrices);
 	protected:
 		std::vector<glm::mat4> m_InstanceMatrices;
 	};

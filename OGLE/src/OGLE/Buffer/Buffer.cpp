@@ -54,6 +54,33 @@ namespace OGLE {
 		m_Resizable = other.m_Resizable;
 	}
 
+	Buffer::Buffer(GLenum bufferTarget, GLsizeiptr size, const GLvoid* data, const char* prefix /*= ""*/, GLenum bufferUsage /*= GL_STATIC_DRAW*/) 
+		: m_BufferTarget(bufferTarget), m_Size(size), m_Data(data), m_BufferUsage(bufferUsage), m_Prefix(prefix)
+	{
+		InitBuffer();
+		AllocateBuffer();
+	}
+
+	Buffer::~Buffer()
+	{
+		GLCall(glDeleteBuffers(1, &m_BufferID));
+	}
+
+	void Buffer::PrintStatus(const char* status)
+	{
+		std::cout << m_Prefix << "Buffer (ID " << m_BufferID << "): " << status << std::endl;
+	}
+
+	void Buffer::PrintInitialized()
+	{
+		PrintStatus("Initialized");
+	}
+
+	void Buffer::PrintBindStatus()
+	{
+		PrintStatus((m_IsBound) ? "Bound" : "Unbound");
+	}
+
 	void Buffer::Bind()
 	{
 		if (m_IsBound)
@@ -70,6 +97,11 @@ namespace OGLE {
 		GLCall(glBindBuffer(m_BufferTarget, 0)); 
 		m_IsBound = false; 
 		//PrintBindStatus();
+	}
+
+	GLsizeiptr Buffer::GetSize() const
+	{
+		return m_Size;
 	}
 
 	void Buffer::UpdateData(GLintptr offset, GLsizeiptr size, const GLvoid* data)
@@ -103,7 +135,7 @@ namespace OGLE {
 			vertices.data(),
 			"Vertex ") 
 	{
-		SetInstanceBuffer(instanceMatrices);
+		InitInstanceBuffer(instanceMatrices);
 		InitVertexBuffer(layout);
 	}
 
@@ -111,7 +143,7 @@ namespace OGLE {
 	: Buffer(other){
 
 		*m_IBO = *other.m_IBO;
-		SetIntanceCount();
+		InitInstanceCount();
 
 		m_Stride = other.m_Stride;
 		m_AttribCount = other.m_AttribCount;
@@ -121,12 +153,52 @@ namespace OGLE {
 
 
 
-	void VertexBuffer::SetInstanceBuffer(std::vector<glm::mat4> instanceMatrices)
+	void VertexBuffer::BindInstanceBuffer()
 	{
-		m_IBO = new InstanceBuffer(*this, instanceMatrices);
+		if (m_IBO) m_IBO->Bind();
 	}
 
-	void VertexBuffer::SetIntanceCount()
+	void VertexBuffer::UnbindInstanceBuffer()
+	{
+		if (m_IBO) m_IBO->Unbind();
+	}
+
+	GLuint VertexBuffer::GetStride() const
+	{
+		return m_Stride;
+	}
+
+	GLuint VertexBuffer::GetAttribCount() const
+	{
+		return m_AttribCount;
+	}
+
+	std::unordered_map<GLuint, VertexAttribute*> VertexBuffer::GetVertexAttributes()
+	{
+		return m_VertexAttributes;
+	}
+
+	OGLE::VertexBuffer::InstanceBuffer& VertexBuffer::GetInstanceBuffer()
+	{
+		return *m_IBO;
+	}
+
+	void VertexBuffer::InitInstanceBuffer(std::vector<glm::mat4> instanceMatrices)
+	{
+		m_IBO = new InstanceBuffer(instanceMatrices);
+	}
+
+	GLuint VertexBuffer::GetInstanceCount()
+	{
+		return m_InstanceCount;
+	}
+
+	bool VertexBuffer::CheckInstanced()
+	{
+		return m_IsInstanced;
+	}
+
+	void VertexBuffer::InitInstanceCount()
 	{
 		if (m_IBO)
 			m_InstanceCount = m_IBO->GetInstanceCount(); 
@@ -141,7 +213,7 @@ namespace OGLE {
 
 	void VertexBuffer::InitVertexBuffer(VertexLayout layout)
 	{
-		SetIntanceCount();
+		InitInstanceCount();
 		for (VertexAttributeData attribData : *layout.AttributeData)
 			AddVertexAttribute(attribData.m_ControlType, attribData.Normalized);
 	}
@@ -161,9 +233,24 @@ namespace OGLE {
 		m_ElementDataType = other.m_ElementDataType;
 	}
 
-	VertexBuffer::InstanceBuffer::InstanceBuffer(const VertexBuffer& vbo, std::vector<glm::mat4>& instanceMatrices)
+	GLuint ElementBuffer::GetElementCount() const
+	{
+		return m_ElementCount;
+	}
+
+	GLenum ElementBuffer::GetElementDataType() const
+	{
+		return m_ElementDataType;
+	}
+
+	VertexBuffer::InstanceBuffer::InstanceBuffer(std::vector<glm::mat4>& instanceMatrices)
 		: m_InstanceCount(instanceMatrices.size()), Buffer(GL_ARRAY_BUFFER,
 			sizeof(glm::mat4)* instanceMatrices.size(),
 			instanceMatrices.data(), "Instance "){	}
+
+	GLuint VertexBuffer::InstanceBuffer::GetInstanceCount()
+	{
+		return m_InstanceCount;
+	}
 
 }

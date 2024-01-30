@@ -4,6 +4,7 @@
 
 #include "OGLE/Display/Renderer/Renderer.h"
 
+#include "OGLE/Core/Application.h"
 
 namespace OGLE{
 
