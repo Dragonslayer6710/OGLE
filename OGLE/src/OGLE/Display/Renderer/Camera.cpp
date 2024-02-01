@@ -10,9 +10,10 @@ namespace OGLE {
 	void Camera::Rotate()
 	{
 		glm::vec3 rotY = glm::cross(m_Orientation, m_Up);
-		glm::mat4 rotation =
-			glm::rotate(glm::radians(-(float)s_MouseDeltaX * m_CameraSensitivity), m_Up) *
-			glm::rotate(glm::radians(-(float)s_MouseDeltaY * m_CameraSensitivity), rotY);
+		glm::vec3 newOrientation = glm::rotate(m_Orientation, glm::radians(-(float)s_MouseDeltaY * m_CameraSensitivity), rotY);
+		if (abs(glm::angle(newOrientation, m_Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
+			m_Orientation = newOrientation;
+		glm::mat4 rotation = glm::rotate(glm::radians(-(float)s_MouseDeltaX * m_CameraSensitivity), m_Up);
 		m_Orientation = glm::mat3(rotation) * m_Orientation;
 	}
 

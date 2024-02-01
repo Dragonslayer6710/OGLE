@@ -1,13 +1,12 @@
 #include "oglepch.h"
 #include "OGLE/Core/Application.h"
 
-#include "OGLE/Debug/Log.h"
-
 #include "OGLE/Scripting/ScriptEngine.h"
 
-#include "OGLE/Input/Input.h"
+#include "OGLE/Input/Control.h"
 #include "OGLE/Utils/PlatformUtils.h"
 
+#include <stb_image.h>
 
 namespace OGLE {
 
@@ -16,6 +15,7 @@ namespace OGLE {
 	Application::Application(const ApplicationSpecification& specification)
 		: m_Specification(specification)
 	{
+		stbi_set_flip_vertically_on_load(true);
 		OGLE_PROFILE_FUNCTION();
 
 		OGLE_CORE_ASSERT(!s_Instance, "Application already exists!");

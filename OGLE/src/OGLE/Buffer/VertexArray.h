@@ -23,8 +23,7 @@ namespace OGLE {
 		GLuint GetElementCount();
 		GLenum GetElementDataType();
 
-		GLuint GetInstanceCount();
-		bool CheckInstanced();
+		GLuint GetInstanceCount();;
 
 	private:
 		void InitVertexArray(VertexBuffer& vbo, ElementBuffer& ebo);
@@ -34,9 +33,6 @@ namespace OGLE {
 		void LinkVertexBufferToVertexArray();
 		void BindVertexBuffer();
 		void UnbindVertexBuffer();
-
-		void BindInstanceBuffer();
-		void UnbindInstanceBuffer();
 
 		void SetVBOAttribPointers();
 
@@ -51,6 +47,8 @@ namespace OGLE {
 
 		VertexBuffer* m_VBO;
 		ElementBuffer* m_EBO;
+
+		GLuint m_InstanceCount;
 
 		bool m_IsBound = false;
 		bool m_RetainBind = false;

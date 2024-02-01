@@ -1,12 +1,7 @@
 #pragma once
 
 #include "OGLE/Display/Layer/ImGui/imgui.h"
-
 #include "OGLE/Display/Layer/Layer.h"
-
-#include "OGLE/Event/ApplicationEvent.h"
-#include "OGLE/Event/KeyEvent.h"
-#include "OGLE/Event/MouseEvent.h"
 
 namespace OGLE {
 

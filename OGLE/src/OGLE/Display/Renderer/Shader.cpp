@@ -35,7 +35,7 @@ namespace OGLE {
 	// Check to see if this file has been loaded before, otherwise parse it and store to cache
 	void Shader::ParseShaderFile(const std::string shaderFile) const
 	{
-		std::ifstream in("C:\\Users\\harri\\source\\repos\\OGLE\\OGLE\\assets\\shaders\\" + shaderFile);
+		std::ifstream in(cwd + "\\assets\\shaders\\" + shaderFile);
 		std::string result((std::istreambuf_iterator<char>(in)),
 			std::istreambuf_iterator<char>());
 		s_ParsedShaders[m_ShaderType][shaderFile] = result.c_str();
@@ -101,9 +101,15 @@ namespace OGLE {
 		//PrintActivationStatus();
 	}
 
+	void ShaderProgram::SetUniform1i(const std::string& uName, GLint value)
+	{
+		glUniform1i(GetUniformLocation(uName), value);
+	}
+
 	void ShaderProgram::SetUniform2fv(const std::string& uName, glm::vec2 value)
 	{
-		GLCall(glUniform2fv(GetUniformLocation(uName), 1, glm::value_ptr(value)));
+		//GLCall(glUniform2fv(GetUniformLocation(uName), 1, glm::value_ptr(value)));
+		GLCall(glUniform2f(GetUniformLocation(uName), value.x, value.y));
 	}
 
 	void ShaderProgram::SetUniform3fv(const std::string& uName, glm::vec3 value)

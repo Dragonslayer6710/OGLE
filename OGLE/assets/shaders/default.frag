@@ -1,15 +1,20 @@
 #version 430 core
 
 in vec4 v_Color;
+in vec2 v_TexUV;
 
 out vec4 FragColor;
 
-uniform vec4 u_Color;
+uniform sampler2D tex0;
+uniform vec2 u_TexSize;
+uniform vec2 u_TexOffset;
 
 void main()
 {
+	FragColor = texture(tex0, v_TexUV*u_TexSize+u_TexOffset);
 	// outputs final color
 	//FragColor = color;
-	FragColor = v_Color;
+	//FragColor = v_Color;
 	//FragColor = u_Color;
+	//FragColor = texture(tex0, v_TexUV);
 }

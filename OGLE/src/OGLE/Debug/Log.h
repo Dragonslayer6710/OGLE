@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OGLE/Core/Base.h"
+#include "OGLE/Maths/glm.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 
@@ -19,8 +20,6 @@
 #include <thread>
 #include <mutex>
 #include <sstream>
-
-#include "OGLE/Maths/glm.h"
 
 namespace OGLE {
 

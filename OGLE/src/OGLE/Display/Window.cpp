@@ -202,7 +202,9 @@ namespace OGLE {
 	void Window::HideCursor()
 	{
 		if (!m_CursorHidden) {
-			glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+			if (!m_ImGuiLayerBlock)
+				glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 			m_CursorHidden = true;
 		}
 	}
@@ -211,9 +213,16 @@ namespace OGLE {
 	{
 		if (m_CursorHidden) {
 			glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			CentreCursor();
+
+			if (!m_ImGuiLayerBlock)
+				CentreCursor();
 			m_CursorHidden = false;
 		}
+	}
+
+	bool Window::IsCursorHidden()
+	{
+		return m_CursorHidden;
 	}
 
 	void Window::CentreCursor()

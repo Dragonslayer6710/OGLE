@@ -1,8 +1,9 @@
 #include "oglepch.h"
 #include "OGLE/Display/Layer/HelloLayer.h"
-#include "OGLE/Maths/Geometry/Shape/Cube.h"
-#include "OGLE/Maths/Geometry/Shape/Triangle.h"
-
+#include "OGLE/Maths/Geometry/3D/Cube.h"
+#include "OGLE/Maths/Geometry/2D/Triangle.h"
+#include "OGLE/Maths/Geometry/2D/Quad.h"
+#include "OGLE/Display/Renderer/Texture.h"
 namespace OGLE {
 
 	HelloLayer::HelloLayer(Renderer& renderer)
@@ -63,7 +64,7 @@ namespace OGLE {
 	{
 	}
 
-
+	GLint* BlockID = new GLint(0);
 	void HelloLayer::OnImGuiRender()
 	{
 		GLfloat FOVDegrees = m_Renderer->GetFOVDegrees();
@@ -77,15 +78,14 @@ namespace OGLE {
 		ImGui::SliderFloat("Far Plane", &FarPlane, 0.1f, 10.0f);
 		m_Renderer->UpdateClipPlanes(NearPlane, FarPlane);
 
+		int xval=0, yval=0;
+		ImGui::SliderInt("BlockIDx", &xval, 0, 15);
+		ImGui::SliderInt("BlockIDy", &yval, 0, 15);
+		BlockID = new GLint(xval + yval * 16);
 		//ImGui::SliderFloat3("Camera Position", &(m_Camera->m_Pos[0]), -10.0f, 10.0f);
 		//ImGui::SliderFloat3("Far Plane", &FarPlane, 0.1f, 10.0f);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
-
-	
-	Cube* cube;
-	Triangle* triangle;
-	InstancedShape* instShape;
 
 	ShaderProgram* shaderProgram;
 
@@ -96,88 +96,68 @@ namespace OGLE {
 	float xRot = 0.0f;
 	float yRot = 0.0f;
 	float zRot = 0.0f;
+
 	VertexBuffer* vbo;
 	ElementBuffer* ebo;
 	VertexArray* vao;
 	Camera* camera;
+
+	Triangle* triangle;
+	Quad* quad;
+	Cube* cube;
+
+	UniformTextureAtlas* texture;
+	glm::vec2* texAtlasSize;
+	glm::vec2* textureOffset;
 	void HelloLayer::OnUpdate(Timestep ts)
 	{
 		if (doInit) {
 			glm::mat4 projMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
 
 			// Apply Translation
-			glm::mat4 transMatrixA = glm::translate(glm::mat4(1.0), glm::vec3(-0.5f, 0.0f, -3.0f));
-			glm::mat4 transMatrixB = glm::translate(glm::mat4(1.0), glm::vec3( 0.5f, 0.0f, -3.0f));
-
-			// Apply Rotation...
-			// ...in x
-			glm::mat4 xRotMatrix = glm::rotate(glm::mat4(1.0), glm::radians(xRot), glm::vec3(1.0f, 0.0f, 0.0f));
-			// ...in y
-			glm::mat4 xyRotMatrix = glm::rotate(xRotMatrix, glm::radians(yRot), glm::vec3(0.0f, 1.0f, 0.0f));
-			// ...in z
-			glm::mat4 xyzRotMatrix = glm::rotate(xyRotMatrix, glm::radians(zRot), glm::vec3(0.0f, 0.0f, 1.0f));
-
-			std::vector<GLfloat> offsets = { -2.0f,0.f, 2.0f };
-			std::vector<glm::mat4> instanceMatrices =
-			{
-				// Shape A
-				transMatrixA * xyzRotMatrix,// glm::translate(projMatrix, glm::vec3(0.0f, 0.0f, -3.0f)),
-				// Shape B
-				transMatrixB * xyzRotMatrix,
-			};
-
 			shaderProgram = new ShaderProgram();
 
-			//cube = new Cube();
-			//triangle = new Triangle();
-			vbo= new VertexBuffer(s_CubeVertices, instanceMatrices);
-			ebo=  new ElementBuffer(s_CubeIndices);
-			vao = new VertexArray(*vbo, *ebo);
+			//vao = Cubes();
 			//instShape = new InstancedShape(*cube,offsets);
 			//instShape = new InstancedShape(*triangle, instanceMatrices);
+			//triangle = new Triangle();
+			quad = new Quad
+			(
+				InstanceDataCollection
+				(
+					{ 
+						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3(1,0,0))},
+						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3(-1,0,0))}
+					}
+				)
+			);
+			//quad = new Quad();
+			//cube = new Cube();
+			
+			vao = &(quad->GetMesh().GetVAO());
+
+			texture = new UniformTextureAtlas("terrain.png", 16, 16);
+			
 
 			m_Renderer->ChangeShaderProgram(*shaderProgram);
 			m_Renderer->ChangeVAO(*vao);
 
+			shaderProgram->SetUniform1i("tex0", 0);
+			
 			doInit = false;
-		
+			
 		}
-		xRot += 1.0f;
-		if (xRot > 360)
-			xRot = 0;
-		yRot += 0.5f;
-		if (yRot > 360)
-			yRot = 0;
-		zRot += 0.25f;
-		if (zRot > 360)
-			zRot = 0;
+		glm::vec2 uSize = texture->GetSubTexture(*BlockID).Size;
+		glm::vec2 uOffset = texture->GetSubTexture(*BlockID).Position;
 		
+
+		shaderProgram->SetUniform2fv("u_TexSize", uSize);
+		shaderProgram->SetUniform2fv("u_TexOffset", uOffset);
 		// Init Projection Matrix
-		glm::mat4 projMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
+		glm::mat4 viewToProjectionMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
+		glm::mat4 worldToProjectionMatrix = viewToProjectionMatrix * m_Camera->GetWorldToViewMatrix();
 
-		// Apply Translation
-		glm::mat4 transMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));
-		
-		// Apply Rotation...
-		// ...in x
-		float rotRadX = glm::radians(xRot);
-		glm::mat4 xRotMatrix = glm::rotate(glm::mat4(1.0), glm::radians(xRot), glm::vec3(1.0f, 0.0f, 0.0f));
-		// ...in y
-		float rotRadY = glm::radians(yRot);
-		glm::mat4 xyRotMatrix = glm::rotate(xRotMatrix, glm::radians(yRot), glm::vec3(0.0f, 1.0f, 0.0f));
-		// ...in z
-		float rotRadZ = glm::radians(zRot);
-		glm::mat4 xyzRotMatrix = glm::rotate(xyRotMatrix, glm::radians(zRot), glm::vec3(0.0f, 0.0f, 1.0f));
-
-
-
-		shaderProgram->SetUniformMatrix4fv("u_Projection", projMatrix);
-
-		shaderProgram->SetUniformMatrix4fv("u_WorldToView", m_Camera->GetWorldToViewMatrix());
-
-		shaderProgram->SetUniformMatrix4fv("u_Translation", transMatrix);
-		shaderProgram->SetUniformMatrix4fv("u_Rotation", xyzRotMatrix);
-
+		shaderProgram->SetUniformMatrix4fv("u_WorldToProjection", worldToProjectionMatrix);
 		
 		s_MouseDeltaX = s_NextMousePosX - s_MousePosX;
 		s_MouseDeltaY = s_NextMousePosY - s_MousePosY;

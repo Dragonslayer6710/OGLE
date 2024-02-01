@@ -6,8 +6,6 @@
 #include "OGLE/Event/MouseEvent.h"
 #include "OGLE/Event/KeyEvent.h"
 
-#include "OGLE/OGL/OpenGLContext.h"
-
 #include "OGLE/Display/Renderer/Renderer.h"
 
 #include <sstream>
@@ -57,6 +55,10 @@ namespace OGLE {
 
 		void RevealCursor();
 
+		bool IsCursorHidden();
+
+		void SetImGuiLayerBlock(bool status) { m_ImGuiLayerBlock = status; };
+
 		static Scope<Window> Create(const WindowProps& props = WindowProps());
 	private:
 		virtual void Init(const WindowProps& props);
@@ -76,6 +78,7 @@ namespace OGLE {
 
 		WindowData m_Data;
 		bool m_CursorHidden = false;
+		bool m_ImGuiLayerBlock = false;
 		glm::vec2 m_CentrePos;
 	};
 

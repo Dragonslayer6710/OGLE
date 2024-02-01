@@ -1,7 +1,7 @@
 #include "oglepch.h"
 #include "OGLE/Display/Layer/ImGui/ImGuiLayer.h"
-
 #include "OGLE/Core/Application.h"
+
 
 namespace OGLE {
 	ImGuiLayer::ImGuiLayer()
@@ -64,9 +64,28 @@ namespace OGLE {
 		if (m_BlockEvents)
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+
+			if (io.WantCaptureMouse) {
+				Application::Get().GetWindow().SetImGuiLayerBlock(true);
+				if (e.GetEventType() == EventType::MouseButtonReleased)
+					Application::Get().GetWindow().RevealCursor();				
+				s_NextMousePosX = s_MousePosX;
+				s_NextMousePosY = s_MousePosY;
+			}
+
+			e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;			
 			e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
-		}
+
+			if (io.WantCaptureMouse) {
+				if (e.GetEventType() == EventType::MouseButtonPressed)
+					Application::Get().GetWindow().HideCursor();
+				Application::Get().GetWindow().SetImGuiLayerBlock(false);
+
+			}
+		}	
+		//if (io.WantCaptureMouse)
+		//	Application::Get().GetWindow().SetImGuiLayerBlock(false);
+
 	}
 
 	void ImGuiLayer::Begin()

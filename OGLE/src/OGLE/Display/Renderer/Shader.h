@@ -102,6 +102,8 @@ namespace OGLE {
 		void PrintInitialized() { PrintStatus("Initialized"); }
 		void PrintActivationStatus() { PrintStatus((m_IsActive) ? "Activated" : "Deactivated"); }
 
+		void SetUniform1i(const std::string& uName, GLint value);
+		
 		void SetUniform2fv(const std::string& uName, glm::vec2 value);
 		void SetUniform3fv(const std::string& uName, glm::vec3 value);
 		void SetUniform4fv(const std::string& uName, glm::vec4 value);
