@@ -39,7 +39,7 @@ namespace OGLE {
 	{
 		GLuint AttribID; // Identifier for this attribute
 		GLboolean Normalized; // Data needs to be normalised between -1/1 0/1 etc.
-		GLenum m_ControlType; // Data type
+		GLenum Type; // Data type
 		GLuint Count; // Number of elements this attribute covers
 		GLsizei Size; // Size of Attribute in bytes
 		DataAttribute
@@ -49,8 +49,8 @@ namespace OGLE {
 			GLenum type = GL_FLOAT,
 			GLuint count = 1
 		)
-			: AttribID(attribID), Normalized(normalized), m_ControlType(type),
-			Count(count), Size(sizeof(m_ControlType)) {}
+			: AttribID(attribID), Normalized(normalized), Type(type),
+			Count(count), Size(sizeof(Type)) {}
 	};
 
 	struct DataFloat : DataAttribute

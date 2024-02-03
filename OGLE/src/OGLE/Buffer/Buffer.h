@@ -12,6 +12,7 @@ namespace OGLE{
 		void Unbind();
 
 		void SetData(GLintptr offset = 0, GLsizeiptr size = 0, const GLvoid* data = NULL);
+		GLuint GetSize();
 
 	protected:
 		void BufferSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data);
@@ -39,18 +40,14 @@ namespace OGLE{
 		VertexBuffer(VertexCollection& vertices, GLenum bufferUsage = GL_STATIC_DRAW);
 		VertexBuffer(VertexCollection& vertices,  InstanceDataCollection& instanceData, GLenum bufferUsage = GL_STATIC_DRAW);
 
-		GLuint GetInstanceCount() { return m_InstanceCount; }
+		GLuint GetInstanceCount();
 
 		std::unordered_map<GLuint, DataAttribute*> GetVertexAttributes();
 
-		GLuint GetVertexStride();
-		GLuint GetVertexAttribCount();
+		GLuint GetVertexDataSize();;
+		GLuint GetInstanceDataSize();;
 
 		std::unordered_map<GLuint, DataAttribute*> GetInstanceDataAttributes();
-
-		GLuint GetInstanceDataStride();
-		GLuint GetInstanceDataAttribCount();
-
 
 	private:
 		GLuint m_InstanceCount;		

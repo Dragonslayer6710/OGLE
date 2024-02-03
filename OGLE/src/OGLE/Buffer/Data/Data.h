@@ -42,8 +42,10 @@ namespace OGLE {
 		glm::vec4 Color;
 		glm::vec2 TexUV;
 
+		Vertex()
+			: Position(glm::vec3()), Color(glm::vec4()), TexUV(glm::vec2()) {}
 		Vertex(glm::vec2 position, glm::vec4 color, glm::vec2 texUV)
-			: Position(position.x, position.y, -1.0f), Color(color), TexUV(texUV) {}
+			: Position(position, -1.0f), Color(color), TexUV(texUV) {}
 		Vertex(glm::vec3 position, glm::vec4 color, glm::vec2 texUV)
 			: Position(position), Color(color), TexUV(texUV) {}
 	};
@@ -60,24 +62,28 @@ namespace OGLE {
 		Vertex* GetData() {
 			return m_Vertices.data();
 		}
+
 		GLuint GetSize() {
 			return m_Vertices.size() * sizeof(Vertex);
 		}
+
+		GLuint GetLength() {
+			return m_Vertices.size();
+		}
+
 		DataLayout& GetLayout() {
 			return m_VertexLayout;
 		}
-
-		GLuint GetStride() { return m_Stride; }
-
-		GLuint GetAttribCount() { return m_AttribCount; }
 
 		std::unordered_map<GLuint, DataAttribute*> GetAttributes() { return m_VertexAttributes; }
 
 	private:
 		void InitAttributes() {
+			GLuint offset = 0;
+			GLuint attribCount = 0;
 			for (DataAttributeInfo attribData : GetLayout().AttributeData) {
-				m_VertexAttributes[m_Stride] = GetNewDataAttribute(m_AttribCount++, attribData.m_ControlType, attribData.Normalized);
-				m_Stride += m_VertexAttributes[m_Stride]->Size;
+				m_VertexAttributes[offset] = GetNewDataAttribute(attribCount++, attribData.m_ControlType, attribData.Normalized);
+				offset += m_VertexAttributes[offset]->Size;
 			}
 		}
 
@@ -85,17 +91,15 @@ namespace OGLE {
 		std::vector<Vertex> m_Vertices;
 		DataLayout m_VertexLayout;
 
-		GLuint m_Stride = 0;
-		GLuint m_AttribCount = 0;
 		std::unordered_map<GLuint, DataAttribute*> m_VertexAttributes;
 	};
 
-	static const DataLayout s_DefInstanceDataLayout = DataLayout({ FloatMat4 });
+	static const DataLayout s_DefInstanceDataLayout = DataLayout({ FloatMat4, UInt });
 
 
 	struct InstanceData {
 		glm::mat4 ModelTransform;
-		//GLuint SubTextureID;
+		GLuint SubTextureID;
 	};
 
 	class InstanceDataCollection
@@ -113,20 +117,24 @@ namespace OGLE {
 		GLuint GetSize() {
 			return m_InstanceData.size() * sizeof(InstanceData);
 		}
+
+		GLuint GetLength() {
+			return m_InstanceData.size();
+		}
+
 		DataLayout& GetLayout() {
 			return m_InstanceDataLayout;
 		}
-		GLuint GetStride() { return m_Stride; }
-
-		GLuint GetAttribCount() { return m_AttribCount; }
 
 		std::unordered_map<GLuint, DataAttribute*> GetAttributes() { return m_InstanceDataAttributes; }
 
 	private:
 		void InitAttributes() {
+			GLuint offset = 0;
+			GLuint attribCount = 0;
 			for (DataAttributeInfo attribData : GetLayout().AttributeData) {
-				m_InstanceDataAttributes[m_Stride] = GetNewDataAttribute(m_AttribCount++, attribData.m_ControlType, attribData.Normalized);
-				m_Stride += m_InstanceDataAttributes[m_Stride]->Size;
+				m_InstanceDataAttributes[offset] = GetNewDataAttribute(attribCount++, attribData.m_ControlType, attribData.Normalized);
+				offset += m_InstanceDataAttributes[offset]->Size;
 			}
 		}
 
@@ -134,8 +142,6 @@ namespace OGLE {
 		std::vector<InstanceData> m_InstanceData;
 		DataLayout m_InstanceDataLayout;
 
-		GLuint m_Stride = 0;
-		GLuint m_AttribCount = 0;
 		std::unordered_map<GLuint, DataAttribute*> m_InstanceDataAttributes;
 	};
 

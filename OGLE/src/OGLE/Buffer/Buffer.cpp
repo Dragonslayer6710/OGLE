@@ -31,6 +31,11 @@ namespace OGLE {
 		BufferSubData(offset, size, data);
 	}
 
+	GLuint Buffer::GetSize()
+	{
+		return m_Size;
+	}
+
 	void Buffer::BufferSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data)
 	{
 		GLCall(glBufferSubData(m_BufferTarget, offset, size, data));
@@ -48,7 +53,7 @@ namespace OGLE {
 	}
 
 	VertexBuffer::VertexBuffer(VertexCollection& vertices, InstanceDataCollection& instanceData, GLenum bufferUsage /*= GL_STATIC_DRAW*/) :
-		m_InstanceCount(instanceData.GetSize() / sizeof(InstanceData)),
+		m_InstanceCount(instanceData.GetLength()),
 		m_VertexCollection(&vertices),
 		m_InstanceDataCollection(&instanceData),
 		Buffer
@@ -64,7 +69,7 @@ namespace OGLE {
 		Bind();
 		SetData(0, vertices.GetSize(), vertices.GetData());
 		SetData(vertices.GetSize(), instanceData.GetSize(), instanceData.GetData());
-		InitBuffer();
+		
 		Unbind();
 	}
 
@@ -83,37 +88,32 @@ namespace OGLE {
 
 	}
 
+	GLuint VertexBuffer::GetInstanceCount()
+	{
+		return m_InstanceCount;
+	}
+
 	std::unordered_map<GLuint, DataAttribute*> VertexBuffer::GetVertexAttributes()
 	{
 
 		return m_VertexCollection->GetAttributes();
 	}
 
-	GLuint VertexBuffer::GetVertexStride()
+
+	GLuint VertexBuffer::GetVertexDataSize()
 	{
-		return m_VertexCollection->GetStride();
+		return m_VertexCollection->GetSize();
 	}
 
-	GLuint VertexBuffer::GetVertexAttribCount()
+	GLuint VertexBuffer::GetInstanceDataSize()
 	{
-		return m_VertexCollection->GetAttribCount();
+		return m_InstanceDataCollection->GetSize();
 	}
 
 	std::unordered_map<GLuint, DataAttribute*> VertexBuffer::GetInstanceDataAttributes()
 	{
 		return m_InstanceDataCollection->GetAttributes();
 	}
-
-	GLuint VertexBuffer::GetInstanceDataStride()
-	{
-		return m_InstanceDataCollection->GetStride();
-	}
-
-	GLuint VertexBuffer::GetInstanceDataAttribCount()
-	{
-		return m_InstanceDataCollection->GetAttribCount();
-	}
-
 
 
 	ElementBuffer::ElementBuffer(std::vector<GLushort>& indices, GLenum bufferTarget, GLenum elementDataType /*= GL_UNSIGNED_SHORT*/) : Buffer

@@ -48,11 +48,11 @@ namespace OGLE{
 		glm::vec2 Position;
 		glm::vec2 Size;
 
-		SubTexture(glm::vec2 subPos, glm::vec2 subSize, glm::vec2 fullSize)
+		SubTexture(glm::vec2 subPos, glm::vec2 subSize)
 		{
-			Size = subSize / fullSize;
-			Position = (subPos / subSize) + glm::vec2(Size.x, 0);
-			Position.y = 1 - Position.y;
+			Size = subSize;
+			Position = subPos;
+			//Position.y = 1.0f - Position.y;
 		}
 	};
 
@@ -66,11 +66,11 @@ namespace OGLE{
 		TextureAtlas(std::string textureFile);
 		
 	protected:
-		void AddSubTexture(GLuint left, GLuint top, GLsizei width, GLsizei height);
+		void AddSubTexture(GLfloat left, GLfloat top, GLfloat width, GLfloat height);
 		void AddSubTexture(SubTexture subTexture);
 
 	private:
-		SubTexture CreateSubTexture(GLuint left, GLuint top, GLsizei width, GLsizei height);
+		SubTexture CreateSubTexture(GLfloat left, GLfloat top, GLfloat width, GLfloat height);
 
 	private:
 		std::vector<SubTexture> m_SubTextures;
@@ -81,10 +81,11 @@ namespace OGLE{
 	public:
 		UniformTextureAtlas(std::string textureFile, GLsizei subWidth, GLsizei subHeight);
 		glm::vec2 GetSubSize();
+		glm::vec2 GetUniformAtlasDims();
 	protected:
-		void AddSubTexture(GLuint left, GLuint top);
+		void AddSubTexture(GLfloat left, GLfloat top);
 	private:
 		glm::vec2 m_SubSize;
-		glm::vec2 m_MaxRightBottom;
+		glm::vec2 m_UniformAtlasDims;
 	};
 }

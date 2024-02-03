@@ -64,7 +64,6 @@ namespace OGLE {
 	{
 	}
 
-	GLint* BlockID = new GLint(0);
 	void HelloLayer::OnImGuiRender()
 	{
 		GLfloat FOVDegrees = m_Renderer->GetFOVDegrees();
@@ -78,10 +77,6 @@ namespace OGLE {
 		ImGui::SliderFloat("Far Plane", &FarPlane, 0.1f, 10.0f);
 		m_Renderer->UpdateClipPlanes(NearPlane, FarPlane);
 
-		int xval=0, yval=0;
-		ImGui::SliderInt("BlockIDx", &xval, 0, 15);
-		ImGui::SliderInt("BlockIDy", &yval, 0, 15);
-		BlockID = new GLint(xval + yval * 16);
 		//ImGui::SliderFloat3("Camera Position", &(m_Camera->m_Pos[0]), -10.0f, 10.0f);
 		//ImGui::SliderFloat3("Far Plane", &FarPlane, 0.1f, 10.0f);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
@@ -126,8 +121,9 @@ namespace OGLE {
 				InstanceDataCollection
 				(
 					{ 
-						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3(1,0,0))},
-						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3(-1,0,0))}
+						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3(-1,0,0)), 0},
+						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3( 0,0,0)), 1},
+						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3( 1,0,0)), 2}
 					}
 				)
 			);
@@ -147,12 +143,28 @@ namespace OGLE {
 			doInit = false;
 			
 		}
-		glm::vec2 uSize = texture->GetSubTexture(*BlockID).Size;
-		glm::vec2 uOffset = texture->GetSubTexture(*BlockID).Position;
-		
+		glm::vec2 uSize = texture->GetSubSize();
+		glm::vec2 uAtlasDims = texture->GetUniformAtlasDims();
+		//shaderProgram->SetUniform2fv("u_SubTexMax", )
+		shaderProgram->SetUniform2fv("u_SubTexSize", uSize);
+		shaderProgram->SetUniform2fv("u_TexAtlasDims", uAtlasDims);
 
-		shaderProgram->SetUniform2fv("u_TexSize", uSize);
-		shaderProgram->SetUniform2fv("u_TexOffset", uOffset);
+		int id = 0;
+		float x = fmod(float(id), uAtlasDims.x);
+		float y = uAtlasDims.x - 1 - (id - x) / uAtlasDims.x;
+		glm::vec2 offset = uSize * glm::vec2(x, y);
+		OGLE_CORE_INFO("\nID: {0}\n\tX: {1}\n\tY: {2}\n\tOffsetX: {3}\n\tOffsetY: {4}", id, x, y, offset.x, offset.y);
+		id = 1;
+		x = fmod(float(id), uAtlasDims.x);
+		y = uAtlasDims.x - 1 - (id - x) / uAtlasDims.x;
+		offset = uSize * glm::vec2(x, y);
+		OGLE_CORE_INFO("\nID: {0}\n\tX: {1}\n\tY: {2}\n\tOffsetX: {3}\n\tOffsetY: {4}", id, x, y, offset.x, offset.y);
+		id = 2;
+		x = fmod(float(id), uAtlasDims.x);
+		y = uAtlasDims.x - 1 - (id - x) / uAtlasDims.x;
+		offset = uSize * glm::vec2(x, y);
+		OGLE_CORE_INFO("\nID: {0}\n\tX: {1}\n\tY: {2}\n\tOffsetX: {3}\n\tOffsetY: {4}", id, x, y, offset.x, offset.y);
+		
 		// Init Projection Matrix
 		glm::mat4 viewToProjectionMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
 		glm::mat4 worldToProjectionMatrix = viewToProjectionMatrix * m_Camera->GetWorldToViewMatrix();
