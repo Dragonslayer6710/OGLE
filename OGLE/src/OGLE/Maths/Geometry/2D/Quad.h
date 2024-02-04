@@ -22,6 +22,6 @@ namespace OGLE {
 		Quad()
 			: Drawable(new Mesh(s_QuadVertices, s_QuadIndices)) {}
 		Quad(InstanceDataCollection instanceData)
-			: Drawable(new InstancedMesh(s_QuadVertices, s_QuadIndices, instanceData)) {}
+			: Drawable(new Mesh(s_QuadVertices, s_QuadIndices, &instanceData)) {}
 	};
 }

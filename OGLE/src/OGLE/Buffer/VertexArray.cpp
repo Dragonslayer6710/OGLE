@@ -164,22 +164,32 @@ namespace OGLE {
 						instOffset += offsetAddition;
 					}
 				}
-				else {
+				else if (instanceDataAttribute->Type == UShort)  {
 					GLCall(glVertexAttribIPointer(attributeIndex, instanceDataAttribute->Count, instanceDataAttribute->Type, sizeof(InstanceData), (GLvoid*)instOffset));
+
 					GLuint ui;
 					glGetBufferSubData(GL_ARRAY_BUFFER, instOffset, 4, &ui);
 					OGLE_CORE_INFO("\nID: {0}\nOffset: {1}\nData: {2}\n", attributeIndex, instOffset, ui);
-					//glGetBufferSubData(GL_ARRAY_BUFFER, instOffset + sizeof(InstanceData), 4, &ui);
-					//OGLE_CORE_INFO("\nID: {0}\nOffset: {1}\nData: {2}\n", instOffset + sizeof(InstanceData), attributeIndex, ui);
-					//glGetBufferSubData(GL_ARRAY_BUFFER, instOffset + sizeof(InstanceData)*2, 4, &ui);
-					//OGLE_CORE_INFO("\nID: {0}\nOffset: {1}\nData: {2}\n", instOffset + sizeof(InstanceData) * 2, attributeIndex, ui);
+
 					GLCall(glEnableVertexAttribArray(attributeIndex));
 					GLCall(glVertexAttribDivisor(attributeIndex++, 1));
-					GLuint i[4];
-					glGetVertexAttribIuiv(7, GL_CURRENT_VERTEX_ATTRIB, i);
+					
 					//std::cout << " - Index: " << attributeIndex-1  << "\n - Number of elements in attribute: " << instanceDataAttribute->Count << "\n - Normalized: " << instanceDataAttribute->Normalized << "\n - Stride: " << sizeof(InstanceData) << "\n - offset: " << instOffset << "\n - Attribute Size: " << instanceDataAttribute->Size << std::endl;
 					offset += instanceDataAttribute->Size;	
-					instOffset += offset;
+					instOffset += instanceDataAttribute->Size;
+				}
+				else {
+					GLCall(glVertexAttribPointer(attributeIndex, instanceDataAttribute->Count, instanceDataAttribute->Type, instanceDataAttribute->Normalized, sizeof(InstanceData), (GLvoid*)instOffset));
+					GLCall(glEnableVertexAttribArray(attributeIndex));
+					GLCall(glVertexAttribDivisor(attributeIndex++, 1));
+
+					glm::vec2 v2;
+					glGetBufferSubData(GL_ARRAY_BUFFER, instOffset, 8, &v2);
+					OGLE_CORE_INFO("\nID: {0}\nOffset: {1}\nData: ({2}, {3})\n", attributeIndex, instOffset, v2.x, v2.y);
+
+
+					offset += instanceDataAttribute->Size;
+					instOffset += instanceDataAttribute->Size;
 				}
 			}
 		}

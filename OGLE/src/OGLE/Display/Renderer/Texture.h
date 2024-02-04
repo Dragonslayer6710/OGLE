@@ -15,8 +15,8 @@ namespace OGLE{
 		GLuint GetTextureID();
 		GLuint GetTextureSlot();
 
-		GLsizei GetWidth() { return m_Size.x; }
-		GLsizei GetHeight() { return m_Size.y; }
+		GLsizei GetWidth();
+		GLsizei GetHeight();
 	protected:
 		void SetParameterI(GLenum target, GLenum param, GLint value);
 
@@ -49,11 +49,8 @@ namespace OGLE{
 		glm::vec2 Size;
 
 		SubTexture(glm::vec2 subPos, glm::vec2 subSize)
-		{
-			Size = subSize;
-			Position = subPos;
-			//Position.y = 1.0f - Position.y;
-		}
+			: Position(subPos), Size(subSize)
+		{}
 	};
 
 
@@ -64,13 +61,7 @@ namespace OGLE{
 
 	protected:
 		TextureAtlas(std::string textureFile);
-		
-	protected:
-		void AddSubTexture(GLfloat left, GLfloat top, GLfloat width, GLfloat height);
-		void AddSubTexture(SubTexture subTexture);
-
-	private:
-		SubTexture CreateSubTexture(GLfloat left, GLfloat top, GLfloat width, GLfloat height);
+		void AddSubTexture(glm::vec2 position, glm::vec2 size);
 
 	private:
 		std::vector<SubTexture> m_SubTextures;
@@ -79,13 +70,6 @@ namespace OGLE{
 	class UniformTextureAtlas : public TextureAtlas
 	{
 	public:
-		UniformTextureAtlas(std::string textureFile, GLsizei subWidth, GLsizei subHeight);
-		glm::vec2 GetSubSize();
-		glm::vec2 GetUniformAtlasDims();
-	protected:
-		void AddSubTexture(GLfloat left, GLfloat top);
-	private:
-		glm::vec2 m_SubSize;
-		glm::vec2 m_UniformAtlasDims;
+		UniformTextureAtlas(std::string textureFile, glm::vec2 subTexSize);
 	};
 }

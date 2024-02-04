@@ -3,7 +3,6 @@
 #include "OGLE/Maths/Geometry/3D/Cube.h"
 #include "OGLE/Maths/Geometry/2D/Triangle.h"
 #include "OGLE/Maths/Geometry/2D/Quad.h"
-#include "OGLE/Display/Renderer/Texture.h"
 namespace OGLE {
 
 	HelloLayer::HelloLayer(Renderer& renderer)
@@ -116,14 +115,17 @@ namespace OGLE {
 			//instShape = new InstancedShape(*cube,offsets);
 			//instShape = new InstancedShape(*triangle, instanceMatrices);
 			//triangle = new Triangle();
+
+			texture = new UniformTextureAtlas("terrain.png",glm::vec2(16,16));
+
 			quad = new Quad
 			(
 				InstanceDataCollection
 				(
 					{ 
-						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3(-1,0,0)), 0},
-						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3( 0,0,0)), 1},
-						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3( 1,0,0)), 2}
+						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3(-1,0,0)), texture->GetSubTexture(0).Position,texture->GetSubTexture(0).Size},
+						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3( 0,0,0)), texture->GetSubTexture(1).Position,texture->GetSubTexture(1).Size},
+						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3( 1,0,0)), texture->GetSubTexture(2).Position,texture->GetSubTexture(2).Size}
 					}
 				)
 			);
@@ -132,7 +134,7 @@ namespace OGLE {
 			
 			vao = &(quad->GetMesh().GetVAO());
 
-			texture = new UniformTextureAtlas("terrain.png", 16, 16);
+			
 			
 
 			m_Renderer->ChangeShaderProgram(*shaderProgram);
@@ -143,27 +145,6 @@ namespace OGLE {
 			doInit = false;
 			
 		}
-		glm::vec2 uSize = texture->GetSubSize();
-		glm::vec2 uAtlasDims = texture->GetUniformAtlasDims();
-		//shaderProgram->SetUniform2fv("u_SubTexMax", )
-		shaderProgram->SetUniform2fv("u_SubTexSize", uSize);
-		shaderProgram->SetUniform2fv("u_TexAtlasDims", uAtlasDims);
-
-		int id = 0;
-		float x = fmod(float(id), uAtlasDims.x);
-		float y = uAtlasDims.x - 1 - (id - x) / uAtlasDims.x;
-		glm::vec2 offset = uSize * glm::vec2(x, y);
-		OGLE_CORE_INFO("\nID: {0}\n\tX: {1}\n\tY: {2}\n\tOffsetX: {3}\n\tOffsetY: {4}", id, x, y, offset.x, offset.y);
-		id = 1;
-		x = fmod(float(id), uAtlasDims.x);
-		y = uAtlasDims.x - 1 - (id - x) / uAtlasDims.x;
-		offset = uSize * glm::vec2(x, y);
-		OGLE_CORE_INFO("\nID: {0}\n\tX: {1}\n\tY: {2}\n\tOffsetX: {3}\n\tOffsetY: {4}", id, x, y, offset.x, offset.y);
-		id = 2;
-		x = fmod(float(id), uAtlasDims.x);
-		y = uAtlasDims.x - 1 - (id - x) / uAtlasDims.x;
-		offset = uSize * glm::vec2(x, y);
-		OGLE_CORE_INFO("\nID: {0}\n\tX: {1}\n\tY: {2}\n\tOffsetX: {3}\n\tOffsetY: {4}", id, x, y, offset.x, offset.y);
 		
 		// Init Projection Matrix
 		glm::mat4 viewToProjectionMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());

@@ -3,14 +3,11 @@ layout (location = 0) in vec3 a_Pos;
 layout (location = 1) in vec4 a_Color;
 layout (location = 2) in vec2 a_TexUV;
 layout (location = 3) in mat4 a_InstMat;
-layout (location = 7) in uint a_TextureID;
+layout (location = 7) in vec2 a_SubTexPos;
+layout (location = 8) in vec2 a_SubTexSize;
 
 out vec4 v_Color;
 out vec2 v_TexUV;
-out vec2 v_SubTexOffset;
-
-uniform vec2 u_TexAtlasDims;
-uniform vec2 u_SubTexSize;
 
 uniform mat4 u_WorldToProjection;
 
@@ -41,10 +38,5 @@ void main(){
 	
 	gl_Position = u_WorldToProjection * a_InstMat * vec4(a_Pos, 1.0);
 	//v_Color = a_Color;
-	v_TexUV = a_TexUV;
-	float x = mod(float(a_TextureID), u_TexAtlasDims.x);
-	
-	float y = u_TexAtlasDims.x - 1 -((a_TextureID - x) / u_TexAtlasDims.x);
-
-	v_SubTexOffset = u_SubTexSize*vec2(x, y);	
+	v_TexUV = a_TexUV * a_SubTexSize + a_SubTexPos;
 }

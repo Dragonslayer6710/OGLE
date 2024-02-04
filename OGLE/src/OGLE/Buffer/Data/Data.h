@@ -94,12 +94,13 @@ namespace OGLE {
 		std::unordered_map<GLuint, DataAttribute*> m_VertexAttributes;
 	};
 
-	static const DataLayout s_DefInstanceDataLayout = DataLayout({ FloatMat4, UInt });
+	static const DataLayout s_DefInstanceDataLayout = DataLayout({ FloatMat4, Float2, Float2 });
 
 
 	struct InstanceData {
 		glm::mat4 ModelTransform;
-		GLuint SubTextureID;
+		glm::vec2 SubTexOffset = glm::vec2(0,0);
+		glm::vec2 SubTexSize = glm::vec2(1, 1);
 	};
 
 	class InstanceDataCollection

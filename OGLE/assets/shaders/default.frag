@@ -7,12 +7,11 @@ in vec2 v_SubTexOffset;
 out vec4 FragColor;
 
 uniform sampler2D tex0;
-uniform vec2 u_SubTexSize;
 
 void main()
 {
 	//FragColor = v_Color;
-	FragColor = texture(tex0, v_TexUV*u_SubTexSize+v_SubTexOffset);
+	FragColor = texture(tex0, v_TexUV);
 	// outputs final color
 	//FragColor = color;
 	//FragColor = v_Color;

@@ -45,6 +45,16 @@ namespace OGLE {
 		return m_TextureID;
 	}
 
+	GLsizei Texture::GetWidth()
+	{
+		return m_Size.x;
+	}
+
+	GLsizei Texture::GetHeight()
+	{
+		return m_Size.y;
+	}
+
 	void Texture::SetParameterI(GLenum target, GLenum param, GLint value)
 	{
 		GLCall(glTexParameteri(target, param, value));
@@ -112,19 +122,15 @@ namespace OGLE {
 
 	}
 
-	TextureAtlas::TextureAtlas(std::string textureFile) :Texture(textureFile)
+	TextureAtlas::TextureAtlas(std::string textureFile)
+		: Texture(textureFile)
 	{
 
 	}
 
-	void TextureAtlas::AddSubTexture(SubTexture subTexture)
+	void TextureAtlas::AddSubTexture(glm::vec2 position, glm::vec2 size)
 	{
-		m_SubTextures.push_back(subTexture);
-	}
-
-	void TextureAtlas::AddSubTexture(GLfloat left, GLfloat top, GLfloat width, GLfloat height)
-	{
-		AddSubTexture(CreateSubTexture(left, top, width, height));
+		m_SubTextures.push_back(SubTexture(position, size));
 	}
 
 	SubTexture TextureAtlas::GetSubTexture(GLuint id)
@@ -132,48 +138,25 @@ namespace OGLE {
 		return m_SubTextures[id];
 	}
 
-	SubTexture TextureAtlas::CreateSubTexture(GLfloat left, GLfloat top, GLfloat width, GLfloat height)
-	{
-		OGLE_CORE_ASSERT
-		(
-			!(left < 0 || left >= m_Size.x || top < 0 || top >= m_Size.y || left + width < 0 || left + width >= m_Size.x || top + height < 0 || top + height >= m_Size.y),
-			"TEXTURE ERROR: Dimensions given for SubTexture exceed the dimensions of the the full texture"
-		);
-		return SubTexture(glm::vec2(left, top), glm::vec2(width, height));
-	}
 
-	UniformTextureAtlas::UniformTextureAtlas(std::string textureFile, GLsizei subWidth, GLsizei subHeight) 
-: TextureAtlas(textureFile), m_SubSize(subWidth, subHeight), m_UniformAtlasDims((m_Size / m_SubSize))
+	UniformTextureAtlas::UniformTextureAtlas(std::string textureFile, glm::vec2 subTexSize)
+		: TextureAtlas(textureFile)
 	{
-		m_SubSize /= m_Size;
-		glm::vec2 floor = glm::floor(m_UniformAtlasDims);
+		glm::vec2 RelSize = subTexSize / m_Size;
+		glm::vec2 AtlasDims = m_Size / subTexSize;
+		glm::vec2 floor = glm::floor(AtlasDims);
+
 		// Check if MaxRightBottom are integers
 		OGLE_CORE_ASSERT
 		(
-			 !(floor.x!= m_UniformAtlasDims.x || floor.y != m_UniformAtlasDims.y),
-			std::string("TEXTURE ERROR: SubTexture size {0}x{1} does not divide the texture into uniform sections", subWidth, subHeight).c_str()
+			 !(floor.x!= AtlasDims.x || floor.y != AtlasDims.y),
+			std::string("TEXTURE ERROR: SubTexture size {0}x{1} does not divide the texture into uniform sections", subTexSize.x, subTexSize.y).c_str()
 		);
 
-		for (int y = 0; y < m_UniformAtlasDims.y; y++)
-			for (int x = 0; x < m_UniformAtlasDims.x; x++) {
-				AddSubTexture(x, y);
+		for (int y = 0; y < AtlasDims.y; y++)
+			for (int x = 0; x < AtlasDims.x; x++) {
+				AddSubTexture(RelSize * glm::vec2(x,AtlasDims.y-1-y), RelSize);
 			}
-	}
-
-	glm::vec2 UniformTextureAtlas::GetSubSize()
-	{
-		return m_SubSize;
-	}
-
-
-	glm::vec2 UniformTextureAtlas::GetUniformAtlasDims()
-	{
-		return m_UniformAtlasDims;
-	}
-
-	void UniformTextureAtlas::AddSubTexture(GLfloat left, GLfloat top)
-	{
-		TextureAtlas::AddSubTexture(left * m_SubSize.x, top * m_SubSize.y, m_SubSize.x, m_SubSize.y);
 	}
 
 }
