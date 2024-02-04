@@ -3,10 +3,21 @@
 
 namespace OGLE {
 
-	VertexArray::VertexArray(VertexBuffer& vbo, ElementBuffer& ebo)
-		: m_InstanceCount(vbo.GetInstanceCount())
+	VertexArray::VertexArray(VertexCollection* vertices, std::vector<GLushort>* indices, InstanceDataCollection* instanceData /*= nullptr*/)
+		: m_VBO(new VertexBuffer(vertices, instanceData)), m_EBO(new ElementBuffer(indices))
 	{
-		InitVertexArray(vbo, ebo);
+		GLCall(glGenVertexArrays(1, &m_VertexArrayID));
+		//PrintInitialized();
+
+		Bind();
+
+		// Bind VBO to VAO
+		SetVBOAttribPointers();
+
+		//Bind EBO to VAO
+		m_EBO->Bind();
+
+		Unbind();
 	}
 
 	VertexArray::~VertexArray()
@@ -69,55 +80,14 @@ namespace OGLE {
 
 	GLuint VertexArray::GetInstanceCount()
 	{
-		return m_InstanceCount;
-	}
-
-	void VertexArray::InitVertexArray(VertexBuffer& vbo, ElementBuffer& ebo)
-	{
-		GLCall(glGenVertexArrays(1, &m_VertexArrayID));
-		//PrintInitialized();
-
-		m_RetainBind = true;
-		Bind();
-		LinkNewVertexBufferToVertexArray(vbo);
-		LinkNewElementBufferToVertexArray(ebo);
-		Unbind();
-		m_RetainBind = false;
-	}
-
-	void VertexArray::LinkNewVertexBufferToVertexArray(VertexBuffer& vbo)
-	{
-		SetVertexBuffer(vbo); LinkVertexBufferToVertexArray();
-	}
-
-	void VertexArray::SetVertexBuffer(VertexBuffer& vbo)
-	{
-		m_VBO = &vbo;
-	}
-
-	void VertexArray::LinkVertexBufferToVertexArray()
-	{
-		
-		Bind();
-		SetVBOAttribPointers();
-		Unbind();
-	}
-
-	void VertexArray::BindVertexBuffer()
-	{
-		m_VBO->Bind();
-	}
-
-	void VertexArray::UnbindVertexBuffer()
-	{
-		m_VBO->Unbind();
+		return m_VBO->GetInstanceCount();
 	}
 
 	void VertexArray::SetVBOAttribPointers()
 	{	
 		GLuint attributeIndex = 0;
 
-		BindVertexBuffer();
+		m_VBO->Bind();
 		// Vertex Attributes
 		std::unordered_map<GLuint, DataAttribute*> vertexAttributes = m_VBO->GetVertexAttributes();
 		DataAttribute* vertexAttribute;
@@ -133,7 +103,7 @@ namespace OGLE {
 			offset += vertexAttribute->Size;
 		}
 		// Instance Data Attributes				
-		if (m_InstanceCount>1) {
+		if (m_VBO->IsInstanced()) {
 			GLuint instOffset = m_VBO->GetVertexDataSize();
 			std::unordered_map<GLuint, DataAttribute*> instanceDataAttributes = m_VBO->GetInstanceDataAttributes();
 			DataAttribute* instanceDataAttribute;
@@ -193,35 +163,7 @@ namespace OGLE {
 				}
 			}
 		}
-		UnbindVertexBuffer();
-
-	}
-
-	void VertexArray::LinkNewElementBufferToVertexArray(ElementBuffer& ebo)
-	{
-		SetElementBuffer(ebo); LinkElementBufferToVertexArray();
-	}
-
-	void VertexArray::SetElementBuffer(ElementBuffer& ebo)
-	{
-		m_EBO = &ebo;
-	}
-
-	void VertexArray::LinkElementBufferToVertexArray()
-	{
-		Bind();
-		BindElementBuffer();
-		Unbind();
-	}
-
-	void VertexArray::BindElementBuffer()
-	{
-		m_EBO->Bind();
-	}
-
-	void VertexArray::UnbindElementBuffer()
-	{
-		m_EBO->Unbind();
+		m_VBO->Unbind();
 	}
 
 }

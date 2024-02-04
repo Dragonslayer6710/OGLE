@@ -23,7 +23,7 @@ namespace OGLE {
 	{
 	public:
 		Triangle()
-			: Drawable(new Mesh(s_TriangleVertices, s_TriangleIndices)){}
+			: Drawable(new Mesh(s_TriangleVertices, s_TriangleIndices), nullptr){}
 	};
 }
 

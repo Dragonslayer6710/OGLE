@@ -65,7 +65,7 @@ namespace OGLE {
 	{
 	public:
 		Cube()
-			: Drawable(new Mesh(s_CubeVertices, s_CubeIndices)) {}
+			: Drawable(new Mesh(s_CubeVertices, s_CubeIndices), nullptr) {}
 	};
 }
 

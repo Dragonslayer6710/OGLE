@@ -19,9 +19,7 @@ namespace OGLE {
 	class Quad : public Drawable
 	{
 	public:
-		Quad()
-			: Drawable(new Mesh(s_QuadVertices, s_QuadIndices)) {}
-		Quad(InstanceDataCollection instanceData)
-			: Drawable(new Mesh(s_QuadVertices, s_QuadIndices, &instanceData)) {}
+		Quad(InstanceDataCollection* instanceData, Texture* texture)
+			: Drawable(new Mesh(s_QuadVertices, s_QuadIndices, instanceData), texture) {}
 	};
 }

@@ -119,7 +119,7 @@ namespace OGLE {
 			return m_InstanceData.size() * sizeof(InstanceData);
 		}
 
-		GLuint GetLength() {
+		GLuint GetInstanceCount() {
 			return m_InstanceData.size();
 		}
 

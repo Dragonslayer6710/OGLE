@@ -34,9 +34,9 @@ namespace OGLE{
 	class VertexBuffer : public Buffer
 	{
 	public:
-		VertexBuffer(VertexCollection& vertices, GLenum bufferUsage = GL_STATIC_DRAW);
-		VertexBuffer(VertexCollection& vertices,  InstanceDataCollection& instanceData, GLenum bufferUsage = GL_STATIC_DRAW);
+		VertexBuffer(VertexCollection* vertices,  InstanceDataCollection* instanceData = nullptr, GLenum bufferUsage = GL_STATIC_DRAW);
 
+		bool IsInstanced();
 		GLuint GetInstanceCount();
 
 		std::unordered_map<GLuint, DataAttribute*> GetVertexAttributes();
@@ -47,7 +47,7 @@ namespace OGLE{
 		std::unordered_map<GLuint, DataAttribute*> GetInstanceDataAttributes();
 
 	private:
-		GLuint m_InstanceCount;		
+		bool m_IsInstanced;		
 
 		VertexCollection* m_VertexCollection;
 		InstanceDataCollection* m_InstanceDataCollection;
@@ -56,7 +56,7 @@ namespace OGLE{
 	class ElementBuffer : public Buffer
 	{
 	public:
-		ElementBuffer(std::vector<GLushort>& indices, GLenum bufferTarget = GL_STATIC_DRAW, GLenum elementDataType = GL_UNSIGNED_SHORT);
+		ElementBuffer(std::vector<GLushort>* indices, GLenum bufferTarget = GL_STATIC_DRAW, GLenum elementDataType = GL_UNSIGNED_SHORT);
 
 		GLuint GetElementCount() const;
 		GLenum GetElementDataType() const;

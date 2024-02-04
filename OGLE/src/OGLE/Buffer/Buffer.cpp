@@ -52,45 +52,36 @@ namespace OGLE {
 		GLCall(glBufferData(m_BufferTarget, size, data, bufferUsage));
 	}
 
-	VertexBuffer::VertexBuffer(VertexCollection& vertices, InstanceDataCollection& instanceData, GLenum bufferUsage /*= GL_STATIC_DRAW*/) :
-		m_InstanceCount(instanceData.GetLength()),
-		m_VertexCollection(&vertices),
-		m_InstanceDataCollection(&instanceData),
+	VertexBuffer::VertexBuffer(VertexCollection* vertices, InstanceDataCollection* instanceData /*= nullptr*/, GLenum bufferUsage /*= GL_STATIC_DRAW*/) :
 		Buffer
 		(
 			GL_ARRAY_BUFFER,
-			vertices.GetSize() + instanceData.GetSize(),
+			vertices->GetSize() + ((instanceData) ? instanceData->GetSize() : 0),
 			NULL,
 			bufferUsage
-		)
+		),
+		m_InstanceDataCollection(instanceData),
+		m_IsInstanced((m_InstanceDataCollection) ? true : false),
+		m_VertexCollection(vertices)
 	{
 
 		// Set Vertex Data
 		Bind();
-		SetData(0, vertices.GetSize(), vertices.GetData());
-		SetData(vertices.GetSize(), instanceData.GetSize(), instanceData.GetData());
+		SetData(0, vertices->GetSize(), vertices->GetData());
+		if (m_IsInstanced)
+			SetData(vertices->GetSize(), m_InstanceDataCollection->GetSize(), m_InstanceDataCollection->GetData());
 		
 		Unbind();
 	}
 
-	VertexBuffer::VertexBuffer(VertexCollection& vertices, GLenum bufferUsage /*= GL_STATIC_DRAW*/) :
-		m_InstanceCount(1),
-		m_VertexCollection(&vertices),
-		m_InstanceDataCollection(nullptr),
-		Buffer
-		(
-			GL_ARRAY_BUFFER,
-			vertices.GetSize(),
-			vertices.GetData(),
-			bufferUsage
-		)
+	bool VertexBuffer::IsInstanced()
 	{
-
+		return m_IsInstanced;
 	}
 
 	GLuint VertexBuffer::GetInstanceCount()
 	{
-		return m_InstanceCount;
+		return m_InstanceDataCollection->GetInstanceCount();
 	}
 
 	std::unordered_map<GLuint, DataAttribute*> VertexBuffer::GetVertexAttributes()
@@ -116,14 +107,14 @@ namespace OGLE {
 	}
 
 
-	ElementBuffer::ElementBuffer(std::vector<GLushort>& indices, GLenum bufferTarget, GLenum elementDataType /*= GL_UNSIGNED_SHORT*/) : Buffer
+	ElementBuffer::ElementBuffer(std::vector<GLushort>* indices, GLenum bufferTarget, GLenum elementDataType /*= GL_UNSIGNED_SHORT*/) : Buffer
 	(
 		GL_ELEMENT_ARRAY_BUFFER,
-		sizeof(GLushort)* indices.size(),
-		indices.data(),
+		sizeof(GLushort)* indices->size(),
+		indices->data(),
 		bufferTarget
 	),
-		m_ElementCount(indices.size()),
+		m_ElementCount(indices->size()),
 		m_ElementDataType(elementDataType)
 	{
 

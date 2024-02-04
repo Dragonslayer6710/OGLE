@@ -119,7 +119,7 @@ namespace OGLE {
 			texture = new UniformTextureAtlas("terrain.png",glm::vec2(16,16));
 
 			quad = new Quad
-			(
+			(new
 				InstanceDataCollection
 				(
 					{ 
@@ -127,7 +127,8 @@ namespace OGLE {
 						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3( 0,0,0)), texture->GetSubTexture(1).Position,texture->GetSubTexture(1).Size},
 						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3( 1,0,0)), texture->GetSubTexture(2).Position,texture->GetSubTexture(2).Size}
 					}
-				)
+				),
+				texture
 			);
 			//quad = new Quad();
 			//cube = new Cube();
