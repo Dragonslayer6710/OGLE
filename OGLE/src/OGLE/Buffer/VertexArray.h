@@ -6,7 +6,7 @@ namespace OGLE {
 	class VertexArray
 	{
 	public:
-		VertexArray(VertexCollection* vertices, std::vector<GLushort>* indices, InstanceDataCollection* instanceData = nullptr);
+		VertexArray(VertexBufferData& vertexBufferData, std::vector<GLushort>& indices);
 
 		~VertexArray();
 
@@ -27,7 +27,8 @@ namespace OGLE {
 
 	private:
 
-		void SetVBOAttribPointers();
+		void SetVertexDataPointers();
+		void SetInstanceDataPointers();
 
 	private:
 		GLuint m_VertexArrayID;
@@ -36,7 +37,8 @@ namespace OGLE {
 		ElementBuffer* m_EBO;
 
 		bool m_IsBound = false;
-		bool m_RetainBind = false;
+
+		GLuint m_NextAttributeIndex = 0;
 	};
 
 }

@@ -185,9 +185,28 @@ namespace OGLE {
 	using namespace MAT3;
 	using namespace MAT4;
 
-	static inline DataAttribute* GetNewDataAttribute(GLuint attribID, DataAttributeType attribType, GLboolean normalized = GL_FALSE)
-	{
+	inline std::vector<GLuint> s_AttributeIDTrackers;
 
+	static inline GLuint NewAttributeIDTracker()
+	{
+		s_AttributeIDTrackers.push_back(GLuint(0));
+		return s_AttributeIDTrackers.back();
+	}
+
+	static inline DataAttribute* GetNewDataAttribute(GLuint attributeIDTracker, DataAttributeType attribType, GLboolean normalized = GL_FALSE)
+	{
+		GLuint attribID = s_AttributeIDTrackers[attributeIDTracker];
+		switch (attribType)
+		{
+		case FloatMat3:
+			s_AttributeIDTrackers[attributeIDTracker] += 3;
+			break;
+		case FloatMat4:
+			s_AttributeIDTrackers[attributeIDTracker] += 4;
+			break;
+		default:
+			s_AttributeIDTrackers[attributeIDTracker] +=1;
+		}
 		switch (attribType)
 		{
 		case Float:

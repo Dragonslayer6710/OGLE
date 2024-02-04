@@ -2,16 +2,15 @@
 
 #include "OGLE/Maths/Geometry/Drawable.h"
 namespace OGLE {
-	static const VertexCollection s_QuadVertices = VertexCollection(
-		{
-			Vertex{ glm::vec2(-0.5,-0.5f), glm::vec4(1.0f), glm::vec2( 0.0f, 0.0f) },
-			Vertex{ glm::vec2(-0.5, 0.5f), glm::vec4(1.0f), glm::vec2( 0.0f, 1.0f) },
-			Vertex{ glm::vec2( 0.5, 0.5f), glm::vec4(1.0f), glm::vec2( 1.0f, 1.0f) },
-			Vertex{ glm::vec2( 0.5,-0.5f), glm::vec4(1.0f), glm::vec2( 1.0f, 0.0f) }
-		}
-	);
+	static std::vector<VertexData> s_QuadVertices =
+	{
+		{ glm::vec2(-0.5,-0.5f), glm::vec4(1.0f), glm::vec2(0.0f, 0.0f) },
+		{ glm::vec2(-0.5, 0.5f), glm::vec4(1.0f), glm::vec2(0.0f, 1.0f) },
+		{ glm::vec2(0.5, 0.5f), glm::vec4(1.0f), glm::vec2(1.0f, 1.0f) },
+		{ glm::vec2(0.5,-0.5f), glm::vec4(1.0f), glm::vec2(1.0f, 0.0f) }
+	};
 
-	static const std::vector<GLushort> s_QuadIndices = {
+	static std::vector<GLushort> s_QuadIndices = {
 		0, 1, 2,
 		2, 3, 0
 	};
@@ -19,7 +18,7 @@ namespace OGLE {
 	class Quad : public Drawable
 	{
 	public:
-		Quad(InstanceDataCollection* instanceData, Texture* texture)
-			: Drawable(new Mesh(s_QuadVertices, s_QuadIndices, instanceData), texture) {}
+		Quad(std::vector<InstanceData>& instanceData, Texture* texture)
+			: Drawable(new Mesh(s_QuadVertices,s_QuadIndices, &instanceData), texture) {}
 	};
 }

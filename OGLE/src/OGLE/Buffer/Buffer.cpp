@@ -52,25 +52,23 @@ namespace OGLE {
 		GLCall(glBufferData(m_BufferTarget, size, data, bufferUsage));
 	}
 
-	VertexBuffer::VertexBuffer(VertexCollection* vertices, InstanceDataCollection* instanceData /*= nullptr*/, GLenum bufferUsage /*= GL_STATIC_DRAW*/) :
+	VertexBuffer::VertexBuffer(VertexBufferData& vertexBufferData, GLenum bufferUsage /*= GL_STATIC_DRAW*/) :
+		m_VertexBufferData(vertexBufferData),
 		Buffer
 		(
 			GL_ARRAY_BUFFER,
-			vertices->GetSize() + ((instanceData) ? instanceData->GetSize() : 0),
+			vertexBufferData.GetSize(),
 			NULL,
 			bufferUsage
 		),
-		m_InstanceDataCollection(instanceData),
-		m_IsInstanced((m_InstanceDataCollection) ? true : false),
-		m_VertexCollection(vertices)
+		m_IsInstanced(m_VertexBufferData.IsInstanced())
 	{
 
 		// Set Vertex Data
 		Bind();
-		SetData(0, vertices->GetSize(), vertices->GetData());
+		SetData(0, m_VertexBufferData.GetVDC().GetSize(), m_VertexBufferData.GetVDC().GetDataPtr());
 		if (m_IsInstanced)
-			SetData(vertices->GetSize(), m_InstanceDataCollection->GetSize(), m_InstanceDataCollection->GetData());
-		
+			SetData(m_VertexBufferData.GetVDC().GetSize(), m_VertexBufferData.GetIDC().GetSize(), m_VertexBufferData.GetIDC().GetDataPtr());		
 		Unbind();
 	}
 
@@ -79,31 +77,30 @@ namespace OGLE {
 		return m_IsInstanced;
 	}
 
-	GLuint VertexBuffer::GetInstanceCount()
-	{
-		return m_InstanceDataCollection->GetInstanceCount();
-	}
-
 	std::unordered_map<GLuint, DataAttribute*> VertexBuffer::GetVertexAttributes()
 	{
 
-		return m_VertexCollection->GetAttributes();
+		return m_VertexBufferData.GetVDC().GetAttributes();
 	}
-
 
 	GLuint VertexBuffer::GetVertexDataSize()
 	{
-		return m_VertexCollection->GetSize();
+		return m_VertexBufferData.GetVDC().GetSize();
+	}
+
+	GLuint VertexBuffer::GetInstanceCount()
+	{
+		return m_VertexBufferData.GetIDC().GetLength();
 	}
 
 	GLuint VertexBuffer::GetInstanceDataSize()
 	{
-		return m_InstanceDataCollection->GetSize();
+		return m_VertexBufferData.GetIDC().GetSize();
 	}
 
 	std::unordered_map<GLuint, DataAttribute*> VertexBuffer::GetInstanceDataAttributes()
 	{
-		return m_InstanceDataCollection->GetAttributes();
+		return m_VertexBufferData.GetIDC().GetAttributes();
 	}
 
 

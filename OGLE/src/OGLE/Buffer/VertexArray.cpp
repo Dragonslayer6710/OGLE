@@ -3,16 +3,20 @@
 
 namespace OGLE {
 
-	VertexArray::VertexArray(VertexCollection* vertices, std::vector<GLushort>* indices, InstanceDataCollection* instanceData /*= nullptr*/)
-		: m_VBO(new VertexBuffer(vertices, instanceData)), m_EBO(new ElementBuffer(indices))
+	VertexArray::VertexArray(VertexBufferData& vertexBufferData, std::vector<GLushort>& indices)
+		: m_VBO(new VertexBuffer(vertexBufferData)), m_EBO(new ElementBuffer(&indices))
 	{
 		GLCall(glGenVertexArrays(1, &m_VertexArrayID));
 		//PrintInitialized();
 
 		Bind();
 
-		// Bind VBO to VAO
-		SetVBOAttribPointers();
+		// Bind VBO to VAO and init attrib pointers
+		m_VBO->Bind();
+		SetVertexDataPointers();
+		if (m_VBO->IsInstanced())
+			SetInstanceDataPointers();
+		m_VBO->Unbind();
 
 		//Bind EBO to VAO
 		m_EBO->Bind();
@@ -83,87 +87,81 @@ namespace OGLE {
 		return m_VBO->GetInstanceCount();
 	}
 
-	void VertexArray::SetVBOAttribPointers()
-	{	
-		GLuint attributeIndex = 0;
-
-		m_VBO->Bind();
-		// Vertex Attributes
+	void VertexArray::SetVertexDataPointers()
+	{
 		std::unordered_map<GLuint, DataAttribute*> vertexAttributes = m_VBO->GetVertexAttributes();
 		DataAttribute* vertexAttribute;
-
-		for (GLuint offset = 0; offset < sizeof(Vertex); offset)
+		for (GLuint offset = 0; offset < sizeof(VertexData); offset)
 		{
 			vertexAttribute = vertexAttributes[offset];
-			GLCall(glVertexAttribPointer(attributeIndex, vertexAttribute->Count, vertexAttribute->Type, vertexAttribute->Normalized, sizeof(Vertex), (GLvoid*)offset));
-			GLCall(glEnableVertexAttribArray(attributeIndex++));
-			//std::cout << std::endl;
-			//PrintStatus("AttribPointer set:");
-			//std::cout << " - Index: " << attributeIndex - 1 << "\n - Number of elements in attribute: " << vertexAttribute->Count << "\n - Normalized: " << vertexAttribute->Normalized << "\n - Stride: " << sizeof(Vertex) << "\n - offset: " << offset << "\n - Attribute Size: " << vertexAttribute->Size << std::endl;
+			GLCall(glVertexAttribPointer(vertexAttribute->AttribID, vertexAttribute->Count, vertexAttribute->Type, vertexAttribute->Normalized, sizeof(VertexData), (GLvoid*)offset));
+			GLCall(glEnableVertexAttribArray(vertexAttribute->AttribID));
+			glm::vec4 v4;
+			glGetBufferSubData(GL_ARRAY_BUFFER, offset, 16, &v4);
+			OGLE_CORE_INFO("\nID: {0}\nOffset: {1}\nData: ({2}, {3}, {4}, {5})\n", vertexAttribute->AttribID, offset, v4.x, v4.y, v4.z, v4.w);
 			offset += vertexAttribute->Size;
 		}
-		// Instance Data Attributes				
-		if (m_VBO->IsInstanced()) {
-			GLuint instOffset = m_VBO->GetVertexDataSize();
-			std::unordered_map<GLuint, DataAttribute*> instanceDataAttributes = m_VBO->GetInstanceDataAttributes();
-			DataAttribute* instanceDataAttribute;
-			for (GLuint offset = 0; offset <sizeof(InstanceData); offset)
-			{
-				instanceDataAttribute = instanceDataAttributes[offset];
-				if (instanceDataAttribute->Count > 4) {
-					for (GLuint attribCount = instanceDataAttribute->Count; attribCount > 0; attribCount) {
-						GLuint offsetAddition, count;
-						if (attribCount > 4) {
-							GLCall(glVertexAttribPointer(attributeIndex, 4, instanceDataAttribute->Type, instanceDataAttribute->Normalized, sizeof(InstanceData), (GLvoid*)instOffset));
-							count = 4;
-							offsetAddition = instanceDataAttribute->Size / instanceDataAttribute->Count * 4;
-						}
-						else {
-							GLCall(glVertexAttribPointer(attributeIndex, attribCount, instanceDataAttribute->Type, instanceDataAttribute->Normalized, sizeof(InstanceData), (GLvoid*)instOffset));
-							offsetAddition = instanceDataAttribute->Size / instanceDataAttribute->Count * attribCount;
-							count = attribCount;
-						}
-						glm::vec4 v4;
-						glGetBufferSubData(GL_ARRAY_BUFFER, instOffset, 16, &v4);
-						OGLE_CORE_INFO("\nID: {0}\nOffset: {1}\nData: ({2}, {3}, {4}, {5})\n", attributeIndex, instOffset, v4.x, v4.y, v4.z, v4.w);
-						GLCall(glEnableVertexAttribArray(attributeIndex));
-						GLCall(glVertexAttribDivisor(attributeIndex++, 1));
-						attribCount -= count;
-						offset += offsetAddition;
-						//std::cout << " - Index: " << attributeIndex-1 << "\n - Number of elements in attribute: " << count << "\n - Normalized: " << instanceDataAttribute->Normalized << "\n - Stride: " << sizeof(InstanceData) << "\n - offset: " << instOffset << "\n - Attribute Size: " << offsetAddition << std::endl;
-						instOffset += offsetAddition;
+	}
+
+	void VertexArray::SetInstanceDataPointers()
+	{				
+		std::unordered_map<GLuint, DataAttribute*> instanceDataAttributes = m_VBO->GetInstanceDataAttributes();
+		GLuint offset;
+		DataAttribute* instanceDataAttribute;
+		for (GLuint offset = m_VBO->GetVertexDataSize(); offset < m_VBO->GetVertexDataSize()+sizeof(InstanceData); offset)
+		{
+			instanceDataAttribute = instanceDataAttributes[offset];
+			if (instanceDataAttribute->Count > 4) {
+				GLuint idOffset = 0;
+				for (GLuint attribCount = instanceDataAttribute->Count; attribCount > 0; attribCount) {
+					GLuint offsetAddition, count;
+					if (attribCount > 4) {
+						GLCall(glVertexAttribPointer(instanceDataAttribute->AttribID + idOffset, 4, instanceDataAttribute->Type, instanceDataAttribute->Normalized, sizeof(InstanceData), (GLvoid*)offset));
+						count = 4;
+						offsetAddition = instanceDataAttribute->Size / instanceDataAttribute->Count * 4;
 					}
-				}
-				else if (instanceDataAttribute->Type == UShort)  {
-					GLCall(glVertexAttribIPointer(attributeIndex, instanceDataAttribute->Count, instanceDataAttribute->Type, sizeof(InstanceData), (GLvoid*)instOffset));
-
-					GLuint ui;
-					glGetBufferSubData(GL_ARRAY_BUFFER, instOffset, 4, &ui);
-					OGLE_CORE_INFO("\nID: {0}\nOffset: {1}\nData: {2}\n", attributeIndex, instOffset, ui);
-
-					GLCall(glEnableVertexAttribArray(attributeIndex));
-					GLCall(glVertexAttribDivisor(attributeIndex++, 1));
-					
-					//std::cout << " - Index: " << attributeIndex-1  << "\n - Number of elements in attribute: " << instanceDataAttribute->Count << "\n - Normalized: " << instanceDataAttribute->Normalized << "\n - Stride: " << sizeof(InstanceData) << "\n - offset: " << instOffset << "\n - Attribute Size: " << instanceDataAttribute->Size << std::endl;
-					offset += instanceDataAttribute->Size;	
-					instOffset += instanceDataAttribute->Size;
-				}
-				else {
-					GLCall(glVertexAttribPointer(attributeIndex, instanceDataAttribute->Count, instanceDataAttribute->Type, instanceDataAttribute->Normalized, sizeof(InstanceData), (GLvoid*)instOffset));
-					GLCall(glEnableVertexAttribArray(attributeIndex));
-					GLCall(glVertexAttribDivisor(attributeIndex++, 1));
-
-					glm::vec2 v2;
-					glGetBufferSubData(GL_ARRAY_BUFFER, instOffset, 8, &v2);
-					OGLE_CORE_INFO("\nID: {0}\nOffset: {1}\nData: ({2}, {3})\n", attributeIndex, instOffset, v2.x, v2.y);
-
-
-					offset += instanceDataAttribute->Size;
-					instOffset += instanceDataAttribute->Size;
+					else {
+						GLCall(glVertexAttribPointer(instanceDataAttribute->AttribID + idOffset, attribCount, instanceDataAttribute->Type, instanceDataAttribute->Normalized, sizeof(InstanceData), (GLvoid*)offset));
+						offsetAddition = instanceDataAttribute->Size / instanceDataAttribute->Count * attribCount;
+						count = attribCount;
+					}
+					glm::vec4 v4;
+					glGetBufferSubData(GL_ARRAY_BUFFER, offset, 16, &v4);
+					OGLE_CORE_INFO("\nID: {0}\nOffset: {1}\nData: ({2}, {3}, {4}, {5})\n", instanceDataAttribute->AttribID + idOffset, offset, v4.x, v4.y, v4.z, v4.w);
+					GLCall(glEnableVertexAttribArray(instanceDataAttribute->AttribID + idOffset));
+					GLCall(glVertexAttribDivisor(instanceDataAttribute->AttribID + idOffset, 1));
+					attribCount -= count;
+					offset += offsetAddition;
+					idOffset++;
+					//std::cout << " - Index: " << attributeIndex-1 << "\n - Number of elements in attribute: " << count << "\n - Normalized: " << instanceDataAttribute->Normalized << "\n - Stride: " << sizeof(InstanceData) << "\n - offset: " << instOffset << "\n - Attribute Size: " << offsetAddition << std::endl;
 				}
 			}
-		}
-		m_VBO->Unbind();
+			else {
+				if (instanceDataAttribute->Type == UShort) {
+					GLCall(glVertexAttribIPointer(instanceDataAttribute->AttribID, instanceDataAttribute->Count, instanceDataAttribute->Type, sizeof(InstanceData), (GLvoid*)offset));
+
+					GLuint ui;
+					glGetBufferSubData(GL_ARRAY_BUFFER, offset, 4, &ui);
+					OGLE_CORE_INFO("\nID: {0}\nOffset: {1}\nData: {2}\n", instanceDataAttribute->AttribID, offset, ui);
+
+					GLCall(glEnableVertexAttribArray(instanceDataAttribute->AttribID));
+					GLCall(glVertexAttribDivisor(instanceDataAttribute->AttribID, 1));
+
+					//std::cout << " - Index: " << attributeIndex-1  << "\n - Number of elements in attribute: " << instanceDataAttribute->Count << "\n - Normalized: " << instanceDataAttribute->Normalized << "\n - Stride: " << sizeof(InstanceData) << "\n - offset: " << instOffset << "\n - Attribute Size: " << instanceDataAttribute->Size << std::endl;
+				}
+				else {
+					GLCall(glVertexAttribPointer(instanceDataAttribute->AttribID, instanceDataAttribute->Count, instanceDataAttribute->Type, instanceDataAttribute->Normalized, sizeof(InstanceData), (GLvoid*)offset));
+					GLCall(glEnableVertexAttribArray(instanceDataAttribute->AttribID));
+					GLCall(glVertexAttribDivisor(instanceDataAttribute->AttribID, 1));
+
+					glm::vec2 v2;
+					glGetBufferSubData(GL_ARRAY_BUFFER, offset, 8, &v2);
+					OGLE_CORE_INFO("\nID: {0}\nOffset: {1}\nData: ({2}, {3})\n", instanceDataAttribute->AttribID, offset, v2.x, v2.y);
+				}
+				offset += instanceDataAttribute->Size;
+			}
+		}	
+			
 	}
 
 }

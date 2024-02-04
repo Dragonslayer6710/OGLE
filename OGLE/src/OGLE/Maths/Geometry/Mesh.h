@@ -6,11 +6,22 @@ namespace OGLE {
 	class Mesh 
 	{
 	public:
-		Mesh(VertexCollection* vertices, std::vector<GLushort>* indices, InstanceDataCollection* instanceData = nullptr);
-		Mesh(const VertexCollection vertices, const std::vector<GLushort> indices, InstanceDataCollection* instanceData = nullptr);
+		Mesh
+		(
+			std::vector<VertexData>& vertices,
+			std::vector<GLushort>& indices,
+			std::vector<InstanceData>* instanceData = nullptr,
+			DataLayout vertexLayout = s_DefVertexDataLayout,
+			DataLayout instanceDataLayout = s_DefInstanceDataLayout
+		);
+
+		Mesh(VertexBufferData* vertexBufferData, std::vector<GLushort>& indices);
 
 		VertexArray& GetVAO() { return *m_VAO; }
 	private:
+
+		VertexBufferData m_VertexBufferData;
+
 		VertexArray* m_VAO;
 	};
 }

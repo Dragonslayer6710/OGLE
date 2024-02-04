@@ -3,15 +3,21 @@
 
 namespace OGLE {
 
-	Mesh::Mesh(VertexCollection* vertices, std::vector<GLushort>* indices, InstanceDataCollection* instanceData /*= nullptr*/)
-	{
-		m_VAO = new VertexArray(vertices, indices, instanceData);
-	}
+	Mesh::Mesh
+	(
+		std::vector<VertexData>& vertices,
+		std::vector<GLushort>& indices,
+		std::vector<InstanceData>* instanceData,
+		DataLayout vertexLayout,
+		DataLayout instanceDataLayout
+	)
+		: Mesh(new VertexBufferData(vertices, instanceData, vertexLayout, instanceDataLayout), indices)
+	{}
 
-	Mesh::Mesh(const VertexCollection vertices, const std::vector<GLushort> indices, InstanceDataCollection* instanceData /*= nullptr*/)
-		: Mesh(new VertexCollection(vertices), new std::vector<GLushort>(indices), instanceData)
+	Mesh::Mesh(VertexBufferData* vertexBufferData, std::vector<GLushort>& indices)
+		: m_VertexBufferData(*vertexBufferData)
 	{
-
+		m_VAO = new VertexArray(m_VertexBufferData, indices);
 	}
 
 }

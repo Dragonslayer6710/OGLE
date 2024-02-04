@@ -1,5 +1,5 @@
 #pragma once
-#include "OGLE/Buffer/Data/Data.h"
+#include "OGLE/Buffer/Data/Collection.h"
 
 namespace OGLE{
 	class Buffer
@@ -31,10 +31,12 @@ namespace OGLE{
 
 	};
 
+
+
 	class VertexBuffer : public Buffer
 	{
 	public:
-		VertexBuffer(VertexCollection* vertices,  InstanceDataCollection* instanceData = nullptr, GLenum bufferUsage = GL_STATIC_DRAW);
+		VertexBuffer(VertexBufferData& vertexBufferData, GLenum bufferUsage = GL_STATIC_DRAW);
 
 		bool IsInstanced();
 		GLuint GetInstanceCount();
@@ -48,10 +50,12 @@ namespace OGLE{
 
 	private:
 		bool m_IsInstanced;		
-
-		VertexCollection* m_VertexCollection;
-		InstanceDataCollection* m_InstanceDataCollection;
+		
+		VertexBufferData m_VertexBufferData;
 	};
+
+
+
 
 	class ElementBuffer : public Buffer
 	{
