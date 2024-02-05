@@ -8,9 +8,9 @@ namespace OGLE {
 	public:
 		Mesh
 		(
-			std::vector<VertexData>& vertices,
+			std::vector<Vertex>& vertices,
 			std::vector<GLushort>& indices,
-			std::vector<InstanceData>* instanceData = nullptr,
+			std::vector<Instance>* instanceData = nullptr,
 			DataLayout vertexLayout = s_DefVertexDataLayout,
 			DataLayout instanceDataLayout = s_DefInstanceDataLayout
 		);

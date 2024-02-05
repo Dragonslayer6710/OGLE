@@ -19,16 +19,30 @@ namespace OGLE {
 
 		VertexBuffer* GetVertexBuffer();
 
-		ElementBuffer* GetElementBuffer();;
+		ElementBuffer* GetElementBuffer();
 		GLuint GetElementCount();
 		GLenum GetElementDataType();
 
-		GLuint GetInstanceCount();;
+		GLuint GetInstanceCount();
 
 	private:
+		void VertexArray::SetAttribPointer
+		(
+			GLuint attribID, GLint elemCount,
+			GLenum type, GLboolean normalized,
+			GLuint size, GLsizei stride, 
+			GLuint localOffset,	GLuint globalOffset,
+			GLuint divisor
+		);
 
-		void SetVertexDataPointers();
-		void SetInstanceDataPointers();
+		void SetAttribPointer
+		(
+			DataAttribute* attribute,
+			GLsizei stride = 0, 
+			GLuint localOffset = 0,
+			GLuint globalOffset = 0,
+			GLuint divisor = 0			
+		);
 
 	private:
 		GLuint m_VertexArrayID;

@@ -37,22 +37,21 @@ namespace OGLE {
 		}
 	}
 
-	VertexDataCollection::VertexDataCollection(std::vector<VertexData>& vertices, DataLayout vertexLayout, GLuint attributeIDTracker) 
-		: Collection(vertices.data(), vertices.size() * sizeof(VertexData), vertices.size(), vertexLayout, attributeIDTracker)
+	VertexCollection::VertexCollection(std::vector<Vertex>& vertices, DataLayout vertexLayout, GLuint attributeIDTracker) 
+		: Collection(vertices.data(), vertices.size() * sizeof(Vertex), vertices.size(), vertexLayout, attributeIDTracker)
 	{
 
 	}
 
 
-	InstanceDataCollection::InstanceDataCollection(std::vector<InstanceData>& instanceData, DataLayout instanceDataLayout, GLuint attributeIDTracker, GLuint bufferOffset) 
+	InstanceCollection::InstanceCollection(std::vector<Instance>& instanceData, DataLayout instanceDataLayout, GLuint attributeIDTracker) 
 		: Collection
 		(
 			instanceData.data(),
-			instanceData.size() * sizeof(InstanceData),
+			instanceData.size() * sizeof(Instance),
 			instanceData.size(),
 			instanceDataLayout, 
-			attributeIDTracker, 
-			bufferOffset
+			attributeIDTracker
 		)
 	{
 

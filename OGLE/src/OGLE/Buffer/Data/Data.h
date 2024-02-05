@@ -35,22 +35,22 @@ namespace OGLE {
 		
 	};
 
-	struct VertexData {
+	struct Vertex {
 		glm::vec3 Position;
 		glm::vec4 Color;
 		glm::vec2 TexUV;
 
-		VertexData()
+		Vertex()
 			: Position(glm::vec3()), Color(glm::vec4()), TexUV(glm::vec2()) {}
-		VertexData(glm::vec2 position, glm::vec4 color, glm::vec2 texUV)
+		Vertex(glm::vec2 position, glm::vec4 color, glm::vec2 texUV)
 			: Position(position, -1.0f), Color(color), TexUV(texUV) {}
-		VertexData(glm::vec3 position, glm::vec4 color, glm::vec2 texUV)
+		Vertex(glm::vec3 position, glm::vec4 color, glm::vec2 texUV)
 			: Position(position), Color(color), TexUV(texUV) {}
 	};
 
 	static const DataLayout s_DefVertexDataLayout = DataLayout({ Float3, Float4, Float2 });
 	
-	struct InstanceData {
+	struct Instance {
 		glm::mat4 ModelTransform;
 		glm::vec2 SubTexOffset = glm::vec2(0,0);
 		glm::vec2 SubTexSize = glm::vec2(1, 1);

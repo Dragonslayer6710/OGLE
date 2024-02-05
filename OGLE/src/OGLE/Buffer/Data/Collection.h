@@ -28,17 +28,17 @@ namespace OGLE{
 		std::unordered_map<GLuint, DataAttribute*> m_DataAttributes;
 	};
 
-	class VertexDataCollection : public Collection
+	class VertexCollection : public Collection
 	{
 	public:
-		VertexDataCollection(std::vector<VertexData>& vertices, DataLayout vertexLayout, GLuint attributeIDTracker);
+		VertexCollection(std::vector<Vertex>& vertices, DataLayout vertexLayout, GLuint attributeIDTracker);
 
 	};
 
-	class InstanceDataCollection : public Collection
+	class InstanceCollection : public Collection
 	{
 	public:
-		InstanceDataCollection(std::vector<InstanceData>& instanceData, DataLayout instanceDataLayout, GLuint attributeIDTracker, GLuint bufferOffset);
+		InstanceCollection(std::vector<Instance>& instanceData, DataLayout instanceDataLayout, GLuint attributeIDTracker);
 	};
 
 	class VertexBufferData
@@ -46,21 +46,21 @@ namespace OGLE{
 	public:
 		VertexBufferData
 		(
-			std::vector<VertexData>& vertices,
-			std::vector<InstanceData>* instanceData = nullptr,
+			std::vector<Vertex>& vertices,
+			std::vector<Instance>* instanceData = nullptr,
 			DataLayout vertexLayout= s_DefVertexDataLayout,
 			DataLayout instanceDataLayout = s_DefInstanceDataLayout
 		)
 			: m_AttributeIDTracker(NewAttributeIDTracker()), m_VDC(vertices, vertexLayout, m_AttributeIDTracker)
 		{
 			if (instanceData) {
-				m_IDC = new InstanceDataCollection(*instanceData, instanceDataLayout, m_AttributeIDTracker, m_VDC.GetSize());
+				m_IDC = new InstanceCollection(*instanceData, instanceDataLayout, m_AttributeIDTracker);
 				m_IsInstanced = true;
 			}
 		}
 
-		VertexDataCollection GetVDC() { return m_VDC; }
-		InstanceDataCollection GetIDC() { return *m_IDC; }
+		VertexCollection GetVDC() { return m_VDC; }
+		InstanceCollection GetIDC() { return *m_IDC; }
 
 		GLuint GetSize() { return m_VDC.GetSize() + ((m_IsInstanced) ? m_IDC->GetSize() : 0); }
 
@@ -68,8 +68,8 @@ namespace OGLE{
 	private:
 		GLuint m_AttributeIDTracker;
 
-		VertexDataCollection m_VDC;
-		InstanceDataCollection* m_IDC = nullptr;
+		VertexCollection m_VDC;
+		InstanceCollection* m_IDC = nullptr;
 
 		bool m_IsInstanced = false;
 	};

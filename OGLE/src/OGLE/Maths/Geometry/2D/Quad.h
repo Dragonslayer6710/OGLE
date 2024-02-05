@@ -2,7 +2,7 @@
 
 #include "OGLE/Maths/Geometry/Drawable.h"
 namespace OGLE {
-	static std::vector<VertexData> s_QuadVertices =
+	static std::vector<Vertex> s_QuadVertices =
 	{
 		{ glm::vec2(-0.5,-0.5f), glm::vec4(1.0f), glm::vec2(0.0f, 0.0f) },
 		{ glm::vec2(-0.5, 0.5f), glm::vec4(1.0f), glm::vec2(0.0f, 1.0f) },
@@ -18,7 +18,7 @@ namespace OGLE {
 	class Quad : public Drawable
 	{
 	public:
-		Quad(std::vector<InstanceData>& instanceData, Texture* texture)
+		Quad(std::vector<Instance>& instanceData, Texture* texture)
 			: Drawable(new Mesh(s_QuadVertices,s_QuadIndices, &instanceData), texture) {}
 	};
 }

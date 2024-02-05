@@ -10,6 +10,7 @@ namespace OGLE{
 
 		void Bind();
 		void Unbind();
+
 		GLuint GetSize();
 
 	protected:
@@ -47,7 +48,6 @@ namespace OGLE{
 		GLuint GetInstanceDataSize();
 
 		std::unordered_map<GLuint, DataAttribute*> GetInstanceDataAttributes();
-
 	private:
 		bool m_IsInstanced;		
 		

@@ -3,7 +3,7 @@
 #include "OGLE/Maths/Geometry/Drawable.h"
 namespace OGLE {
 
-	static std::vector<VertexData> s_CubeVertices = 
+	static std::vector<Vertex> s_CubeVertices = 
 	
 	{
 		{glm::vec3(0.5f,-0.5f, 0.5f), glm::vec4(0.5f, 0.0f, 0.0f, 0.5f), glm::vec2(0.0f)}, //0 Right

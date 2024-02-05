@@ -120,11 +120,11 @@ namespace OGLE {
 
 			quad = new Quad
 			(
-				std::vector<InstanceData>				
+				std::vector<Instance>				
 					({ 
-						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3(-1,0,0)), texture->GetSubTexture(0).Position,texture->GetSubTexture(0).Size},
-						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3( 0,0,0)), texture->GetSubTexture(1).Position,texture->GetSubTexture(1).Size},
-						InstanceData{glm::translate(glm::mat4(1.0f), glm::vec3( 1,0,0)), texture->GetSubTexture(2).Position,texture->GetSubTexture(2).Size}
+						Instance{glm::translate(glm::mat4(1.0f), glm::vec3(-1,0,0)), texture->GetSubTexture(0).Position,texture->GetSubTexture(0).Size},
+						Instance{glm::translate(glm::mat4(1.0f), glm::vec3( 0,0,0)), texture->GetSubTexture(1).Position,texture->GetSubTexture(1).Size},
+						Instance{glm::translate(glm::mat4(1.0f), glm::vec3( 1,0,0)), texture->GetSubTexture(2).Position,texture->GetSubTexture(2).Size}
 					})
 				,
 				texture
