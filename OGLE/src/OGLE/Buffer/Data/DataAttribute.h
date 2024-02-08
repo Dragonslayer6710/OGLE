@@ -84,10 +84,10 @@ namespace OGLE {
 	};
 
 	struct DataAttributeInfo {
-		DataAttributeType m_ControlType;
+		DataAttributeType Type;
 		GLboolean Normalized;
 		DataAttributeInfo(DataAttributeType type, GLboolean normalized = GL_FALSE)
-			: m_ControlType(type), Normalized(normalized) {}
+			: Type(type), Normalized(normalized) {}
 	
 	};
 

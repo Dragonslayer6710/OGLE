@@ -11,14 +11,6 @@ out vec2 v_TexUV;
 
 uniform mat4 u_WorldToProjection;
 
-mat4 BuildTranslation(vec3 delta)
-{
-    return mat4(
-        vec4(1.0, 0.0, 0.0, 0.0),
-        vec4(0.0, 1.0, 0.0, 0.0),
-        vec4(0.0, 0.0, 1.0, 0.0),
-        vec4(delta, 1.0));
-}
 
 void main(){
 	//gl_Position = fullTrans * vec4(a_Pos,1.0);

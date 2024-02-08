@@ -6,53 +6,61 @@ namespace OGLE {
 	class VertexArray
 	{
 	public:
-		VertexArray(VertexBufferData& vertexBufferData, std::vector<GLushort>& indices);
+		VertexArray(VertexCollection& vertexCollection, std::vector<GLushort>& indices, InstanceCollection* instanceCollection);
 
 		~VertexArray();
-
-		void PrintStatus(const char* status);
-		void PrintInitialized();
-		void PrintBindStatus();
 
 		void Bind();
 		void Unbind();
 
-		VertexBuffer* GetVertexBuffer();
+		VertexBuffer& GetVertexBuffer();
 
-		ElementBuffer* GetElementBuffer();
+		ElementBuffer& GetElementBuffer();
 		GLuint GetElementCount();
 		GLenum GetElementDataType();
 
+		InstanceBuffer& GetInstanceBuffer();
 		GLuint GetInstanceCount();
+		bool CheckInstanced();
 
 	private:
-		void VertexArray::SetAttribPointer
+		static void SetAttribPointer
 		(
 			GLuint attribID, GLint elemCount,
 			GLenum type, GLboolean normalized,
 			GLuint size, GLsizei stride, 
-			GLuint localOffset,	GLuint globalOffset,
-			GLuint divisor
+			GLuint offset, GLuint divisor, 
+			GLuint subOffset = 0, GLuint subAttribID=0
 		);
 
-		void SetAttribPointer
+		static void SetAttribPointer
 		(
 			DataAttribute* attribute,
 			GLsizei stride = 0, 
-			GLuint localOffset = 0,
-			GLuint globalOffset = 0,
-			GLuint divisor = 0			
+			GLuint offset = 0,
+			GLuint divisor = 0
 		);
+		
+		template<typename T>
+		static void SetAttribPointers(Collection<T> collection, GLuint divisor=0) {
+			GLuint stride = collection.GetStride();
+			for (auto& offsetAttrib : collection.GetAttributes())
+				SetAttribPointer(offsetAttrib.second, stride, offsetAttrib.first, divisor);
+		}
 
 	private:
 		GLuint m_VertexArrayID;
 
 		VertexBuffer* m_VBO;
-		ElementBuffer* m_EBO;
+		InstanceBuffer* m_IBO;
+
+		GLuint m_Instances = 1;
+		bool m_IsInstanced = false;
+
+		ElementBuffer* m_EBO = nullptr;
 
 		bool m_IsBound = false;
 
-		GLuint m_NextAttributeIndex = 0;
 	};
 
 }

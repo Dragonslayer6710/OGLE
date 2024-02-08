@@ -1,27 +1,27 @@
 #pragma once
 
-#include "OGLE/Maths/Geometry/Drawable.h"
+#include "OGLE/Maths/Geometry/Mesh.h"
 namespace OGLE {
 
-	static std::vector<Vertex> s_TriangleVertices =
-	{
-		{glm::vec2(-0.5f,  0.5f), glm::vec4(0.5f, 0.0f, 0.0f, 0.5f), glm::vec2(0.0f)},
-		{glm::vec2(-0.5f, -0.5f), glm::vec4(0.0f, 0.5f, 0.0f, 0.5f), glm::vec2(0.0f)},
-		{glm::vec2(-0.75f, -0.5f), glm::vec4(0.0f, 0.0f, 0.5f, 0.5f), glm::vec2(0.0f)},
-	};
+	static VertexList s_TriangleVertices = VertexList(
+		{
+			Vertex(glm::vec2(-0.5f,  0.5f), glm::vec4(0.5f, 0.0f, 0.0f, 0.5f), glm::vec2(0.0f)),
+			Vertex(glm::vec2(-0.5f, -0.5f), glm::vec4(0.0f, 0.5f, 0.0f, 0.5f), glm::vec2(0.0f)),
+			Vertex(glm::vec2(-0.75f, -0.5f), glm::vec4(0.0f, 0.0f, 0.5f, 0.5f), glm::vec2(0.0f))
+		}
+	);
 
 
 	static std::vector<GLushort> s_TriangleIndices =
 	{
 		0, 1, 2,
-		//0, 3, 2
 	};
 
-	class Triangle : public Drawable
+	class Triangle : public Mesh
 	{
 	public:
-		Triangle()
-			: Drawable(new Mesh(s_TriangleVertices, s_TriangleIndices), nullptr){}
+		Triangle(InstanceList* instanceList = nullptr)
+		:Mesh(s_TriangleVertices, s_TriangleIndices, instanceList){};
 	};
 }
 

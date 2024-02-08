@@ -2,75 +2,50 @@
 #include "OGLE/Buffer/Data/Data.h"
 
 namespace OGLE{
+	template <typename T>
 	class Collection
 	{
 	public:
-		const GLvoid* GetDataPtr();
-
-		GLuint GetSize();
-
-		GLuint GetLength();
-
-		DataLayout& GetLayout();
-
-		std::unordered_map<GLuint, DataAttribute*> GetAttributes();
-
-	protected:
-		Collection(const GLvoid* dataPtr, GLuint dataSize, GLuint dataLength, DataLayout layout, GLuint attributeIDTracker, GLuint bufferOffset = 0);
-
-	private:
-		const GLvoid* m_DataPtr;
-		GLuint m_DataSize;
-		GLuint m_DataLength;
-
-		DataLayout m_DataLayout;
-
-		std::unordered_map<GLuint, DataAttribute*> m_DataAttributes;
-	};
-
-	class VertexCollection : public Collection
-	{
-	public:
-		VertexCollection(std::vector<Vertex>& vertices, DataLayout vertexLayout, GLuint attributeIDTracker);
-
-	};
-
-	class InstanceCollection : public Collection
-	{
-	public:
-		InstanceCollection(std::vector<Instance>& instanceData, DataLayout instanceDataLayout, GLuint attributeIDTracker);
-	};
-
-	class VertexBufferData
-	{
-	public:
-		VertexBufferData
-		(
-			std::vector<Vertex>& vertices,
-			std::vector<Instance>* instanceData = nullptr,
-			DataLayout vertexLayout= s_DefVertexDataLayout,
-			DataLayout instanceDataLayout = s_DefInstanceDataLayout
-		)
-			: m_AttributeIDTracker(NewAttributeIDTracker()), m_VDC(vertices, vertexLayout, m_AttributeIDTracker)
+		Collection(DataList<T>& dataList, DataLayout& dataLayout, GLuint attributeIDTracker)
+			: m_DataList(dataList), m_Data(m_DataList.GetData()), m_Length(m_DataList.GetLength()), m_Size(m_DataList.GetSize())
 		{
-			if (instanceData) {
-				m_IDC = new InstanceCollection(*instanceData, instanceDataLayout, m_AttributeIDTracker);
-				m_IsInstanced = true;
+			for (DataAttributeInfo attribInfo : dataLayout.AttributeData)
+			{
+				m_DataAttributes[m_Stride] = GetNewDataAttribute(attributeIDTracker, attribInfo.Type, attribInfo.Normalized);
+				m_Stride += m_DataAttributes[m_Stride]->Size;
 			}
 		}
 
-		VertexCollection GetVDC() { return m_VDC; }
-		InstanceCollection GetIDC() { return *m_IDC; }
+		std::unordered_map<GLuint, DataAttribute*> GetAttributes() { return m_DataAttributes; };
+		DataList<T> GetDataList() { return m_DataList; }
 
-		GLuint GetSize() { return m_VDC.GetSize() + ((m_IsInstanced) ? m_IDC->GetSize() : 0); }
+		const GLvoid* GetData() { return m_Data; }
+		GLuint GetLength() { return m_Length; }
+		GLuint GetSize() { return m_Size; }
+		GLuint GetStride() { return m_Stride; }
 
-		bool IsInstanced() { return m_IsInstanced; }
+
 	private:
-		GLuint m_AttributeIDTracker;
+		std::unordered_map<GLuint, DataAttribute*> m_DataAttributes;
+		DataList<T> m_DataList;
 
-		VertexCollection m_VDC;
-		InstanceCollection* m_IDC = nullptr;
+		const GLvoid* m_Data;
+		GLuint m_Length;
+		GLuint m_Size;
+		GLuint m_Stride = 0;
+	};
 
-		bool m_IsInstanced = false;
+	class VertexCollection : public Collection<Vertex>
+	{
+	public:
+		VertexCollection(VertexList& vertexList, DataLayout& vertexLayout, GLuint attributeIDTracker)
+			: Collection(vertexList, vertexLayout, attributeIDTracker) {}
+	};
+
+	class InstanceCollection : public Collection<Instance>
+	{
+	public:
+		InstanceCollection(InstanceList& instanceList, DataLayout& instanceLayout, GLuint attributeIDTracker)
+			: Collection(instanceList, instanceLayout, attributeIDTracker) {}
 	};
 }

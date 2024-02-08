@@ -117,22 +117,20 @@ namespace OGLE {
 			//triangle = new Triangle();
 
 			texture = new UniformTextureAtlas("terrain.png",glm::vec2(16,16));
-
+			InstanceList instList = InstanceList
+			({
+				Instance{glm::translate(glm::mat4(1.0f), glm::vec3(-0.5,0,0)) * glm::rotate(glm::mat4(1.0f),glm::radians(90.0f),glm::vec3(0.0f, 1.0f, 0.0f)), texture->GetSubTexture(0).Position,texture->GetSubTexture(0).Size},
+				Instance{glm::translate(glm::mat4(1.0f), glm::vec3(0,0,-0.5)), texture->GetSubTexture(1).Position,texture->GetSubTexture(1).Size},
+				Instance{glm::translate(glm::mat4(1.0f), glm::vec3(0,-0.5,0)) * glm::rotate(glm::mat4(1.0f),glm::radians(90.0f),glm::vec3(1.0f, 0.0f, 0.0f)), texture->GetSubTexture(2).Position,texture->GetSubTexture(2).Size}
+				});
 			quad = new Quad
 			(
-				std::vector<Instance>				
-					({ 
-						Instance{glm::translate(glm::mat4(1.0f), glm::vec3(-1,0,0)), texture->GetSubTexture(0).Position,texture->GetSubTexture(0).Size},
-						Instance{glm::translate(glm::mat4(1.0f), glm::vec3( 0,0,0)), texture->GetSubTexture(1).Position,texture->GetSubTexture(1).Size},
-						Instance{glm::translate(glm::mat4(1.0f), glm::vec3( 1,0,0)), texture->GetSubTexture(2).Position,texture->GetSubTexture(2).Size}
-					})
-				,
-				texture
+				&instList 
 			);
 			//quad = new Quad();
 			//cube = new Cube();
 			
-			vao = &(quad->GetMesh().GetVAO());
+			vao = &(quad->GetVAO());
 
 			
 			

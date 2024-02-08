@@ -2,12 +2,15 @@
 #include "OGLE/Buffer/Buffer.h"
 
 namespace OGLE {
-
+	//init buffer params
 	Buffer::Buffer(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum bufferUsage)
-		:m_BufferTarget(target), m_Size(size), m_DataPtr(data), m_BufferUsage(bufferUsage)
+		:m_BufferTarget(target), m_BufferUsage(bufferUsage)
 	{
-		GLCall(glGenBuffers(1, &m_BufferID));		
-		InitBuffer();	
+		// Generate buffer then bind
+		GLCall(glGenBuffers(1, &m_BufferID));
+		Bind();
+		// 0 fill the buffer to the dedicated size and set data to buffer if provided
+		GLCall(glBufferData(m_BufferTarget, size, data, bufferUsage));
 		Unbind();
 	}
 
@@ -16,102 +19,41 @@ namespace OGLE {
 		GLCall(glDeleteBuffers(1, &m_BufferID));
 	}
 
+	bool Buffer::IsBound()
+	{
+		return m_IsBound;
+	}
+
 	void Buffer::Bind()
 	{
+		if (m_IsBound)
+			return;
 		GLCall(glBindBuffer(m_BufferTarget, m_BufferID));
+		m_IsBound = true;
 	}
 
 	void Buffer::Unbind()
 	{
+		if (!m_IsBound)
+			return
 		GLCall(glBindBuffer(m_BufferTarget, 0));
+		m_IsBound = false;
 	}
 
-	void Buffer::SetData(GLintptr offset /*= 0*/, GLsizeiptr size /*= 0*/, const GLvoid* data /*= NULL*/)
-	{
-		BufferSubData(offset, size, data);
-	}
-
-	GLuint Buffer::GetSize()
-	{
-		return m_Size;
-	}
-
-	void Buffer::BufferSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data)
+	void Buffer::SetData(GLintptr offset, GLsizeiptr size, const GLvoid* data)
 	{
 		GLCall(glBufferSubData(m_BufferTarget, offset, size, data));
 	}
 
-	void Buffer::InitBuffer()
-	{	
-		Bind();
-		BufferData(m_Size, m_DataPtr, m_BufferUsage);
-	}
 
-	void Buffer::BufferData(GLsizeiptr size, const GLvoid* data, GLenum bufferUsage /*= GL_STATIC_DRAW*/)
-	{
-		GLCall(glBufferData(m_BufferTarget, size, data, bufferUsage));
-	}
-
-	VertexBuffer::VertexBuffer(VertexBufferData& vertexBufferData, GLenum bufferUsage /*= GL_STATIC_DRAW*/) :
-		m_VertexBufferData(vertexBufferData),
-		Buffer
-		(
-			GL_ARRAY_BUFFER,
-			vertexBufferData.GetSize(),
-			NULL,
-			bufferUsage
-		),
-		m_IsInstanced(m_VertexBufferData.IsInstanced())
-	{
-
-		// Set Vertex Data
-		Bind();
-		SetData(0, m_VertexBufferData.GetVDC().GetSize(), m_VertexBufferData.GetVDC().GetDataPtr());
-		if (m_IsInstanced)
-			SetData(m_VertexBufferData.GetVDC().GetSize(), m_VertexBufferData.GetIDC().GetSize(), m_VertexBufferData.GetIDC().GetDataPtr());		
-		Unbind();
-	}
-
-	bool VertexBuffer::IsInstanced()
-	{
-		return m_IsInstanced;
-	}
-
-	std::unordered_map<GLuint, DataAttribute*> VertexBuffer::GetVertexAttributes()
-	{
-
-		return m_VertexBufferData.GetVDC().GetAttributes();
-	}
-
-	GLuint VertexBuffer::GetVertexDataSize()
-	{
-		return m_VertexBufferData.GetVDC().GetSize();
-	}
-
-	GLuint VertexBuffer::GetInstanceCount()
-	{
-		return m_VertexBufferData.GetIDC().GetLength();
-	}
-
-	GLuint VertexBuffer::GetInstanceDataSize()
-	{
-		return m_VertexBufferData.GetIDC().GetSize();
-	}
-
-	std::unordered_map<GLuint, DataAttribute*> VertexBuffer::GetInstanceDataAttributes()
-	{
-		return m_VertexBufferData.GetIDC().GetAttributes();
-	}
-
-
-	ElementBuffer::ElementBuffer(std::vector<GLushort>* indices, GLenum bufferTarget, GLenum elementDataType /*= GL_UNSIGNED_SHORT*/) : Buffer
+	ElementBuffer::ElementBuffer(std::vector<GLushort>& indices, GLenum bufferTarget, GLenum elementDataType /*= GL_UNSIGNED_SHORT*/) : Buffer
 	(
 		GL_ELEMENT_ARRAY_BUFFER,
-		sizeof(GLushort)* indices->size(),
-		indices->data(),
+		sizeof(GLushort)* indices.size(),
+		indices.data(),
 		bufferTarget
 	),
-		m_ElementCount(indices->size()),
+		m_ElementCount(indices.size()),
 		m_ElementDataType(elementDataType)
 	{
 

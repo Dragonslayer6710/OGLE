@@ -8,20 +8,31 @@ namespace OGLE {
 	public:
 		Mesh
 		(
-			std::vector<Vertex>& vertices,
+			VertexList& vertexList,
 			std::vector<GLushort>& indices,
-			std::vector<Instance>* instanceData = nullptr,
-			DataLayout vertexLayout = s_DefVertexDataLayout,
-			DataLayout instanceDataLayout = s_DefInstanceDataLayout
-		);
+			InstanceList* instanceList = nullptr,
+			DataLayout vertexLayout = s_DefVertexLayout,
+			DataLayout instanceLayout = s_DefInstanceLayout
+		) 
+			: m_AttributeIDTracker(NewAttributeIDTracker())
+		{
+			VertexCollection* vertexCollection = new VertexCollection(vertexList, vertexLayout, m_AttributeIDTracker);
+			InstanceCollection* instanceCollection;
+			if (instanceList)
+				instanceCollection = new InstanceCollection(*instanceList, instanceLayout, m_AttributeIDTracker);
+			m_VAO = new VertexArray(*vertexCollection, indices, instanceCollection);
+		}
+			
 
-		Mesh(VertexBufferData* vertexBufferData, std::vector<GLushort>& indices);
-
+		Mesh(VertexCollection& vertexCollection, std::vector<GLushort>& indices, InstanceCollection* instanceCollection = nullptr)
+			: m_AttributeIDTracker(NewAttributeIDTracker()) 
+		{
+			m_VAO = new VertexArray(vertexCollection, indices, instanceCollection);
+		}
 		VertexArray& GetVAO() { return *m_VAO; }
+
 	private:
-
-		VertexBufferData m_VertexBufferData;
-
+		GLuint m_AttributeIDTracker;
 		VertexArray* m_VAO;
 	};
 }
