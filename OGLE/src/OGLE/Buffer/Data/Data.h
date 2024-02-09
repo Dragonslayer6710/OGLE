@@ -52,8 +52,14 @@ namespace OGLE {
 
 	static const DataLayout s_DefVertexLayout = DataLayout({ Float3, Float4, Float2 });
 	
+	struct TextureGeometry {
+		glm::vec2 Position;
+		glm::vec2 Size;
 
-	
+		TextureGeometry(glm::vec2 position, glm::vec2 size)
+			: Position(position), Size(size)
+		{}
+	};
 
 	struct Instance {
 		glm::mat4 ModelTransform;
@@ -61,8 +67,8 @@ namespace OGLE {
 		glm::vec2 SubTexSize = glm::vec2(1, 1);
 
 		Instance() {}
-		Instance(glm::mat4 modelTransform, glm::vec2 subTexOffset = glm::vec2(0, 0), glm::vec2 subTexSize = glm::vec2(1, 1))
-			:ModelTransform(modelTransform), SubTexOffset(subTexOffset), SubTexSize(subTexSize)
+		Instance(glm::mat4 modelTransform, TextureGeometry texGeom)
+			:ModelTransform(modelTransform), SubTexOffset(texGeom.Position), SubTexSize(texGeom.Size)
 		{
 			OGLE_INFO("");
 		}

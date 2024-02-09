@@ -29,6 +29,7 @@ void main(){
 	//}
 	
 	gl_Position = u_WorldToProjection * a_InstMat * vec4(a_Pos, 1.0);
+	//gl_Position = u_WorldToProjection * vec4(a_Pos, 1.0);
 	//v_Color = a_Color;
 	v_TexUV = a_TexUV * a_SubTexSize + a_SubTexPos;
 }

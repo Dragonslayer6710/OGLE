@@ -8,7 +8,23 @@ namespace OGLE {
 
 	Texture::Texture(std::string textureFile)
 	{
-		InitTexture(textureFile);
+		GLint width, height, numColCh;
+		GLubyte* bytes = stbi_load((cwd + "\\assets\\textures\\" + textureFile).c_str(), &width, &(int&)height, &numColCh, 0);
+		m_Size = glm::vec2(width, height);
+		GLCall(glGenTextures(1, &m_TextureID));
+		Bind();
+
+		SetParameterI(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		SetParameterI(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		SetParameterI(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		SetParameterI(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Size.x, m_Size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		stbi_image_free(bytes);
+		Unbind();
 	}
 
 	Texture::~Texture()
@@ -20,8 +36,8 @@ namespace OGLE {
 	{
 		if (m_IsBound)
 			return;
-		GetNextTextureSlot();
-		GLCall(glActiveTexture(m_TextureSlot));
+		m_TextureSlot = GetNextTextureSlot();
+		GLCall(glActiveTexture(GL_TEXTURE0 + m_TextureSlot));
 		GLCall(glBindTexture(GL_TEXTURE_2D, m_TextureID));
 		m_IsBound = true;
 	}
@@ -42,7 +58,7 @@ namespace OGLE {
 
 	GLuint Texture::GetTextureSlot()
 	{
-		return m_TextureID;
+		return m_TextureSlot;
 	}
 
 	GLsizei Texture::GetWidth()
@@ -60,36 +76,19 @@ namespace OGLE {
 		GLCall(glTexParameteri(target, param, value));
 	}
 
-	void Texture::InitTexture(std::string textureFile)
-	{
-		GLint width, height, numColCh;
-		GLubyte* bytes = stbi_load((cwd+"\\assets\\textures\\" + textureFile).c_str(), &width, &(int&)height, &numColCh, 0);
-		m_Size = glm::vec2(width, height);
-		GLCall(glGenTextures(1, &m_TextureID));
-		Bind();
-
-		SetParameterI(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		SetParameterI(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	
-		SetParameterI(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		SetParameterI(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Size.x, m_Size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		stbi_image_free(bytes);
-		Unbind();
-	}
-
-
-	void Texture::SetTextureSlot()
-	{
-		m_TextureSlot = GetNextTextureSlot();
-	}
-
 	void Texture::ClearTextureSlot()
 	{
-		ClearTextureSlot(m_TextureSlot);
+		s_TextureSlots[m_TextureSlot] = false;
+		int lastElem = s_FreedTextureSlots.size() - 1;
+		for (int i = 0; i <= lastElem; i++)
+		{
+			if (i == lastElem)
+				s_FreedTextureSlots.push_back(m_TextureSlot);
+			else if (s_FreedTextureSlots[i] > m_TextureSlot) {
+				s_FreedTextureSlots.insert(s_FreedTextureSlots.begin() + i + 1, m_TextureSlot);
+				break;
+			}
+		}
 		m_TextureSlot = NULL;
 	}
 
@@ -98,7 +97,7 @@ namespace OGLE {
 		GLuint textureSlot;
 		if (s_FreedTextureSlots.empty())
 		{
-			textureSlot = GL_TEXTURE0 + s_TextureSlots.size();
+			textureSlot = s_TextureSlots.size();
 		}
 		else {
 			textureSlot = s_FreedTextureSlots.back();
@@ -106,20 +105,6 @@ namespace OGLE {
 		}
 		s_TextureSlots[textureSlot] = true;
 		return textureSlot;
-	}
-
-	void Texture::ClearTextureSlot(GLuint textureSlot)
-	{
-		s_TextureSlots[textureSlot] = false;
-		int lastElem = s_FreedTextureSlots.size() - 1;
-		for (int i = 0; i <= lastElem; i++)
-		{
-			if (i == lastElem)
-				s_FreedTextureSlots.push_back(textureSlot);
-			else if (s_FreedTextureSlots[i] > textureSlot)
-				s_FreedTextureSlots.insert(s_FreedTextureSlots.begin() + i + 1, textureSlot);
-		}
-
 	}
 
 	TextureAtlas::TextureAtlas(std::string textureFile)
@@ -130,10 +115,10 @@ namespace OGLE {
 
 	void TextureAtlas::AddSubTexture(glm::vec2 position, glm::vec2 size)
 	{
-		m_SubTextures.push_back(SubTexture(position, size));
+		m_SubTextures.push_back(TextureGeometry(position, size));
 	}
 
-	SubTexture TextureAtlas::GetSubTexture(GLuint id)
+	TextureGeometry TextureAtlas::GetSubTexture(GLuint id)
 	{
 		return m_SubTextures[id];
 	}

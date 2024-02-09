@@ -1,5 +1,6 @@
 #pragma once
 #include "OGLE/OGL/OpenGL.h"
+#include "OGLE/Buffer/Data/Data.h"
 #include <map>"
 namespace OGLE{
 
@@ -17,18 +18,15 @@ namespace OGLE{
 
 		GLsizei GetWidth();
 		GLsizei GetHeight();
-	protected:
-		void SetParameterI(GLenum target, GLenum param, GLint value);
 
+	protected:
+		static void SetParameterI(GLenum target, GLenum param, GLint value);
 
 	private:
-		void InitTexture(std::string textureFile);
 
-		void SetTextureSlot();
 		void ClearTextureSlot();
 
 		static GLuint GetNextTextureSlot();
-		static void ClearTextureSlot(GLuint textureSlot);
 
 		
 
@@ -39,32 +37,22 @@ namespace OGLE{
 		GLuint m_TextureID;
 		GLuint m_TextureSlot;
 
-		bool m_IsBound;
+		bool m_IsBound =false;
 		static std::map<GLuint, bool> s_TextureSlots;
 		static std::vector<GLuint> s_FreedTextureSlots;
 	};
 
-	struct SubTexture {
-		glm::vec2 Position;
-		glm::vec2 Size;
-
-		SubTexture(glm::vec2 subPos, glm::vec2 subSize)
-			: Position(subPos), Size(subSize)
-		{}
-	};
-
-
 	class TextureAtlas : public Texture
 	{
 	public:
-		SubTexture GetSubTexture(GLuint id);
+		TextureGeometry GetSubTexture(GLuint id);
 
 	protected:
 		TextureAtlas(std::string textureFile);
 		void AddSubTexture(glm::vec2 position, glm::vec2 size);
 
 	private:
-		std::vector<SubTexture> m_SubTextures;
+		std::vector<TextureGeometry> m_SubTextures;
 	};
 
 	class UniformTextureAtlas : public TextureAtlas
