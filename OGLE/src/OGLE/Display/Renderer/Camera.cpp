@@ -47,7 +47,7 @@ namespace OGLE {
 		m_Pos -= m_MoveSpeed * m_Up;
 	}
 
-	glm::mat4 Camera::GetWorldToViewMatrix() const
+	glm::mat4 Camera::GetViewMatrix() const
 	{
 		return glm::lookAt(m_Pos, m_Pos + m_Orientation, m_Up);
 	}

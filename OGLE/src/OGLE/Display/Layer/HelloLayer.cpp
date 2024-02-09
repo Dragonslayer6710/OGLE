@@ -118,12 +118,15 @@ namespace OGLE {
 
 			texture = new UniformTextureAtlas("terrain.png",glm::vec2(16,16));
 			texture->Bind();
+
 			InstanceList instList = InstanceList
-			({
-				Instance{glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, 0.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f),glm::radians(90.0f),glm::vec3(0.0f, 1.0f, 0.0f)), texture->GetSubTexture(0)},
-				Instance{glm::translate(glm::mat4(1.0f), glm::vec3( 0.0f, 0.0f,-0.5f)), texture->GetSubTexture(1)},
-				Instance{glm::translate(glm::mat4(1.0f), glm::vec3( 0.0f,-0.5f, 0.0f)) * glm::rotate(glm::mat4(1.0f),glm::radians(90.0f),glm::vec3(1.0f, 0.0f, 0.0f)), texture->GetSubTexture(2)}
-				});
+			(
+				{
+					Instance(NewModelMatrix(glm::vec3(-0.5f, 0.0f, 0.0f),glm::vec3( 0.0f,90.0f, 0.0f)),texture->GetSubTexture(0)),
+					Instance(NewModelMatrix(glm::vec3( 0.0f, 0.0f,-0.5f),glm::vec3( 0.0f, 0.0f, 0.0f)),texture->GetSubTexture(1)),
+					Instance(NewModelMatrix(glm::vec3( 0.0f,-0.5f, 0.0f),glm::vec3(90.0f, 0.0f, 0.0f)),texture->GetSubTexture(2))
+				}
+			);
 			quad = new Quad
 			(
 				&instList 
@@ -131,7 +134,7 @@ namespace OGLE {
 			//quad = new Quad();
 			//cube = new Cube();
 			
-			vao = &(quad->GetVAO());
+			vao = &(quad->GetMesh().GetVAO());
 
 			
 			
@@ -146,10 +149,11 @@ namespace OGLE {
 		}
 		
 		// Init Projection Matrix
-		glm::mat4 viewToProjectionMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
-		glm::mat4 worldToProjectionMatrix = viewToProjectionMatrix * m_Camera->GetWorldToViewMatrix();
+		glm::mat4 viewMatrix = m_Camera->GetViewMatrix();
+		glm::mat4 projMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
 
-		shaderProgram->SetUniformMatrix4fv("u_WorldToProjection", worldToProjectionMatrix);
+
+		shaderProgram->SetUniformMatrix4fv("u_ProjViewMatrix", projMatrix * viewMatrix);
 		
 		s_MouseDeltaX = s_NextMousePosX - s_MousePosX;
 		s_MouseDeltaY = s_NextMousePosY - s_MousePosY;

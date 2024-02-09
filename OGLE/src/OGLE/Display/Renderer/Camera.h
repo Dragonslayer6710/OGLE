@@ -24,7 +24,7 @@ namespace OGLE {
 		void MoveDown();
 
 
-		glm::mat4 GetWorldToViewMatrix() const;
+		glm::mat4 GetViewMatrix() const;
 	private:
 		float m_CameraSensitivity = 0.5f;
 		float m_MoveSpeed = 0.1f;

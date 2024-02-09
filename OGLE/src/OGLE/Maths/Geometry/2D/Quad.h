@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OGLE/Maths/Geometry/Mesh.h"
+#include "OGLE/Maths/Geometry/Shape.h"
 namespace OGLE {
 
 	static VertexList s_QuadVertices = VertexList(
@@ -19,10 +19,10 @@ namespace OGLE {
 	};
 
 
-	class Quad : public Mesh
+	class Quad : public Shape
 	{
 	public:
 		Quad(InstanceList* instanceList = nullptr)
-			: Mesh(s_QuadVertices, s_QuadIndices, instanceList) {}
+			: Shape(s_QuadVertices, s_QuadIndices, instanceList) {}
 	};
 }

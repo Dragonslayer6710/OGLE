@@ -61,18 +61,28 @@ namespace OGLE {
 		{}
 	};
 
+	static inline glm::mat4 NewModelMatrix(glm::vec3 translation, glm::quat rotation, glm::vec3 scale)
+	{
+		return glm::scale(glm::translate(glm::mat4(1.0), translation) * glm::toMat4(rotation), scale);
+	}
+	static inline glm::mat4 NewModelMatrix(glm::vec3 translation = glm::vec3(1.0f), glm::vec3 rotDeg = glm::vec3(0.0f), glm::vec3 scale = glm::vec3(1.0f))
+	{
+		return NewModelMatrix(translation, glm::quat(glm::radians(rotDeg)), scale);
+	}
+
 	struct Instance {
-		glm::mat4 ModelTransform;
+		glm::mat4 ModelMatrix;
 		glm::vec2 SubTexOffset = glm::vec2(0,0);
 		glm::vec2 SubTexSize = glm::vec2(1, 1);
 
 		Instance() {}
-		Instance(glm::mat4 modelTransform, TextureGeometry texGeom)
-			:ModelTransform(modelTransform), SubTexOffset(texGeom.Position), SubTexSize(texGeom.Size)
+		Instance(glm::mat4 modelMatrix, TextureGeometry texGeom)
+			:ModelMatrix(modelMatrix), SubTexOffset(texGeom.Position), SubTexSize(texGeom.Size)
 		{
 			OGLE_INFO("");
 		}
 	};
+	
 
 	static const DataLayout s_DefInstanceLayout = DataLayout({ FloatMat4, Float2, Float2 });
 
