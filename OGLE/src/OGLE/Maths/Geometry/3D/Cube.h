@@ -1,9 +1,9 @@
 #pragma once
 
-#include "OGLE/Maths/Geometry/Mesh.h"
+#include "OGLE/Maths/Geometry/Shape.h"
 namespace OGLE {
 
-	static VertexList s_CubeVertices = VertexList(
+	static VertexList s_CubeVertexList = VertexList(
 
 		{
 			Vertex(glm::vec3(0.5f,-0.5f, 0.5f), glm::vec4(0.5f, 0.0f, 0.0f, 0.5f), glm::vec2(0.0f)), //0 Right
@@ -38,6 +38,9 @@ namespace OGLE {
 		}
 	);
 
+	static VertexCollection s_CubeVertices = VertexCollection(s_CubeVertexList, s_DefVertexLayout);
+
+
 	static std::vector<GLushort> s_CubeIndices =
 	{
 		 0,  1,  2,
@@ -61,11 +64,16 @@ namespace OGLE {
 	};
 
 
-	class Cube : public Mesh
+	class Cube : public Shape
 	{
 	public:
-		Cube(InstanceList* instanceList = nullptr)
-			: Mesh(s_CubeVertices, s_CubeIndices, instanceList) {}
+		Cube
+		(
+			glm::vec3* position = new glm::vec3(0.0f),
+			glm::vec3* rotDeg = new glm::vec3(0.0f),
+			glm::vec3* scale = new glm::vec3(1.0f)
+		)
+			: Shape(s_CubeVertices, s_CubeIndices, position, rotDeg, scale) {}
 	};
 }
 

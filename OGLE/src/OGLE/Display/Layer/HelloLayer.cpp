@@ -1,8 +1,7 @@
 #include "oglepch.h"
 #include "OGLE/Display/Layer/HelloLayer.h"
-#include "OGLE/Maths/Geometry/3D/Cube.h"
-#include "OGLE/Maths/Geometry/2D/Triangle.h"
-#include "OGLE/Maths/Geometry/2D/Quad.h"
+#include "OGLE/Maths/Geometry/Mesh.h"
+
 namespace OGLE {
 
 	HelloLayer::HelloLayer(Renderer& renderer)
@@ -96,6 +95,7 @@ namespace OGLE {
 	VertexArray* vao;
 	Camera* camera;
 
+	Mesh* mesh;
 	Triangle* triangle;
 	Quad* quad;
 	Cube* cube;
@@ -119,7 +119,7 @@ namespace OGLE {
 			texture = new UniformTextureAtlas("terrain.png",glm::vec2(16,16));
 			texture->Bind();
 
-			InstanceList instList = InstanceList
+			InstanceList* instList = new InstanceList
 			(
 				{
 					Instance(NewModelMatrix(glm::vec3(-0.5f, 0.0f, 0.0f),glm::vec3( 0.0f,90.0f, 0.0f)),texture->GetSubTexture(0)),
@@ -127,14 +127,12 @@ namespace OGLE {
 					Instance(NewModelMatrix(glm::vec3( 0.0f,-0.5f, 0.0f),glm::vec3(90.0f, 0.0f, 0.0f)),texture->GetSubTexture(2))
 				}
 			);
-			quad = new Quad
-			(
-				&instList 
-			);
+			quad = new Quad();
+			mesh = new Mesh(*quad, instList);
 			//quad = new Quad();
 			//cube = new Cube();
 			
-			vao = &(quad->GetMesh().GetVAO());
+			vao = &(mesh->GetVAO());
 
 			
 			

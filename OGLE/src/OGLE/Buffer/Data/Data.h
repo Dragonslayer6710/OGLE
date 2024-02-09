@@ -56,19 +56,12 @@ namespace OGLE {
 		glm::vec2 Position;
 		glm::vec2 Size;
 
-		TextureGeometry(glm::vec2 position, glm::vec2 size)
+		TextureGeometry(glm::vec2 position = glm::vec2(1.0f), glm::vec2 size = glm::vec2(1.0f))
 			: Position(position), Size(size)
 		{}
 	};
 
-	static inline glm::mat4 NewModelMatrix(glm::vec3 translation, glm::quat rotation, glm::vec3 scale)
-	{
-		return glm::scale(glm::translate(glm::mat4(1.0), translation) * glm::toMat4(rotation), scale);
-	}
-	static inline glm::mat4 NewModelMatrix(glm::vec3 translation = glm::vec3(1.0f), glm::vec3 rotDeg = glm::vec3(0.0f), glm::vec3 scale = glm::vec3(1.0f))
-	{
-		return NewModelMatrix(translation, glm::quat(glm::radians(rotDeg)), scale);
-	}
+	
 
 	struct Instance {
 		glm::mat4 ModelMatrix;

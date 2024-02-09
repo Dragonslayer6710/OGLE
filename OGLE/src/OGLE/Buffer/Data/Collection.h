@@ -6,10 +6,14 @@ namespace OGLE{
 	class Collection
 	{
 	public:
-		Collection(DataList<T>& dataList, DataLayout& dataLayout, GLuint attributeIDTracker)
-			: m_DataList(dataList), m_Data(m_DataList.GetData()), m_Length(m_DataList.GetLength()), m_Size(m_DataList.GetSize())
+		Collection(DataList<T>& dataList, DataLayout& dataLayout)
+			: m_DataList(dataList), m_DataLayout(dataLayout), m_Data(m_DataList.GetData()), m_Length(m_DataList.GetLength()), m_Size(m_DataList.GetSize())
 		{
-			for (DataAttributeInfo attribInfo : dataLayout.AttributeData)
+		}
+
+		void LinkCollection(GLuint attributeIDTracker)
+		{
+			for (DataAttributeInfo attribInfo : m_DataLayout.AttributeData)
 			{
 				m_DataAttributes[m_Stride] = GetNewDataAttribute(attributeIDTracker, attribInfo.Type, attribInfo.Normalized);
 				m_Stride += m_DataAttributes[m_Stride]->Size;
@@ -28,6 +32,7 @@ namespace OGLE{
 	private:
 		std::unordered_map<GLuint, DataAttribute*> m_DataAttributes;
 		DataList<T> m_DataList;
+		DataLayout m_DataLayout;
 
 		const GLvoid* m_Data;
 		GLuint m_Length;
@@ -38,14 +43,14 @@ namespace OGLE{
 	class VertexCollection : public Collection<Vertex>
 	{
 	public:
-		VertexCollection(VertexList& vertexList, DataLayout& vertexLayout, GLuint attributeIDTracker)
-			: Collection(vertexList, vertexLayout, attributeIDTracker) {}
+		VertexCollection(VertexList& vertexList, DataLayout vertexLayout)
+			: Collection(vertexList, vertexLayout) {}
 	};
 
 	class InstanceCollection : public Collection<Instance>
 	{
 	public:
-		InstanceCollection(InstanceList& instanceList, DataLayout& instanceLayout, GLuint attributeIDTracker)
-			: Collection(instanceList, instanceLayout, attributeIDTracker) {}
+		InstanceCollection(InstanceList& instanceList, DataLayout instanceLayout)
+			: Collection(instanceList, instanceLayout) {}
 	};
 }
