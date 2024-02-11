@@ -55,7 +55,7 @@ namespace OGLE{
 	class InstanceCollection : public Collection<Instance>
 	{
 	public:
-		InstanceCollection(InstanceList& instanceList, DataLayout instanceLayout = s_DefInstanceLayout)
-			: Collection(instanceList, instanceLayout) {}
+		InstanceCollection(InstanceList& m_InstanceList, DataLayout instanceLayout = s_DefInstanceLayout)
+			: Collection(m_InstanceList, instanceLayout) {}
 	};
 }

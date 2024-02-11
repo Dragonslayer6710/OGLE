@@ -143,7 +143,7 @@ namespace OGLE {
 					&texture->GetSubTexture(0),
 				}
 			);
-			mesh = new Mesh(cuboid->Vertices, cuboid->Instances);
+			mesh = new Mesh(cuboid->GetVertices(), cuboid->GetInstances());
 
 			//quad = new Quad();
 			//cube = new Cube();

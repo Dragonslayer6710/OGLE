@@ -9,16 +9,16 @@ namespace OGLE {
 	public:
 		Mesh
 		(
-			VertexCollection* Vertices,
-			InstanceCollection* Instances = nullptr
+			VertexCollection* m_Vertices,
+			InstanceCollection* m_Instances = nullptr
 		) 
 			: m_AttributeIDTracker(NewAttributeIDTracker())
 		{			
-			Vertices->LinkCollection(m_AttributeIDTracker);
-			if (Instances != nullptr) {
-				Instances->LinkCollection(m_AttributeIDTracker);
+			m_Vertices->LinkCollection(m_AttributeIDTracker);
+			if (m_Instances != nullptr) {
+				m_Instances->LinkCollection(m_AttributeIDTracker);
 			}
-			m_VAO = new VertexArray(*Vertices, Instances);
+			m_VAO = new VertexArray(*m_Vertices, m_Instances);
 		}
 		
 		VertexArray& GetVAO() { return *m_VAO; }
