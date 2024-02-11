@@ -11,13 +11,12 @@ namespace OGLE {
 		}
 	);
 
-	static VertexCollection s_TriangleVertices = VertexCollection(s_TriangleVertexList, s_DefVertexLayout);
-
-
 	static std::vector<GLushort> s_TriangleIndices =
 	{
 		0, 1, 2,
 	};
+
+	static VertexCollection s_TriangleVertices = VertexCollection(s_TriangleVertexList, &s_TriangleIndices);
 
 	class Triangle : public Shape
 	{
@@ -28,7 +27,7 @@ namespace OGLE {
 			glm::vec3* rotDeg = new glm::vec3(0.0f),
 			glm::vec3* scale = new glm::vec3(1.0f)
 		)
-			: Shape(s_TriangleVertices, s_TriangleIndices, position, rotDeg, scale) {}
+			: Shape(s_TriangleVertices, position, rotDeg, scale) {}
 	};
 }
 

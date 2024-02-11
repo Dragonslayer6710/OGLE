@@ -4,7 +4,7 @@
 namespace OGLE {
 
 
-	VertexArray::VertexArray(VertexCollection& vertexCollection, std::vector<GLushort>& indices, InstanceCollection* instanceCollection)
+	VertexArray::VertexArray(VertexCollection& vertexCollection, InstanceCollection* instanceCollection)
 	{
 		// Gen and Bind Vertex Array
 		GLCall(glGenVertexArrays(1, &m_VertexArrayID));
@@ -36,7 +36,7 @@ namespace OGLE {
 		m_IsInstanced = m_Instances;
 
 		// Generate Element buffer then unbind VAO to close off VAO initialization
-		m_EBO = new ElementBuffer(indices);
+		m_EBO = new ElementBuffer(vertexCollection.GetIndices());
 		Unbind();
 	}
 

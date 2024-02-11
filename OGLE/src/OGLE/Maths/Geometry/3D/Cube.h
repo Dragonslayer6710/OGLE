@@ -38,9 +38,6 @@ namespace OGLE {
 		}
 	);
 
-	static VertexCollection s_CubeVertices = VertexCollection(s_CubeVertexList, s_DefVertexLayout);
-
-
 	static std::vector<GLushort> s_CubeIndices =
 	{
 		 0,  1,  2,
@@ -63,6 +60,7 @@ namespace OGLE {
 
 	};
 
+	static VertexCollection s_CubeVertices = VertexCollection(s_CubeVertexList, &s_CubeIndices);
 
 	class Cube : public Shape
 	{
@@ -73,7 +71,7 @@ namespace OGLE {
 			glm::vec3* rotDeg = new glm::vec3(0.0f),
 			glm::vec3* scale = new glm::vec3(1.0f)
 		)
-			: Shape(s_CubeVertices, s_CubeIndices, position, rotDeg, scale) {}
+			: Shape(s_CubeVertices, position, rotDeg, scale) {}
 	};
 }
 

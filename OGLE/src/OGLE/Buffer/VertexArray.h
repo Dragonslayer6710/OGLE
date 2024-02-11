@@ -6,7 +6,7 @@ namespace OGLE {
 	class VertexArray
 	{
 	public:
-		VertexArray(VertexCollection& vertexCollection, std::vector<GLushort>& indices, InstanceCollection* instanceCollection);
+		VertexArray(VertexCollection& vertexCollection, InstanceCollection* instanceCollection);
 
 		~VertexArray();
 

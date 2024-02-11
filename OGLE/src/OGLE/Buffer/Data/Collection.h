@@ -43,14 +43,19 @@ namespace OGLE{
 	class VertexCollection : public Collection<Vertex>
 	{
 	public:
-		VertexCollection(VertexList& vertexList, DataLayout vertexLayout)
-			: Collection(vertexList, vertexLayout) {}
+		VertexCollection(VertexList& vertexList, std::vector<GLushort>* indices, DataLayout vertexLayout = s_DefVertexLayout)
+			: Collection(vertexList, vertexLayout), m_Indices(indices) {}
+
+		std::vector<GLushort>& GetIndices() { return *m_Indices; }
+
+	private:
+		std::vector<GLushort>* m_Indices;
 	};
 
 	class InstanceCollection : public Collection<Instance>
 	{
 	public:
-		InstanceCollection(InstanceList& instanceList, DataLayout instanceLayout)
+		InstanceCollection(InstanceList& instanceList, DataLayout instanceLayout = s_DefInstanceLayout)
 			: Collection(instanceList, instanceLayout) {}
 	};
 }

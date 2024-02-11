@@ -99,6 +99,8 @@ namespace OGLE {
 	Triangle* triangle;
 	Quad* quad;
 	Cube* cube;
+	
+	QuadCuboid* cuboid;
 
 	UniformTextureAtlas* texture;
 	glm::vec2* texAtlasSize;
@@ -119,7 +121,7 @@ namespace OGLE {
 			texture = new UniformTextureAtlas("terrain.png",glm::vec2(16,16));
 			texture->Bind();
 
-			InstanceList* instList = new InstanceList
+			/*InstanceList* instList = new InstanceList
 			(
 				{
 					Instance(NewModelMatrix(glm::vec3(-0.5f, 0.0f, 0.0f),glm::vec3( 0.0f,90.0f, 0.0f)),texture->GetSubTexture(0)),
@@ -128,7 +130,21 @@ namespace OGLE {
 				}
 			);
 			quad = new Quad();
-			mesh = new Mesh(*quad, instList);
+			mesh = new Mesh(quad->GetVertices(), new InstanceCollection(*instList));*/
+
+			cuboid = new QuadCuboid
+			(
+				new TextureGeometry* [6]{
+					&texture->GetSubTexture(3),
+					&texture->GetSubTexture(3),
+					&texture->GetSubTexture(3),
+					&texture->GetSubTexture(3),
+					&texture->GetSubTexture(2),
+					&texture->GetSubTexture(0),
+				}
+			);
+			mesh = new Mesh(cuboid->Vertices, cuboid->Instances);
+
 			//quad = new Quad();
 			//cube = new Cube();
 			

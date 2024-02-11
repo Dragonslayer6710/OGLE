@@ -8,6 +8,8 @@ namespace OGLE {
 	struct DataLayout {
 		std::vector<DataAttributeInfo> AttributeData;
 		GLsizeiptr AttribCount;
+		
+		DataLayout() {}
 
 		DataLayout(std::initializer_list<DataAttributeInfo>& attributeData)
 			: AttributeData(attributeData), AttribCount(AttributeData.size()) {}
@@ -65,12 +67,11 @@ namespace OGLE {
 
 	struct Instance {
 		glm::mat4 ModelMatrix;
-		glm::vec2 SubTexOffset = glm::vec2(0,0);
-		glm::vec2 SubTexSize = glm::vec2(1, 1);
+		TextureGeometry TexGeometry;
 
 		Instance() {}
 		Instance(glm::mat4 modelMatrix, TextureGeometry texGeom)
-			:ModelMatrix(modelMatrix), SubTexOffset(texGeom.Position), SubTexSize(texGeom.Size)
+			:ModelMatrix(modelMatrix), TexGeometry(texGeom)
 		{
 			OGLE_INFO("");
 		}
@@ -98,15 +99,18 @@ namespace OGLE {
 			return m_Data->size() * sizeof(T);
 		}
 
-		std::vector<T>& GetDataVector() {
-			return *m_Data;
+		void push_back(T dataElement)
+		{
+			m_Data->push_back(dataElement);
+		}
+
+		std::vector<T>* GetDataVector() {
+			return m_Data;
 		}
 
 	protected:
 		DataList(std::initializer_list<T> data)
 			: DataList(new std::vector<T>(data)) {}
-
-	private:
 		DataList(std::vector<T>* data)
 			: m_Data(data) {}
 
@@ -117,14 +121,18 @@ namespace OGLE {
 	class VertexList : public DataList<Vertex>
 	{
 	public:
-		VertexList(std::initializer_list<Vertex> data)
+		VertexList(std::vector<Vertex>* data)
+			:DataList(data) {}
+		VertexList(std::initializer_list<Vertex> data = {})
 			:DataList(data) {}
 	};
 
 	class InstanceList : public DataList<Instance>
 	{
 	public:
-		InstanceList(std::initializer_list<Instance> data)
+		InstanceList(std::vector<Instance>* data)
+			:DataList(data) {}
+		InstanceList(std::initializer_list<Instance> data = {})
 			:DataList(data) {}
 	};
 
