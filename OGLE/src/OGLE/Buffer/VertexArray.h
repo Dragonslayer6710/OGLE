@@ -23,6 +23,8 @@ namespace OGLE {
 		GLuint GetInstanceCount();
 		bool CheckInstanced();
 
+		void SetInstanceBuffer(InstanceCollection* instanceCollection);
+
 	private:
 		static void SetAttribPointer
 		(

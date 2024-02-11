@@ -10,6 +10,8 @@ namespace OGLE{
 		Texture(std::string textureFile);
 		~Texture();
 
+		bool IsAtlas();
+
 		void Bind();
 		void Unbind();
 
@@ -31,6 +33,7 @@ namespace OGLE{
 		
 
 	protected:
+		bool m_IsAtlas = false;
 		glm::vec2 m_Size;
 
 	private:

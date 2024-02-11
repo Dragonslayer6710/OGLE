@@ -52,7 +52,7 @@ namespace OGLE {
 	};
 	void Renderer::DrawInstanced()
 	{
-		GLCall(glDrawElementsInstanced(GL_TRIANGLES, m_ElementCount, m_ElementDataType, nullptr, m_InstanceCount));
+		GLCall(glDrawElementsInstanced(GL_TRIANGLES, m_ElementCount, m_ElementDataType, nullptr, m_CurrentVAO->GetInstanceCount()));
 	}
 
 	void Renderer::UpdateClipPlanes(GLfloat nearPlane /*= NULL*/, GLfloat farPlane /*= NULL*/)
@@ -139,8 +139,7 @@ namespace OGLE {
 		m_CurrentVAO = &vao;
 		m_ElementCount = m_CurrentVAO->GetElementCount();
 		m_ElementDataType = m_CurrentVAO->GetElementDataType();
-		m_InstanceCount = m_CurrentVAO->GetInstanceCount();
-		m_IsInstanced = m_InstanceCount > 1;
+		m_IsInstanced = m_CurrentVAO->GetElementCount() > 1;
 	}
 
 	void Renderer::BindVAO()

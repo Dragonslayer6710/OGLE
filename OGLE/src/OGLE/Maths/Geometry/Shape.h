@@ -1,5 +1,6 @@
 #pragma once
 
+#include "OGLE/Display/Renderer/Texture.h"
 #include "OGLE/Buffer/VertexArray.h"
 
 #include <variant>
@@ -17,45 +18,40 @@ namespace OGLE {
 	class Shape
 	{
 	public:
+		static Shape* Create(VertexCollection* vertices, InstanceCollection* instances = nullptr);
+
+		bool CheckInstanced();
+
+		VertexCollection* GetVertices();
+		std::vector<GLushort>& GetIndices();
+
+	protected:
 		Shape
 		(
-			VertexCollection& m_Vertices, glm::vec3* position,
-			glm::vec3* rotDeg, glm::vec3* scale, TextureGeometry* texGeom = new TextureGeometry()
-		)
-			: m_Vertices(&m_Vertices), m_Position(position), m_RotDeg(rotDeg), m_Scale(scale)
-		{
-		}
+			VertexCollection* vertices
+		);
 
-		VertexCollection* GetVertices() { return m_Vertices; }
-		std::vector<GLushort>& GetIndices() { return m_Vertices->GetIndices(); }
+	protected:
+		bool m_IsInstanced = false;
 
-	private:
 		VertexCollection* m_Vertices;
-
-		glm::vec3* m_Position;
-		glm::vec3* m_RotDeg;
-		glm::vec3* m_Scale;
 	};
 
-	class MultiShape
+	class MultiShape : public Shape
 	{
 	public:
-		MultiShape(VertexCollection* vertices, InstanceList* instanceList, DataLayout instanceLayout = s_DefInstanceLayout)
-			: m_Vertices(vertices)
-		{
-			m_Instances = new InstanceCollection(*instanceList, instanceLayout);
-		}
+		InstanceCollection* GetInstances();
 
-		VertexCollection* GetVertices() { return m_Vertices; }
-		InstanceCollection* GetInstances() { return m_Instances; }
+		static MultiShape* Create(VertexCollection* vertices, InstanceCollection* instances);
+	protected:
+		MultiShape(VertexCollection* vertices, InstanceCollection* instances);
+
+
 	private:
-		VertexCollection* m_Vertices;
-
 		InstanceCollection* m_Instances;
 	};
+
 }
-
-
 
 #include "OGLE/Maths/Geometry/3D/Cube.h"
 #include "OGLE/Maths/Geometry/2D/Triangle.h"

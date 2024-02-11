@@ -1,6 +1,6 @@
 #include "oglepch.h"
 #include "OGLE/Display/Layer/HelloLayer.h"
-#include "OGLE/Maths/Geometry/Mesh.h"
+#include "OGLE/Maths/Geometry/Model.h"
 
 namespace OGLE {
 
@@ -99,6 +99,7 @@ namespace OGLE {
 	Triangle* triangle;
 	Quad* quad;
 	Cube* cube;
+	Model* model;
 	
 	QuadCuboid* cuboid;
 
@@ -131,24 +132,27 @@ namespace OGLE {
 			);
 			quad = new Quad();
 			mesh = new Mesh(quad->GetVertices(), new InstanceCollection(*instList));*/
+			model = new Model(texture);
 
-			cuboid = new QuadCuboid
-			(
-				new TextureGeometry* [6]{
-					&texture->GetSubTexture(3),
-					&texture->GetSubTexture(3),
-					&texture->GetSubTexture(3),
-					&texture->GetSubTexture(3),
-					&texture->GetSubTexture(2),
-					&texture->GetSubTexture(0),
+			model->AddQuadCuboid(
+				glm::vec3(1.0,0,-3.0f),
+				glm::vec3(0.0f),
+				glm::vec3(1.0f),
+				new GLushort[6]{
+					3, 3, 3,
+					3, 2, 0
 				}
 			);
-			mesh = new Mesh(cuboid->GetVertices(), cuboid->GetInstances());
-
-			//quad = new Quad();
-			//cube = new Cube();
-			
-			vao = &(mesh->GetVAO());
+			model->AddQuadCuboid(
+				glm::vec3(-1.0, 0, -3.0f),
+				glm::vec3(0.0f),
+				glm::vec3(1.0f),
+				new GLushort[6]{
+					3, 3, 3,
+					3, 2, 0
+				}
+			);
+			vao = &(model->GetVAO());
 
 			
 			

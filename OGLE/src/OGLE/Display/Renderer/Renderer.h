@@ -109,7 +109,6 @@ namespace OGLE {
 
 		GLuint m_ElementCount;
 		GLenum m_ElementDataType;
-		GLuint m_InstanceCount;
 		bool m_IsInstanced;
 	};
 

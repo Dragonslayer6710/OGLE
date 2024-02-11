@@ -23,13 +23,8 @@ namespace OGLE {
 	class Quad : public Shape
 	{
 	public:
-		Quad
-		(
-			glm::vec3* position = new glm::vec3(0.0f),
-			glm::vec3* rotDeg = new glm::vec3(0.0f),
-			glm::vec3* scale = new glm::vec3(1.0f)
-		)
-			: Shape(s_QuadVertices, position, rotDeg, scale) {}
+		Quad()
+			: Shape(&s_QuadVertices) {}
 	};
 
 	static const glm::vec3* cuboidQuadPositions[6]
@@ -62,23 +57,39 @@ namespace OGLE {
 		new glm::mat4(NewModelMatrix(*cuboidQuadPositions[5], *cuboidQuadRotations[5])),
 	};
 
-	static class QuadCuboid : public MultiShape
+	static InstanceList* NewQuadCuboidInstanceList(Texture* texture = nullptr, GLushort subTextureIDs[] = nullptr, glm::mat4 modelMatrix = glm::mat4(1.0f))
+	{
+		std::vector<Instance>* instances = new std::vector<Instance>();
+		TextureGeometry* texGeom;
+		for (int side = 0; side < 6; side++) {
+			if (texture != nullptr && !texture->IsAtlas())
+			{
+				OGLE_CORE_ASSERT(subTextureIDs != nullptr, "QuadCuboid Error: TextureAtlas provided without sub texture ids");
+				texGeom = &((TextureAtlas*)texture)->GetSubTexture(subTextureIDs[side]);
+			}
+			else
+				texGeom = new TextureGeometry();
+			glm::mat4 finalMatrix = modelMatrix * *cuboidQuadModelMatrices[side];
+
+			instances->push_back(Instance(finalMatrix, *texGeom));
+		}
+		return new InstanceList(instances);
+	}
+
+	class QuadCuboid : public MultiShape
 	{
 	public:
-		QuadCuboid(TextureGeometry* cuboidFaceTextures[6])
+		static QuadCuboid* Create(Texture* texture = nullptr, GLushort subTextureIDs[] = nullptr, glm::mat4 modelMatrix = glm::mat4(1.0f), DataLayout instanceLayout = s_DefInstanceLayout) {
+			return new QuadCuboid(
+				new InstanceCollection(*NewQuadCuboidInstanceList(texture, subTextureIDs, modelMatrix), instanceLayout)
+			);
+		}
+	protected:
+		QuadCuboid(InstanceCollection* instances)
 			: MultiShape
 			(
 				&s_QuadVertices,
-				new InstanceList(
-					{
-						Instance(*cuboidQuadModelMatrices[0], *cuboidFaceTextures[0]),
-						Instance(*cuboidQuadModelMatrices[1], *cuboidFaceTextures[1]),
-						Instance(*cuboidQuadModelMatrices[2], *cuboidFaceTextures[2]),
-						Instance(*cuboidQuadModelMatrices[3], *cuboidFaceTextures[3]),
-						Instance(*cuboidQuadModelMatrices[4], *cuboidFaceTextures[4]),
-						Instance(*cuboidQuadModelMatrices[5], *cuboidFaceTextures[5]),
-					}
-				)
+				instances
 			)
 		{
 		}

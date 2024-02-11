@@ -32,6 +32,11 @@ namespace OGLE {
 		GLCall(glDeleteTextures(1, &m_TextureID));
 	}
 
+	bool Texture::IsAtlas()
+	{
+		return m_IsAtlas;
+	}
+
 	void Texture::Bind()
 	{
 		if (m_IsBound)

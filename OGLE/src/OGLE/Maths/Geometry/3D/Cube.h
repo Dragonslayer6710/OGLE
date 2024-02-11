@@ -66,12 +66,8 @@ namespace OGLE {
 	{
 	public:
 		Cube
-		(
-			glm::vec3* position = new glm::vec3(0.0f),
-			glm::vec3* rotDeg = new glm::vec3(0.0f),
-			glm::vec3* scale = new glm::vec3(1.0f)
-		)
-			: Shape(s_CubeVertices, position, rotDeg, scale) {}
+		()
+			: Shape(&s_CubeVertices) {}
 	};
 }
 

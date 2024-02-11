@@ -21,16 +21,7 @@ namespace OGLE {
 		// If instance data given
 		if (instanceCollection)
 		{
-			// Init and bind IBO
-			m_IBO = new InstanceBuffer(*instanceCollection);
-			m_IBO->Bind();
-
-			// Init IBO Attrib Arrays then unbind IBO
-			SetAttribPointers(m_IBO->GetCollection(), 1);
-			m_IBO->Unbind();
-
-			// Get count of instances
-			m_Instances = m_IBO->GetCollection().GetLength();
+			SetInstanceBuffer(instanceCollection);
 		}
 		// Set bool symbolizing instance status
 		m_IsInstanced = m_Instances;
@@ -100,6 +91,20 @@ namespace OGLE {
 		return m_IsInstanced;
 	}
 
+	void VertexArray::SetInstanceBuffer(InstanceCollection* instanceCollection)
+	{
+		// Init and bind IBO
+		m_IBO = new InstanceBuffer(*instanceCollection);
+		m_IBO->Bind();
+
+		// Init IBO Attrib Arrays then unbind IBO
+		SetAttribPointers(m_IBO->GetCollection(), 1);
+		m_IBO->Unbind();
+
+		// Get count of instances
+		m_Instances = m_IBO->GetCollection().GetLength();
+	}
+
 	void VertexArray::SetAttribPointer
 	(
 		GLuint attribID, GLint elemCount,
@@ -140,7 +145,7 @@ namespace OGLE {
 				GLCall(glVertexAttribDivisor(attribID, divisor));
 			glm::vec4 v4;
 			glGetBufferSubData(GL_ARRAY_BUFFER, totalOffset, size, &v4);
-			OGLE_CORE_INFO("\nAttribute ID {0}:\n\tAttribute Size: {1}\t|\tOffset: {2}\t|\tElements: {3}\t|\tType: {4}\t|\tNormalized: {5}\nData: {6}\t|\tDivisor: {7}\n", attribID, size, totalOffset, elemCount, type, normalized, v4, divisor);
+			//OGLE_CORE_INFO("\nAttribute ID {0}:\n\tAttribute Size: {1}\t|\tOffset: {2}\t|\tElements: {3}\t|\tType: {4}\t|\tNormalized: {5}\nData: {6}\t|\tDivisor: {7}\n", attribID, size, totalOffset, elemCount, type, normalized, v4, divisor);
 		}
 	}
 
