@@ -37,22 +37,25 @@ namespace OGLE {
 		
 	};
 
-	
 
 	struct Vertex {
 		glm::vec3 Position;
 		glm::vec4 Color;
 		glm::vec2 TexUV;
+		//bool isNull = false;
 
 		Vertex()
 			: Position(glm::vec3()), Color(glm::vec4()), TexUV(glm::vec2()) {}
 		Vertex(glm::vec2 position, glm::vec4 color, glm::vec2 texUV)
-			: Position(position, 0.0f), Color(color), TexUV(texUV) {}
+			: Position(glm::vec3(position, 0.0f)), Color(color), TexUV(texUV) {}
 		Vertex(glm::vec3 position, glm::vec4 color, glm::vec2 texUV)
-			: Position(position), Color(color), TexUV(texUV) {}
+			: Position(glm::vec3(position)), Color(color), TexUV(texUV) {}
+
+		bool IsNull() { return false; }
+
 	};
 
-	static const DataLayout s_DefVertexLayout = DataLayout({ Float3, Float4, Float2 });
+	static const DataLayout s_VertexLayout = DataLayout({ Float3, Float4, Float2 });
 	
 	struct TextureGeometry {
 		glm::vec2 Position;
@@ -65,76 +68,19 @@ namespace OGLE {
 
 	
 
-	struct Instance {
+	struct Instance{
 		glm::mat4 ModelMatrix;
 		TextureGeometry TexGeometry;
+		//bool isNull = false;
 
-		Instance() {}
-		Instance(glm::mat4 modelMatrix, TextureGeometry texGeom)
-			:ModelMatrix(modelMatrix), TexGeometry(texGeom)
-		{
-			OGLE_INFO("");
-		}
+		Instance(glm::mat4 modelMatrix=glm::mat4(), TextureGeometry texGeom = TextureGeometry())
+			: ModelMatrix(modelMatrix), TexGeometry(texGeom) {}
+
+		bool IsNull() { return ModelMatrix == glm::mat4(); }
 	};
 	
 
-	static const DataLayout s_DefInstanceLayout = DataLayout({ FloatMat4, Float2, Float2 });
-
-
-	
-
-	template <typename T>
-	class DataList
-	{
-	public:
-		GLvoid* GetData() {
-			return m_Data->data();
-		}
-
-		GLuint GetLength() {
-			return m_Data->size();
-		}
-
-		GLuint GetSize() {
-			return m_Data->size() * sizeof(T);
-		}
-
-		void push_back(T dataElement)
-		{
-			m_Data->push_back(dataElement);
-		}
-
-		std::vector<T>* GetDataVector() {
-			return m_Data;
-		}
-
-	protected:
-		DataList(std::initializer_list<T> data)
-			: DataList(new std::vector<T>(data)) {}
-		DataList(std::vector<T>* data)
-			: m_Data(data) {}
-
-	private:
-		std::vector<T>* m_Data;
-	};
-
-	class VertexList : public DataList<Vertex>
-	{
-	public:
-		VertexList(std::vector<Vertex>* data)
-			:DataList(data) {}
-		VertexList(std::initializer_list<Vertex> data = {})
-			:DataList(data) {}
-	};
-
-	class InstanceList : public DataList<Instance>
-	{
-	public:
-		InstanceList(std::vector<Instance>* data)
-			:DataList(data) {}
-		InstanceList(std::initializer_list<Instance> data = {})
-			:DataList(data) {}
-	};
+	static const DataLayout s_InstanceLayout = DataLayout({ FloatMat4, Float2, Float2 });
 
 	/*class C
 	{

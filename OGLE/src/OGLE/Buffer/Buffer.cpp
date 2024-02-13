@@ -46,14 +46,14 @@ namespace OGLE {
 	}
 
 
-	ElementBuffer::ElementBuffer(std::vector<GLushort>& indices, GLenum bufferTarget, GLenum elementDataType /*= GL_UNSIGNED_SHORT*/) : Buffer
+	ElementBuffer::ElementBuffer(std::vector<GLushort>* indices, GLenum bufferTarget, GLenum elementDataType /*= GL_UNSIGNED_SHORT*/) : Buffer
 	(
 		GL_ELEMENT_ARRAY_BUFFER,
-		sizeof(GLushort)* indices.size(),
-		indices.data(),
+		sizeof(GLushort)* indices->size(),
+		indices->data(),
 		bufferTarget
 	),
-		m_ElementCount(indices.size()),
+		m_ElementCount(indices->size()),
 		m_ElementDataType(elementDataType)
 	{
 

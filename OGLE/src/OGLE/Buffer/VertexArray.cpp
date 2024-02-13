@@ -4,7 +4,7 @@
 namespace OGLE {
 
 
-	VertexArray::VertexArray(VertexCollection& vertexCollection, InstanceCollection* instanceCollection)
+	VertexArray::VertexArray(VertexCollection* vertexCollection, InstanceCollection* instanceCollection)
 	{
 		// Gen and Bind Vertex Array
 		GLCall(glGenVertexArrays(1, &m_VertexArrayID));
@@ -27,7 +27,7 @@ namespace OGLE {
 		m_IsInstanced = m_Instances;
 
 		// Generate Element buffer then unbind VAO to close off VAO initialization
-		m_EBO = new ElementBuffer(vertexCollection.GetIndices());
+		m_EBO = new ElementBuffer(vertexCollection->GetIndices());
 		Unbind();
 	}
 
@@ -94,7 +94,7 @@ namespace OGLE {
 	void VertexArray::SetInstanceBuffer(InstanceCollection* instanceCollection)
 	{
 		// Init and bind IBO
-		m_IBO = new InstanceBuffer(*instanceCollection);
+		m_IBO = new InstanceBuffer(instanceCollection);
 		m_IBO->Bind();
 
 		// Init IBO Attrib Arrays then unbind IBO
@@ -102,7 +102,7 @@ namespace OGLE {
 		m_IBO->Unbind();
 
 		// Get count of instances
-		m_Instances = m_IBO->GetCollection().GetLength();
+		m_Instances = m_IBO->GetCollection()->GetLength();
 	}
 
 	void VertexArray::SetAttribPointer

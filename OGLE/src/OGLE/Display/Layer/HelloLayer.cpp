@@ -1,6 +1,7 @@
 #include "oglepch.h"
 #include "OGLE/Display/Layer/HelloLayer.h"
 #include "OGLE/Maths/Geometry/Model.h"
+#include "OGLE/MineClone/World.h"
 
 namespace OGLE {
 
@@ -72,7 +73,7 @@ namespace OGLE {
 		m_Renderer->UpdateFOV(FOVDegrees);
 
 		ImGui::SliderFloat("Near Plane", &NearPlane, 0.1f, 10.0f);
-		ImGui::SliderFloat("Far Plane", &FarPlane, 0.1f, 10.0f);
+		ImGui::SliderFloat("Far Plane", &FarPlane, 0.1f, 1000.0f);
 		m_Renderer->UpdateClipPlanes(NearPlane, FarPlane);
 
 		//ImGui::SliderFloat3("Camera Position", &(m_Camera->m_Pos[0]), -10.0f, 10.0f);
@@ -96,14 +97,11 @@ namespace OGLE {
 	Camera* camera;
 
 	Mesh* mesh;
-	Triangle* triangle;
-	Quad* quad;
-	Cube* cube;
-	Model* model;
+	World* world;
+	//Model* model;
 	
-	QuadCuboid* cuboid;
+	MultiQuad* cuboid;
 
-	UniformTextureAtlas* texture;
 	glm::vec2* texAtlasSize;
 	glm::vec2* textureOffset;
 	void HelloLayer::OnUpdate(Timestep ts)
@@ -114,45 +112,13 @@ namespace OGLE {
 			// Apply Translation
 			shaderProgram = new ShaderProgram();
 
-			//vao = Cubes();
-			//instShape = new InstancedShape(*cube,offsets);
-			//instShape = new InstancedShape(*triangle, instanceMatrices);
-			//triangle = new Triangle();
+			s_TextureAtlas = new UniformTextureAtlas("terrain.png", glm::vec2(16, 16));
+			s_TextureAtlas->Bind();
+			
 
-			texture = new UniformTextureAtlas("terrain.png",glm::vec2(16,16));
-			texture->Bind();
-
-			/*InstanceList* instList = new InstanceList
-			(
-				{
-					Instance(NewModelMatrix(glm::vec3(-0.5f, 0.0f, 0.0f),glm::vec3( 0.0f,90.0f, 0.0f)),texture->GetSubTexture(0)),
-					Instance(NewModelMatrix(glm::vec3( 0.0f, 0.0f,-0.5f),glm::vec3( 0.0f, 0.0f, 0.0f)),texture->GetSubTexture(1)),
-					Instance(NewModelMatrix(glm::vec3( 0.0f,-0.5f, 0.0f),glm::vec3(90.0f, 0.0f, 0.0f)),texture->GetSubTexture(2))
-				}
-			);
-			quad = new Quad();
-			mesh = new Mesh(quad->GetVertices(), new InstanceCollection(*instList));*/
-			model = new Model(texture);
-
-			model->AddQuadCuboid(
-				glm::vec3(1.0,0,-3.0f),
-				glm::vec3(0.0f),
-				glm::vec3(1.0f),
-				new GLushort[6]{
-					3, 3, 3,
-					3, 2, 0
-				}
-			);
-			model->AddQuadCuboid(
-				glm::vec3(-1.0, 0, -3.0f),
-				glm::vec3(0.0f),
-				glm::vec3(1.0f),
-				new GLushort[6]{
-					3, 3, 3,
-					3, 2, 0
-				}
-			);
-			vao = &(model->GetVAO());
+			world = new World();
+			mesh = Mesh::Create(world->GetWorldGeometry());
+			vao = mesh->GetVAO();
 
 			
 			
@@ -160,7 +126,7 @@ namespace OGLE {
 			m_Renderer->ChangeShaderProgram(*shaderProgram);
 			m_Renderer->ChangeVAO(*vao);
 
-			shaderProgram->SetUniform1i("tex0", texture->GetTextureSlot());
+			shaderProgram->SetUniform1i("tex0", s_TextureAtlas->GetTextureSlot());
 			
 			doInit = false;
 			

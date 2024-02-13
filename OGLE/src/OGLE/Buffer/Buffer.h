@@ -27,24 +27,24 @@ namespace OGLE{
 	class CollectionBuffer : public Buffer
 	{
 	public:
-		CollectionBuffer(Collection<T>& collection, GLenum bufferUsage = GL_STATIC_DRAW) 
-			: m_Collection(collection), Buffer(GL_ARRAY_BUFFER, collection.GetSize(), collection.GetData(), bufferUsage){}
-		Collection<T> GetCollection() { return m_Collection; }
+		CollectionBuffer(Collection<T>* collection, GLenum bufferUsage = GL_STATIC_DRAW) 
+			: m_Collection(collection), Buffer(GL_ARRAY_BUFFER, collection->GetSize(), collection->GetData(), bufferUsage){}
+		Collection<T>* GetCollection() { return m_Collection; }
 	protected:
-		Collection<T> m_Collection;
+		Collection<T>* m_Collection;
 	};
 
 	class VertexBuffer : public CollectionBuffer<Vertex>
 	{
 	public:
-		VertexBuffer(VertexCollection& vertexCollection, GLenum bufferUsage = GL_STATIC_DRAW)
+		VertexBuffer(VertexCollection* vertexCollection, GLenum bufferUsage = GL_STATIC_DRAW)
 			: CollectionBuffer(vertexCollection, bufferUsage) {}
 	};
 
 	class InstanceBuffer : public CollectionBuffer<Instance>
 	{
 	public:
-		InstanceBuffer(InstanceCollection& instanceCollection, GLenum bufferUsage = GL_STATIC_DRAW)
+		InstanceBuffer(InstanceCollection* instanceCollection, GLenum bufferUsage = GL_STATIC_DRAW)
 			: CollectionBuffer(instanceCollection, bufferUsage) {}
 	};
 
@@ -52,7 +52,7 @@ namespace OGLE{
 	class ElementBuffer : public Buffer
 	{
 	public:
-		ElementBuffer(std::vector<GLushort>& indices, GLenum bufferTarget = GL_STATIC_DRAW, GLenum elementDataType = GL_UNSIGNED_SHORT);
+		ElementBuffer(std::vector<GLushort>* indices, GLenum bufferTarget = GL_STATIC_DRAW, GLenum elementDataType = GL_UNSIGNED_SHORT);
 
 		GLuint GetElementCount() const;
 		GLenum GetElementDataType() const;

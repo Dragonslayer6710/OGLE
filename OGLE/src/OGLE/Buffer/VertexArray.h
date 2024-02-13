@@ -6,7 +6,7 @@ namespace OGLE {
 	class VertexArray
 	{
 	public:
-		VertexArray(VertexCollection& vertexCollection, InstanceCollection* instanceCollection);
+		VertexArray(VertexCollection* vertexCollection, InstanceCollection* instanceCollection);
 
 		~VertexArray();
 
@@ -44,9 +44,9 @@ namespace OGLE {
 		);
 		
 		template<typename T>
-		static void SetAttribPointers(Collection<T> collection, GLuint divisor=0) {
-			GLuint stride = collection.GetStride();
-			for (auto& offsetAttrib : collection.GetAttributes())
+		static void SetAttribPointers(Collection<T>* collection, GLuint divisor=0) {
+			GLuint stride = collection->GetStride();
+			for (auto& offsetAttrib : collection->GetAttributes())
 				SetAttribPointer(offsetAttrib.second, stride, offsetAttrib.first, divisor);
 		}
 

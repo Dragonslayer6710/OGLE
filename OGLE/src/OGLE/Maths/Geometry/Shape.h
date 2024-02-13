@@ -15,44 +15,82 @@ namespace OGLE {
 		return NewModelMatrix(translation, glm::quat(glm::radians(rotDeg)), scale);
 	}
 
+	template<typename T>
+	static std::initializer_list<T> CopyConstInit(const std::initializer_list<T> vertices)
+	{
+		return std::initializer_list(vertices);
+	}
+
+	static std::vector<GLushort> CopyConstIndices(const std::vector<GLushort> indices)
+	{
+		return std::vector<GLushort>(indices);
+	}
+
+
+
 	class Shape
 	{
 	public:
-		static Shape* Create(VertexCollection* vertices, InstanceCollection* instances = nullptr);
 
-		bool CheckInstanced();
+		VertexCollection* GetVertices() { return m_Vertices; };
+		std::vector<GLushort>* GetIndices() { return m_Vertices->GetIndices(); };
 
-		VertexCollection* GetVertices();
-		std::vector<GLushort>& GetIndices();
+		InstanceCollection* GetInstances() { return m_Instances; };
+
+		bool CheckInstanced() { return !m_Instances->IsEmpty(); }
+
+		template<typename T>
+		static T* Create()
+		{
+			return (T*) new Shape(T().NewVertexCollection());
+		}
+
+		virtual VertexCollection* NewVertexCollection() { return nullptr; }
+
+		void AddInstances(std::vector<Instance>& instances)
+		{
+			return m_Instances->AddElements(instances);
+		}
+
+		void AddInstance(Instance instance)
+		{
+			m_Instances->AddElement(instance);
+		}
+
+		void InsertInstance(GLuint index, Instance instance)
+		{
+			m_Instances->InsertElement(index, instance);
+		}
+
+		void RemoveInstance(GLuint index)
+		{
+			m_Instances->RemoveElement(index);
+		}
 
 	protected:
+		virtual Shape* Create(VertexCollection* vertices)
+		{
+			return new Shape(vertices);
+		}
+
+		Shape() = default;
+
 		Shape
 		(
 			VertexCollection* vertices
-		);
+		)
+			: m_Vertices(vertices), m_Instances(new InstanceCollection()){}
 
-	protected:
-		bool m_IsInstanced = false;
+		static VertexCollection* NewVertexCollection(const std::initializer_list<Vertex> vertices, const std::vector<GLushort> indices)
+		{
+			return new VertexCollection(CopyConstInit<Vertex>(vertices), CopyConstIndices(indices));
+		}
 
 		VertexCollection* m_Vertices;
-	};
-
-	class MultiShape : public Shape
-	{
-	public:
-		InstanceCollection* GetInstances();
-
-		static MultiShape* Create(VertexCollection* vertices, InstanceCollection* instances);
-	protected:
-		MultiShape(VertexCollection* vertices, InstanceCollection* instances);
-
-
-	private:
 		InstanceCollection* m_Instances;
 	};
 
 }
 
-#include "OGLE/Maths/Geometry/3D/Cube.h"
-#include "OGLE/Maths/Geometry/2D/Triangle.h"
-#include "OGLE/Maths/Geometry/2D/Quad.h"
+#include "OGLE/Maths/Geometry/Geometry2D.h"
+#include "OGLE/Maths/Geometry/Geometry3D.h"

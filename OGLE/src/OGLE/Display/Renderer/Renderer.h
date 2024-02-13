@@ -5,7 +5,7 @@
 
 static const GLfloat DefFOVDegrees = 60.0f;
 static const GLfloat DefNearPlane = 0.1f;
-static const GLfloat DefFarPlane = 10.0f;
+static const GLfloat DefFarPlane = 1000.0f;
 
 namespace OGLE {
 

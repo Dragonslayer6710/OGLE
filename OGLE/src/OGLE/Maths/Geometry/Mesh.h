@@ -11,7 +11,7 @@ namespace OGLE {
 		{
 
 			if (shape->CheckInstanced())
-				return new Mesh(shape->GetVertices(), ((MultiShape*)shape)->GetInstances());
+				return new Mesh(shape->GetVertices(), shape->GetInstances());
 			else
 				return new Mesh(shape->GetVertices(), nullptr);
 		}
@@ -30,7 +30,7 @@ namespace OGLE {
 			if (instances != nullptr) {
 				instances->LinkCollection(m_AttributeIDTracker);
 			}
-			m_VAO = new VertexArray(*vertices, instances);
+			m_VAO = new VertexArray(vertices, instances);
 		}
 
 	private:

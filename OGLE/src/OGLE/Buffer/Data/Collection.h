@@ -6,9 +6,10 @@ namespace OGLE{
 	class Collection
 	{
 	public:
-		Collection(DataList<T>& dataList, DataLayout& dataLayout)
-			: m_DataList(dataList), m_DataLayout(dataLayout), m_Data(m_DataList.GetData()), m_Length(m_DataList.GetLength()), m_Size(m_DataList.GetSize())
+		Collection(std::vector<T>& data, DataLayout dataLayout)
+			: m_Elements(new std::vector(data)), m_DataLayout(dataLayout)
 		{
+			OGLE_INFO("");
 		}
 
 		void LinkCollection(GLuint attributeIDTracker)
@@ -21,20 +22,69 @@ namespace OGLE{
 		}
 
 		std::unordered_map<GLuint, DataAttribute*> GetAttributes() { return m_DataAttributes; };
-		DataList<T> GetDataList() { return m_DataList; }
 
-		const GLvoid* GetData() { return m_Data; }
-		GLuint GetLength() { return m_Length; }
-		GLuint GetSize() { return m_Size; }
+		GLuint GetLength() { return CompressElements()->size(); }
+		GLuint GetSize() { return GetLength() * sizeof(T); }
 		GLuint GetStride() { return m_Stride; }
 
+		bool IsEmpty() { return !GetLength(); }
 
-	private:
+		std::vector<T>* GetElements() { return m_Elements; }
+		const GLvoid* GetData() { 
+			return CompressElements()->data(); }
+	
+	protected:
+		std::vector<T>* CompressElements() {
+			if (m_Length == m_Elements->size())
+				return m_Elements;
+			std::vector<T>* retVector = new std::vector<T>(*m_Elements);
+			int nonNullIndex = 0;
+			for (int i = 0; i < retVector->size(); ++i) {
+				// If the current element is non-zero
+				if (!(*retVector)[i].IsNull()) {
+					// Shift the non-zero element to the nonZeroIndex position
+					(*retVector)[nonNullIndex] = (*retVector)[i];
+					// Increment the nonZeroIndex
+					++nonNullIndex;
+				}
+			}
+
+			// Resize the vector to remove the trailing zeros
+			retVector->resize(nonNullIndex);
+			return retVector;
+		}
+
+		void AddElements(std::vector<T>& data)
+		{
+			m_Elements->insert(m_Elements->end(), data.begin(), data.end());
+		}
+		void AddElement(T& data)
+		{
+			m_Elements->push_back(data);
+		}
+
+		void InsertElement(GLuint index, T data) {
+			if (index >= GetElements()->size())
+				m_Elements->resize(index + 1, T());
+			(*m_Elements)[index] = data;
+		}
+
+		void RemoveElement(GLuint index)
+		{
+			(*m_Elements)[index] = T();
+		}
+
+		T GetElement(GLuint index)
+		{
+			return m_Elements[index];
+		}
+
+	private:		
+		std::vector<T>* m_Elements;	
+
 		std::unordered_map<GLuint, DataAttribute*> m_DataAttributes;
-		DataList<T> m_DataList;
 		DataLayout m_DataLayout;
 
-		const GLvoid* m_Data;
 		GLuint m_Length;
 		GLuint m_Size;
 		GLuint m_Stride = 0;
@@ -43,10 +93,15 @@ namespace OGLE{
 	class VertexCollection : public Collection<Vertex>
 	{
 	public:
-		VertexCollection(VertexList& vertexList, std::vector<GLushort>* indices, DataLayout vertexLayout = s_DefVertexLayout)
-			: Collection(vertexList, vertexLayout), m_Indices(indices) {}
+		VertexCollection(std::initializer_list<Vertex>& data, std::vector<GLushort>& indices)
+			: VertexCollection(std::vector(data), indices) {}
 
-		std::vector<GLushort>& GetIndices() { return *m_Indices; }
+		std::vector<Vertex>* GetVertices() { return GetElements(); }
+		std::vector<GLushort>* GetIndices() { return m_Indices; }
+
+	private:
+		VertexCollection(std::vector<Vertex>& vertices, std::vector<GLushort>& indices)
+			: Collection(vertices, s_VertexLayout), m_Indices(new std::vector<GLushort>(indices)) {}
 
 	private:
 		std::vector<GLushort>* m_Indices;
@@ -55,7 +110,16 @@ namespace OGLE{
 	class InstanceCollection : public Collection<Instance>
 	{
 	public:
-		InstanceCollection(InstanceList& m_InstanceList, DataLayout instanceLayout = s_DefInstanceLayout)
-			: Collection(m_InstanceList, instanceLayout) {}
+		InstanceCollection(std::initializer_list<Instance>* data = nullptr)
+			: InstanceCollection((data != nullptr) ? std::vector(*data) 
+				: std::vector<Instance>()) {}
+
+		std::vector<Instance>* GetInstances() { return GetElements(); }		
+
+		friend class Shape;
+	private:
+		InstanceCollection(std::vector<Instance>& instances)
+			: Collection(instances, s_InstanceLayout) {}
+
 	};
 }
