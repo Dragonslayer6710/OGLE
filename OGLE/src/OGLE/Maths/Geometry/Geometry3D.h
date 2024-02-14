@@ -78,12 +78,12 @@ namespace OGLE {
 
 	static const glm::vec3 cuboidQuadRotations[6]
 	{
-		glm::vec3(  0.0f,	0.0f, 0.0f), // Front
-		glm::vec3(  0.0f, 180.0f, 0.0f), // Back
-		glm::vec3(  0.0f,- 90.0f, 0.0f), // Left
-		glm::vec3(  0.0f,  90.0f, 0.0f), // Right
-		glm::vec3( 90.0f,   0.0f, 0.0f), // Bottom
-		glm::vec3(-90.0f,   0.0f, 0.0f)	 // Top
+		glm::vec3(  0.0f, 180.0f, 0.0f), // Front
+		glm::vec3(  0.0f,   0.0f, 0.0f), // Back
+		glm::vec3(  0.0f,  90.0f, 0.0f), // Left
+		glm::vec3(  0.0f, -90.0f, 0.0f), // Right
+		glm::vec3(-90.0f,   0.0f, 0.0f), // Bottom
+		glm::vec3( 90.0f,   0.0f, 0.0f)	 // Top
 	};
 
 	static const glm::mat4 cuboidQuadModelMatrices[6]

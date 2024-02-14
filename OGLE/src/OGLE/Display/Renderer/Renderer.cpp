@@ -18,6 +18,11 @@ namespace OGLE {
 
 	void Renderer::InitRenderer(GLsizei width, GLsizei height, GLfloat fovDeg, GLfloat nearPlane, GLfloat farPlane)
 	{
+		// Enable face culling
+		glEnable(GL_CULL_FACE);
+
+		// Specify which faces to cull (back faces in this case)
+		glCullFace(GL_BACK);
 		OnWindowResize(width, height);
 		UpdateFOV(DefFOVDegrees);
 		UpdateClipPlanes(nearPlane, farPlane);

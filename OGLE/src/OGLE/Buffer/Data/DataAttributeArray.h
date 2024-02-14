@@ -185,12 +185,17 @@ namespace OGLE {
 	using namespace MAT3;
 	using namespace MAT4;
 
-	inline std::vector<GLuint> s_AttributeIDTrackers;
+	inline std::unordered_map<GLuint, GLuint> s_AttributeIDTrackers;
 
 	static inline GLuint NewAttributeIDTracker()
 	{
-		s_AttributeIDTrackers.push_back(GLuint(0));
-		return s_AttributeIDTrackers.size()-1;
+		GLuint id = s_AttributeIDTrackers.size();
+		s_AttributeIDTrackers[id] = GLuint(0);
+		return id;
+	}
+
+	static inline void DeleteAttributeIDTracker(GLuint id) {
+		s_AttributeIDTrackers.erase(id);
 	}
 
 	static inline DataAttribute* GetNewDataAttribute(GLuint attributeIDTracker, DataAttributeType attribType, GLboolean normalized = GL_FALSE)

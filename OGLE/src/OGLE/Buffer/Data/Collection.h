@@ -33,7 +33,7 @@ namespace OGLE{
 		const GLvoid* GetData() { 
 			return CompressElements()->data(); }
 	
-	protected:
+	//protected:
 		std::vector<T>* CompressElements() {
 			if (m_Length == m_Elements->size())
 				return m_Elements;
@@ -76,7 +76,7 @@ namespace OGLE{
 
 		T GetElement(GLuint index)
 		{
-			return m_Elements[index];
+			return (*m_Elements)[index];
 		}
 
 	private:		

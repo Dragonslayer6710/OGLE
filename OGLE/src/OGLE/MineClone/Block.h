@@ -20,7 +20,7 @@ namespace OGLE {
 		GLushort* subTexIDs;
 
 		switch (id)
-		{
+		{			
 		case 0:
 			subTexIDs = new GLushort[6]{ 3, 3, 3, 3, 2, 0 };
 			break;
@@ -34,7 +34,15 @@ namespace OGLE {
 			subTexIDs = new GLushort[6]{ 7, 7, 7, 7, 7, 7 };
 			break;
 		default:
-			return nullptr;
+			return new std::vector<TextureGeometry>
+			{
+				TextureGeometry(),
+				TextureGeometry(),
+				TextureGeometry(),
+				TextureGeometry(),
+				TextureGeometry(),
+				TextureGeometry()
+			};;
 		}
 		return BlockTextureMap(s_TextureAtlas, subTexIDs);
 	}
@@ -62,7 +70,9 @@ namespace OGLE {
 
 		void ShowFace(GLushort face);
 
-		GLushort GetBlockID();
+		glm::vec3 GetPos() { return m_Position; }
+
+		GLushort GetBlockTypeID();
 
 		GLuint Block::GetWorldBlockID();
 		static int hiddenFaces;

@@ -4,7 +4,7 @@
 namespace OGLE {
 	class Window;
 
-	static const GLuint numChunksOnAxis = 1;
+	static const GLuint numChunksOnAxis = 2;
 	static const GLuint chunkWidth = 16;
 
 	static const GLuint numBlocksOnAxis = numChunksOnAxis * chunkWidth;

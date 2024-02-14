@@ -14,40 +14,52 @@ namespace OGLE {
 		World::Get()->AddBlock(m_Position, *m_FaceTexGeoms);
 		auto it = World::Get()->GetWorldGeometry()->GetInstances()->GetElements()->begin();
 		m_Faces = new std::vector<Instance>(it+m_WorldBlockID, it+m_WorldBlockID+6);
+		if (m_BlockID == GLushort(-1))
+			for (GLushort face = 0; face < 6; face++)
+				HideFace(face);
 	}
 	void Block::UpdateGeometry()
 	{
+		if (m_BlockID == GLushort(-1))
+			return;
 		for (GLushort face = 0; face < 6; face++)
 		{
 			Ref<Block> adjacentBlock = nullptr;
+			glm::vec3 adjPos;
 			switch (face)
 			{
 			case BlockSouth:
-				adjacentBlock = World::Get()->GetBlock(glm::vec3(m_Position.x, m_Position.y, m_Position.z + 1));
+				adjPos = glm::vec3(m_Position.x, m_Position.y, m_Position.z + 1);
 				break;
 			case BlockNorth:
-				adjacentBlock = World::Get()->GetBlock(glm::vec3(m_Position.x, m_Position.y, m_Position.z - 1));
+				adjPos = glm::vec3(m_Position.x, m_Position.y, m_Position.z - 1);
 				break;
 			case BlockWest:
-				adjacentBlock = World::Get()->GetBlock(glm::vec3(m_Position.x - 1, m_Position.y, m_Position.z));
+				adjPos = glm::vec3(m_Position.x - 1, m_Position.y, m_Position.z);
 				break;
 			case BlockEast:
-				adjacentBlock = World::Get()->GetBlock(glm::vec3(m_Position.x + 1, m_Position.y, m_Position.z));
+				adjPos = glm::vec3(m_Position.x + 1, m_Position.y, m_Position.z);
 				break;
 			case BlockBottom:
-				adjacentBlock = World::Get()->GetBlock(glm::vec3(m_Position.x, m_Position.y - 1, m_Position.z));
+				adjPos = glm::vec3(m_Position.x, m_Position.y - 1, m_Position.z);
 				break;
 			case BlockTop:
-				adjacentBlock = World::Get()->GetBlock(glm::vec3(m_Position.x, m_Position.y + 1, m_Position.z));
+				adjPos = glm::vec3(m_Position.x, m_Position.y + 1, m_Position.z);
 				break;
-			}
+			};
 
+			adjacentBlock = World::Get()->GetBlock(adjPos);	
 			if (adjacentBlock != nullptr)
-				if (adjacentBlock->GetBlockID() != -1)
-					if (m_VisibleFaces[face])
+				if (adjPos != adjacentBlock->GetPos())
+				OGLE_CORE_INFO("{0} vs {1}", adjPos, adjacentBlock->GetPos());
+
+			if (m_VisibleFaces[face])
+				if (adjacentBlock != nullptr)
+					if (adjacentBlock->GetBlockTypeID() != GLushort(-1))
+
 					{
 						HideFace(face);
-						hiddenFaces+=1;
+						hiddenFaces += 1;
 						continue;
 					}
 			if (!m_VisibleFaces[face])
@@ -58,7 +70,6 @@ namespace OGLE {
 	void Block::HideFace(GLushort face)
 	{
 		m_VisibleFaces[face] = false;
-		//OGLE_CORE_INFO("Block {0}: Culling Face: {1} FaceID: {2}", m_WorldBlockID, face, m_WorldBlockID*6 + face);
 		World::Get()->HideFace(m_WorldBlockID*6 + face);
 	}
 
@@ -68,7 +79,7 @@ namespace OGLE {
 		World::Get()->ShowFace(m_WorldBlockID + face, (*m_Faces)[face]);
 	}
 
-	GLushort Block::GetBlockID()
+	GLushort Block::GetBlockTypeID()
 	{
 		return m_BlockID;
 	}

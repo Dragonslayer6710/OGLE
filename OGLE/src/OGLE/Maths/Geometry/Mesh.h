@@ -32,6 +32,11 @@ namespace OGLE {
 			m_VAO = new VertexArray(vertices, instances);
 		}
 
+		~Mesh()
+		{
+			DeleteAttributeIDTracker(m_AttributeIDTracker);
+		}
+
 	private:
 		GLuint m_AttributeIDTracker;
 		VertexArray* m_VAO;

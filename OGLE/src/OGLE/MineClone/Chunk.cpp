@@ -6,25 +6,25 @@
 namespace OGLE {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<int> blockDist(0, 3);
-	std::uniform_int_distribution<int> setBlock(0, 1);
+	std::uniform_int_distribution<int> blockDist(-1, 3);
 	static int numChunks = 0;
 	Chunk::Chunk(int chunkX, int chunkZ)
 	{
 		int worldX = chunkX * chunkWidth;
 		int worldZ = chunkZ * chunkWidth;
-		for (int y = 0; y < buildHeight; y++) 
-			for (int x = 0; x < chunkWidth; x++) 
+
+		for (int x = 0; x < chunkWidth; x++) {
+			m_Blocks.push_back(std::vector<std::vector<Ref<Block>>>());
+			for (int y = 0; y < buildHeight; y++) {
+				m_Blocks[x].push_back(std::vector<Ref<Block>>());
 				for (int z = 0; z < chunkWidth; z++)
 				{
-					if (y==0)
-						m_Blocks.push_back(std::vector<std::vector<Ref<Block>>>());
-					if (z == 0)
-						m_Blocks[x].push_back(std::vector<Ref<Block>>());
-					if (setBlock(gen))
-						m_Blocks[x][y].push_back(CreateScope<Block>(glm::vec3(x+worldX, y, z+worldZ), blockDist(gen)));
+					m_Blocks[x][y].push_back(CreateRef<Block>(glm::vec3(x + worldX, y, z + worldZ), blockDist(gen)));
 					//OGLE_CORE_INFO("Block {0} ({1}, {2}, {3}) Generated at Chunk {4}", m_Blocks[x][y][z]->GetWorldBlockID(), x + worldX, y, z + worldZ, numChunks + 1);
 				}
+			}
+		}
+
 		numChunks++;
 
 	}
@@ -42,7 +42,8 @@ namespace OGLE {
 		for (std::vector<std::vector<Ref<Block>>> x : m_Blocks)
 			for (std::vector<Ref<Block>> y : x)
 				for (Ref<Block> z : y)
-					z->UpdateGeometry();
+					if (z != nullptr)
+						z->UpdateGeometry();
 		//OGLE_CORE_INFO("\nHidden Faces: {0}", Block::hiddenFaces);
 
 	}

@@ -34,12 +34,12 @@ namespace OGLE {
 		return m_WorldGeometry;
 	}
 
-	Ref<Block> World::GetBlock(int x, int y, int z)	{
-		int chunkX = x / (chunkWidth * numChunksOnAxis);
-		int chunkZ = z / (chunkWidth * numChunksOnAxis);
+	Ref<Block> World::GetBlock(int x, int y, int z)	{		
 		if (x < 0 || x >= numBlocksOnAxis || y < 0 || y >= buildHeight || z < 0 || z >= numBlocksOnAxis)
 			return nullptr;
-		return m_Chunks[chunkX][chunkZ]->GetBlock(x/numBlocksOnAxis* chunkWidth, y, z / numBlocksOnAxis * chunkWidth);
+		float chunkX = (x * (numChunksOnAxis)) / (numBlocksOnAxis);
+		float chunkZ = (z * (numChunksOnAxis)) / (numBlocksOnAxis);
+		return m_Chunks[int(chunkX)][int(chunkZ)]->GetBlock(x-chunkX*chunkWidth, y, z-chunkZ*chunkWidth);
 	}
 
 	Ref<Block> World::GetBlock(glm::vec3 position)
