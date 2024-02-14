@@ -6,10 +6,10 @@ namespace OGLE{
 	class Collection
 	{
 	public:
+
 		Collection(std::vector<T>& data, DataLayout dataLayout)
 			: m_Elements(new std::vector(data)), m_DataLayout(dataLayout)
 		{
-			OGLE_INFO("");
 		}
 
 		void LinkCollection(GLuint attributeIDTracker)
@@ -93,6 +93,11 @@ namespace OGLE{
 	class VertexCollection : public Collection<Vertex>
 	{
 	public:
+		static Ref<VertexCollection> Create(std::initializer_list<Vertex>& data, std::vector<GLushort>& indices)
+		{
+			return CreateRef <VertexCollection>(data, indices);
+		}
+
 		VertexCollection(std::initializer_list<Vertex>& data, std::vector<GLushort>& indices)
 			: VertexCollection(std::vector(data), indices) {}
 
@@ -110,12 +115,17 @@ namespace OGLE{
 	class InstanceCollection : public Collection<Instance>
 	{
 	public:
+		static Ref<InstanceCollection> Create(std::initializer_list<Instance>* data = nullptr)
+		{
+			return CreateRef <InstanceCollection>(data);
+		}
+
 		InstanceCollection(std::initializer_list<Instance>* data = nullptr)
 			: InstanceCollection((data != nullptr) ? std::vector(*data) 
 				: std::vector<Instance>()) {}
 
 		std::vector<Instance>* GetInstances() { return GetElements(); }		
-
+		
 		friend class Shape;
 	private:
 		InstanceCollection(std::vector<Instance>& instances)

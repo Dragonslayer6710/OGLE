@@ -4,14 +4,14 @@
 namespace OGLE {
 
 
-	VertexArray::VertexArray(VertexCollection* vertexCollection, InstanceCollection* instanceCollection)
+	VertexArray::VertexArray(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection)
 	{
 		// Gen and Bind Vertex Array
 		GLCall(glGenVertexArrays(1, &m_VertexArrayID));
 		Bind();
 
 		// Gen and Bind VBO
-		m_VBO = new VertexBuffer(vertexCollection);
+		m_VBO = VertexBuffer::Create(vertexCollection);
 		m_VBO->Bind();
 
 		// Init VBO attrib arrays then unbind vbo
@@ -91,10 +91,10 @@ namespace OGLE {
 		return m_IsInstanced;
 	}
 
-	void VertexArray::SetInstanceBuffer(InstanceCollection* instanceCollection)
+	void VertexArray::SetInstanceBuffer(Ref<InstanceCollection> instanceCollection)
 	{
 		// Init and bind IBO
-		m_IBO = new InstanceBuffer(instanceCollection);
+		m_IBO = InstanceBuffer::Create(instanceCollection);
 		m_IBO->Bind();
 
 		// Init IBO Attrib Arrays then unbind IBO

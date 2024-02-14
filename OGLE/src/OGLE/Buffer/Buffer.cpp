@@ -35,7 +35,7 @@ namespace OGLE {
 	void Buffer::Unbind()
 	{
 		if (!m_IsBound)
-			return
+			return;
 		GLCall(glBindBuffer(m_BufferTarget, 0));
 		m_IsBound = false;
 	}
@@ -67,6 +67,16 @@ namespace OGLE {
 	GLenum ElementBuffer::GetElementDataType() const
 	{
 		return m_ElementDataType;
+	}
+
+	Scope<VertexBuffer> VertexBuffer::Create(Ref<Collection<Vertex>> collection, GLenum bufferUsage /*= GL_STATIC_DRAW*/)
+	{
+		return CreateScope<VertexBuffer>(collection, bufferUsage);
+	}
+
+	Scope<InstanceBuffer> InstanceBuffer::Create(Ref<Collection<Instance>> collection, GLenum bufferUsage /*= GL_STATIC_DRAW*/)
+	{
+		return CreateScope<InstanceBuffer>(collection, bufferUsage);
 	}
 
 }

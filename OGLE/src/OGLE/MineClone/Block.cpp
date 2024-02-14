@@ -2,17 +2,14 @@
 
 #include "OGLE/MineClone/Block.h"
 #include "OGLE/MineClone/World.h"
-#include <random>
+
 namespace OGLE {
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_int_distribution<int> distribution(0, 3);
+
 	int Block::hiddenFaces = 0;
 	GLuint Block::numBlocks = 0;
 	Block::Block(glm::vec3 position, GLushort id /*= 2*/)
 		: m_Position(position), m_ModelTransform(NewModelMatrix(position)), m_BlockID(id)
 	{
-		m_BlockID = distribution(gen);
 		m_FaceTexGeoms = GetBlockTextureMap(m_BlockID);
 		World::Get()->AddBlock(m_Position, *m_FaceTexGeoms);
 		auto it = World::Get()->GetWorldGeometry()->GetInstances()->GetElements()->begin();
@@ -22,7 +19,7 @@ namespace OGLE {
 	{
 		for (GLushort face = 0; face < 6; face++)
 		{
-			Block* adjacentBlock = nullptr;
+			Ref<Block> adjacentBlock = nullptr;
 			switch (face)
 			{
 			case BlockSouth:

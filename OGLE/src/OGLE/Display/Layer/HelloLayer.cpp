@@ -63,6 +63,8 @@ namespace OGLE {
 	{
 	}
 
+	bool newWorld = true;
+
 	void HelloLayer::OnImGuiRender()
 	{
 		GLfloat FOVDegrees = m_Renderer->GetFOVDegrees();
@@ -74,6 +76,11 @@ namespace OGLE {
 
 		ImGui::SliderFloat("Near Plane", &NearPlane, 0.1f, 10.0f);
 		ImGui::SliderFloat("Far Plane", &FarPlane, 0.1f, 1000.0f);
+
+		if (!newWorld)
+			if (ImGui::Button("New World"))
+				newWorld = true;
+
 		m_Renderer->UpdateClipPlanes(NearPlane, FarPlane);
 
 		//ImGui::SliderFloat3("Camera Position", &(m_Camera->m_Pos[0]), -10.0f, 10.0f);
@@ -91,16 +98,10 @@ namespace OGLE {
 	float yRot = 0.0f;
 	float zRot = 0.0f;
 
-	VertexBuffer* vbo;
-	ElementBuffer* ebo;
-	VertexArray* vao;
 	Camera* camera;
 
-	Mesh* mesh;
-	World* world;
-	//Model* model;
-	
-	MultiQuad* cuboid;
+	Ref<Mesh> mesh;
+	Ref<World> world;
 
 	glm::vec2* texAtlasSize;
 	glm::vec2* textureOffset;
@@ -113,23 +114,22 @@ namespace OGLE {
 			shaderProgram = new ShaderProgram();
 
 			s_TextureAtlas = new UniformTextureAtlas("terrain.png", glm::vec2(16, 16));
-			s_TextureAtlas->Bind();
-			
-
-			world = new World();
-			mesh = Mesh::Create(world->GetWorldGeometry());
-			vao = mesh->GetVAO();
-
-			
+			s_TextureAtlas->Bind();	
 			
 
 			m_Renderer->ChangeShaderProgram(*shaderProgram);
-			m_Renderer->ChangeVAO(*vao);
+			
 
 			shaderProgram->SetUniform1i("tex0", s_TextureAtlas->GetTextureSlot());
 			
 			doInit = false;
 			
+		}
+		if (newWorld) {
+			world = CreateScope<World>();
+			mesh = Mesh::Create(world->GetWorldGeometry());
+			m_Renderer->ChangeVAO(*mesh->GetVAO());
+			newWorld = false;
 		}
 		
 		// Init Projection Matrix

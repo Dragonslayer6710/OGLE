@@ -18,7 +18,7 @@ namespace OGLE {
 	class Triangle : public Shape
 	{
 	public:
-		VertexCollection* NewVertexCollection() override
+		Ref<VertexCollection> NewVertexCollection() override
 		{
 			return Shape::NewVertexCollection(s_TriangleVertices, s_TriangleIndices);
 		}
@@ -41,7 +41,7 @@ namespace OGLE {
 	class Quad : public Shape
 	{
 	public:
-		VertexCollection* NewVertexCollection() override
+		Ref<VertexCollection> NewVertexCollection() override
 		{
 			return Shape::NewVertexCollection(s_QuadVertices, s_QuadIndices);
 		}

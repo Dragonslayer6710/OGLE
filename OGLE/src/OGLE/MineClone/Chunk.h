@@ -4,7 +4,7 @@
 namespace OGLE {
 	class Window;
 
-	static const GLuint numChunksOnAxis = 5;
+	static const GLuint numChunksOnAxis = 1;
 	static const GLuint chunkWidth = 16;
 
 	static const GLuint numBlocksOnAxis = numChunksOnAxis * chunkWidth;
@@ -16,13 +16,13 @@ namespace OGLE {
 	public:
 		Chunk(int chunkX, int chunkZ);
 
-		Block* GetBlock(int x, int y, int z);
+		Ref<Block> GetBlock(int x, int y, int z);
 	protected:
 		friend class World;
 		void UpdateGeometry();
 
 	private:
-		std::vector< std::vector<std::vector<Block*>>> m_Blocks;
+		std::vector< std::vector<std::vector<Ref<Block>>>> m_Blocks;
 	};
 
 }

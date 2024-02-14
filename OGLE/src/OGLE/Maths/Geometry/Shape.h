@@ -32,20 +32,20 @@ namespace OGLE {
 	{
 	public:
 
-		VertexCollection* GetVertices() { return m_Vertices; };
+		Ref<VertexCollection> GetVertices() { return m_Vertices; };
 		std::vector<GLushort>* GetIndices() { return m_Vertices->GetIndices(); };
 
-		InstanceCollection* GetInstances() { return m_Instances; };
+		Ref<InstanceCollection> GetInstances() { return m_Instances; };
 
 		bool CheckInstanced() { return !m_Instances->IsEmpty(); }
 
 		template<typename T>
-		static T* Create()
+		static Ref<T> Create()
 		{
-			return (T*) new Shape(T().NewVertexCollection());
+			Ref<T> t = CreateRef<T>();
+			t->SetVertexCollection();
+			return t;
 		}
-
-		virtual VertexCollection* NewVertexCollection() { return nullptr; }
 
 		void AddInstances(std::vector<Instance>& instances)
 		{
@@ -67,27 +67,26 @@ namespace OGLE {
 			m_Instances->RemoveElement(index);
 		}
 
-	protected:
-		virtual Shape* Create(VertexCollection* vertices)
-		{
-			return new Shape(vertices);
-		}
-
-		Shape() = default;
-
 		Shape
-		(
-			VertexCollection* vertices
-		)
-			: m_Vertices(vertices), m_Instances(new InstanceCollection()){}
+		() 
+			:m_Instances(InstanceCollection::Create()){}
+	protected:
 
-		static VertexCollection* NewVertexCollection(const std::initializer_list<Vertex> vertices, const std::vector<GLushort> indices)
+		static Ref<VertexCollection> NewVertexCollection(const std::initializer_list<Vertex> vertices, const std::vector<GLushort> indices)
 		{
-			return new VertexCollection(CopyConstInit<Vertex>(vertices), CopyConstIndices(indices));
+			return VertexCollection::Create(CopyConstInit<Vertex>(vertices), CopyConstIndices(indices));
 		}
 
-		VertexCollection* m_Vertices;
-		InstanceCollection* m_Instances;
+		virtual Ref<VertexCollection> NewVertexCollection() {
+			return nullptr;
+		}
+
+		void SetVertexCollection() {
+			m_Vertices = NewVertexCollection();
+		}
+
+		Ref<VertexCollection> m_Vertices;
+		Ref<InstanceCollection> m_Instances;
 	};
 
 }

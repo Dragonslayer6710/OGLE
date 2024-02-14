@@ -190,7 +190,7 @@ namespace OGLE {
 	static inline GLuint NewAttributeIDTracker()
 	{
 		s_AttributeIDTrackers.push_back(GLuint(0));
-		return s_AttributeIDTrackers.back();
+		return s_AttributeIDTrackers.size()-1;
 	}
 
 	static inline DataAttribute* GetNewDataAttribute(GLuint attributeIDTracker, DataAttributeType attribType, GLboolean normalized = GL_FALSE)

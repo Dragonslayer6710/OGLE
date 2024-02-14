@@ -8,10 +8,11 @@ namespace OGLE {
 	{
 	public:
 		World();
+		~World();
 
-		MultiQuad* GetWorldGeometry();
+		Ref<MultiQuad> GetWorldGeometry();
 
-		static Block* GetBlock(glm::vec3 position);
+		static Ref<Block> GetBlock(glm::vec3 position);
 		
 		static World* Get();
 
@@ -21,15 +22,15 @@ namespace OGLE {
 		friend class Block;
 		void AddBlock(glm::vec3 position, std::vector<TextureGeometry> texGeoms);
 
-		Block* GetBlock(int x, int y, int z);
+		Ref<Block> GetBlock(int x, int y, int z);
 		void HideFace(GLuint index);
 		void ShowFace(GLuint index, Instance face);
 
 	private:
 		static World* s_CurrentWorld;
 
-		std::vector<std::vector<Chunk*>> m_Chunks;
-		MultiQuad* m_WorldGeometry = Shape::Create<MultiQuad>();
+		std::vector<std::vector<Ref<Chunk>>> m_Chunks;
+		Ref<MultiQuad> m_WorldGeometry = Shape::Create<MultiQuad>();
 	};
 }
 

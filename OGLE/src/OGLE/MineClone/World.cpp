@@ -13,22 +13,28 @@ namespace OGLE {
 
 	World::World()
 	{
-
+		Block::ResetBlocks();
 		World::s_CurrentWorld = this;
 		for (int chunkX = 0; chunkX < numChunksOnAxis; chunkX++) {
-			m_Chunks.push_back(std::vector<Chunk*>());
+			m_Chunks.push_back(std::vector<Ref<Chunk>>());
 			for (int chunkZ = 0; chunkZ < numChunksOnAxis; chunkZ++)
-				m_Chunks[chunkX].push_back(new Chunk(chunkX, chunkZ));
+				m_Chunks[chunkX].push_back(CreateScope<Chunk>(chunkX, chunkZ));
 		}
 		UpdateWorldGeometry();
 	}
 
-	MultiQuad* World::GetWorldGeometry()
+
+	World::~World()
+	{
+		s_CurrentWorld = nullptr;
+	}
+
+	Ref<MultiQuad> World::GetWorldGeometry()
 	{
 		return m_WorldGeometry;
 	}
 
-	Block* World::GetBlock(int x, int y, int z)	{	
+	Ref<Block> World::GetBlock(int x, int y, int z)	{
 		int chunkX = x / (chunkWidth * numChunksOnAxis);
 		int chunkZ = z / (chunkWidth * numChunksOnAxis);
 		if (x < 0 || x >= numBlocksOnAxis || y < 0 || y >= buildHeight || z < 0 || z >= numBlocksOnAxis)
@@ -36,7 +42,7 @@ namespace OGLE {
 		return m_Chunks[chunkX][chunkZ]->GetBlock(x/numBlocksOnAxis* chunkWidth, y, z / numBlocksOnAxis * chunkWidth);
 	}
 
-	Block* World::GetBlock(glm::vec3 position)
+	Ref<Block> World::GetBlock(glm::vec3 position)
 	{		
 		return s_CurrentWorld->GetBlock(position.x, position.y, position.z);
 	}
@@ -48,8 +54,8 @@ namespace OGLE {
 
 	void World::UpdateWorldGeometry()
 	{
-		for (std::vector<Chunk*> x : m_Chunks)
-			for (Chunk* z : x)
+		for (std::vector<Ref<Chunk>> x : m_Chunks)
+			for (Ref<Chunk> z : x)
 					z->UpdateGeometry();
 	}
 

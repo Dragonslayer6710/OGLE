@@ -6,7 +6,7 @@ namespace OGLE {
 	class VertexArray
 	{
 	public:
-		VertexArray(VertexCollection* vertexCollection, InstanceCollection* instanceCollection);
+		VertexArray(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection);
 
 		~VertexArray();
 
@@ -23,7 +23,7 @@ namespace OGLE {
 		GLuint GetInstanceCount();
 		bool CheckInstanced();
 
-		void SetInstanceBuffer(InstanceCollection* instanceCollection);
+		void SetInstanceBuffer(Ref<InstanceCollection> instanceCollection);
 
 	private:
 		static void SetAttribPointer
@@ -44,7 +44,7 @@ namespace OGLE {
 		);
 		
 		template<typename T>
-		static void SetAttribPointers(Collection<T>* collection, GLuint divisor=0) {
+		static void SetAttribPointers(Ref<Collection<T>> collection, GLuint divisor=0) {
 			GLuint stride = collection->GetStride();
 			for (auto& offsetAttrib : collection->GetAttributes())
 				SetAttribPointer(offsetAttrib.second, stride, offsetAttrib.first, divisor);
@@ -53,8 +53,8 @@ namespace OGLE {
 	private:
 		GLuint m_VertexArrayID;
 
-		VertexBuffer* m_VBO;
-		InstanceBuffer* m_IBO;
+		Scope<VertexBuffer> m_VBO;
+		Scope<InstanceBuffer> m_IBO;
 
 		GLuint m_Instances = 1;
 		bool m_IsInstanced = false;

@@ -1,9 +1,13 @@
 #include "oglepch.h"
 
 #include "OGLE/MineClone/Chunk.h"
-
+#include <random>
 
 namespace OGLE {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<int> blockDist(0, 3);
+	std::uniform_int_distribution<int> setBlock(0, 1);
 	static int numChunks = 0;
 	Chunk::Chunk(int chunkX, int chunkZ)
 	{
@@ -14,17 +18,18 @@ namespace OGLE {
 				for (int z = 0; z < chunkWidth; z++)
 				{
 					if (y==0)
-						m_Blocks.push_back(std::vector<std::vector<Block*>>());
+						m_Blocks.push_back(std::vector<std::vector<Ref<Block>>>());
 					if (z == 0)
-						m_Blocks[x].push_back(std::vector<Block*>());
-					m_Blocks[x][y].push_back(new Block(glm::vec3(x+worldX, y, z+worldZ)));
+						m_Blocks[x].push_back(std::vector<Ref<Block>>());
+					if (setBlock(gen))
+						m_Blocks[x][y].push_back(CreateScope<Block>(glm::vec3(x+worldX, y, z+worldZ), blockDist(gen)));
 					//OGLE_CORE_INFO("Block {0} ({1}, {2}, {3}) Generated at Chunk {4}", m_Blocks[x][y][z]->GetWorldBlockID(), x + worldX, y, z + worldZ, numChunks + 1);
 				}
 		numChunks++;
 
 	}
 
-	OGLE::Block* Chunk::GetBlock(int x, int y, int z)
+	Ref<Block> Chunk::GetBlock(int x, int y, int z)
 	{
 		return m_Blocks[x][y][z];
 	}
@@ -34,9 +39,9 @@ namespace OGLE {
 		std::vector<Shape> data = std::vector<Shape>();
 		std::vector<Shape>* testData = &data;
 
-		for (std::vector<std::vector<Block*>> x : m_Blocks)
-			for (std::vector<Block*> y : x)
-				for (Block* z : y)
+		for (std::vector<std::vector<Ref<Block>>> x : m_Blocks)
+			for (std::vector<Ref<Block>> y : x)
+				for (Ref<Block> z : y)
 					z->UpdateGeometry();
 		//OGLE_CORE_INFO("\nHidden Faces: {0}", Block::hiddenFaces);
 

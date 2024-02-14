@@ -60,7 +60,7 @@ namespace OGLE {
 	class Cube : public Shape
 	{
 	public:
-		VertexCollection* NewVertexCollection() override
+		Ref<VertexCollection> NewVertexCollection() override
 		{
 			return Shape::NewVertexCollection(s_CubeVertices, s_CubeIndices);
 		}
@@ -122,7 +122,7 @@ namespace OGLE {
 	class MultiQuad : public Quad
 	{
 	public:
-		VertexCollection* NewVertexCollection() override
+		Ref<VertexCollection> NewVertexCollection() override
 		{
 			return Quad::NewVertexCollection();
 		}

@@ -7,22 +7,21 @@ namespace OGLE {
 	class Mesh 
 	{
 	public:
-		static Mesh* Create(Shape* shape)
+		static Ref<Mesh> Create(Ref<Shape> shape)
 		{
 
 			if (shape->CheckInstanced())
-				return new Mesh(shape->GetVertices(), shape->GetInstances());
+				return CreateScope<Mesh>(shape->GetVertices(), shape->GetInstances());
 			else
-				return new Mesh(shape->GetVertices(), nullptr);
+				return CreateScope<Mesh>(shape->GetVertices(), nullptr);
 		}
 
 		VertexArray* GetVAO() { return m_VAO; }
 
-	protected:
 		Mesh
 		(
-			VertexCollection* vertices,
-			InstanceCollection* instances = nullptr
+			Ref<VertexCollection> vertices,
+			Ref<InstanceCollection> instances = nullptr
 		) 
 			: m_AttributeIDTracker(NewAttributeIDTracker())
 		{			

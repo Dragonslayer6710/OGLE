@@ -67,6 +67,9 @@ namespace OGLE {
 		GLuint Block::GetWorldBlockID();
 		static int hiddenFaces;
 
+		static void ResetBlocks() {
+			numBlocks = 0;
+		}
 	private:
 		glm::vec3 m_Position;
 		glm::mat4 m_ModelTransform;
