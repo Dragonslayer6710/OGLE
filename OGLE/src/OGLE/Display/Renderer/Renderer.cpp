@@ -13,7 +13,11 @@ namespace OGLE {
 	{
 		InitRenderer(width, height, fovDeg, nearPlane, farPlane);
 		InitShaderProgram(shaderProgram);
-		InitVAO(vao);
+	}
+
+	Renderer::~Renderer()
+	{
+		DeactivateShaderProgram();
 	}
 
 	void Renderer::InitRenderer(GLsizei width, GLsizei height, GLfloat fovDeg, GLfloat nearPlane, GLfloat farPlane)
@@ -46,28 +50,19 @@ namespace OGLE {
 
 	void Renderer::Draw()
 	{
-		if (m_IsInstanced)
-			DrawInstanced();
-		else
-			GLCall(glDrawElements(GL_TRIANGLES, m_ElementCount, m_ElementDataType, nullptr));
-	}
-
-
-	static const std::vector<glm::vec3> positions{
-	};
-	void Renderer::DrawInstanced()
-	{
-		GLCall(glDrawElementsInstanced(GL_TRIANGLES, m_ElementCount, m_ElementDataType, nullptr, m_CurrentVAO->GetInstanceCount()));
+		for (auto& kv : m_Models) {
+			Ref<Model> model = kv.second;
+			model->Draw();
+		}
 	}
 
 	void Renderer::UpdateClipPlanes(GLfloat nearPlane /*= NULL*/, GLfloat farPlane /*= NULL*/)
 	{
 		if (nearPlane != NULL)
-			SetNearPlane(nearPlane);
+			m_NearPlane = nearPlane;
 		if (farPlane != NULL)
-			SetFarPlane(farPlane);
+			m_FarPlane = farPlane;
 	}
-
 
 	void Renderer::Clear()
 	{
@@ -81,6 +76,21 @@ namespace OGLE {
 		GLCall(glClear(mask));
 	}
 
+	void Renderer::AddModel(Ref<Model> model)
+	{
+		m_Models[model->GetID()] = model;
+	}
+
+	void Renderer::RemoveModel(Ref<Model> model)
+	{
+		RemoveModel(model->GetID());
+	}
+
+	void Renderer::RemoveModel(GLuint modelID)
+	{
+		m_Models.erase(modelID);
+	}
+
 	void Renderer::SetClearColor(glm::vec4 clearColor /*= glm::vec4(0.1, 0.1, 0, 1)*/)
 	{
 		GLCall(glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a));
@@ -92,18 +102,11 @@ namespace OGLE {
 		InitShaderProgram(shaderProgram);
 	}
 
-	void Renderer::ChangeVAO(VertexArray& vao)
-	{
-		UnbindVAO();
-		InitVAO(vao);
-	}
-
 	void Renderer::UpdateFOV(GLfloat fovDegrees)
 	{
 		m_FOVDegrees = fovDegrees;
 		UpdateFOV();
 	}
-
 
 	void Renderer::InitShaderProgram(ShaderProgram& shaderProgam)
 	{
@@ -132,36 +135,4 @@ namespace OGLE {
 	{
 		m_CurrentShaderProgram = nullptr;
 	}
-
-	void Renderer::InitVAO(VertexArray& vao)
-	{
-		SetVAO(vao);
-		BindVAO();
-	}
-
-	void Renderer::SetVAO(VertexArray& vao)
-	{
-		m_CurrentVAO = &vao;
-		m_ElementCount = m_CurrentVAO->GetElementCount();
-		m_ElementDataType = m_CurrentVAO->GetElementDataType();
-		m_IsInstanced = m_CurrentVAO->GetElementCount() > 1;
-	}
-
-	void Renderer::BindVAO()
-	{
-		if (!(m_CurrentVAO == nullptr))
-			m_CurrentVAO->Bind();
-	}
-
-	void Renderer::UnbindVAO()
-	{
-		if (!(m_CurrentVAO == nullptr))
-			m_CurrentVAO->Unbind();
-	}
-
-	void Renderer::ClearVAO()
-	{
-		m_CurrentVAO = nullptr;
-	}
-
 }

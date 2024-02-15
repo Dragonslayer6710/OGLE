@@ -1,5 +1,4 @@
 #pragma once
-
 #include "OGLE/MineClone/Chunk.h"
 
 namespace OGLE {
@@ -17,10 +16,10 @@ namespace OGLE {
 		static World* Get();
 
 		void UpdateWorldGeometry();
-		
+
 	protected:
 		friend class Block;
-		void AddBlock(glm::vec3 position, std::vector<TextureGeometry> texGeoms);
+		std::vector<Instance>::iterator AddBlock(glm::vec3 position, std::vector<TextureGeometry> texGeoms);
 
 		Ref<Block> GetBlock(int x, int y, int z);
 		void HideFace(GLuint index);

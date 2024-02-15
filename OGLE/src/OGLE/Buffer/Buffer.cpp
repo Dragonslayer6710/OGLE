@@ -46,37 +46,27 @@ namespace OGLE {
 	}
 
 
+	Ref<ElementBuffer> ElementBuffer::Create(std::vector<GLushort>* indices, GLenum bufferTarget /*= GL_STATIC_DRAW*/, GLenum elementDataType /*= GL_UNSIGNED_SHORT*/)
+	{
+		return CreateRef<ElementBuffer>(indices, bufferTarget, elementDataType);
+	}
+
 	ElementBuffer::ElementBuffer(std::vector<GLushort>* indices, GLenum bufferTarget, GLenum elementDataType /*= GL_UNSIGNED_SHORT*/) : Buffer
 	(
 		GL_ELEMENT_ARRAY_BUFFER,
 		sizeof(GLushort)* indices->size(),
 		indices->data(),
 		bufferTarget
-	),
-		m_ElementCount(indices->size()),
-		m_ElementDataType(elementDataType)
+	)
 	{
 
 	}
 
-	GLuint ElementBuffer::GetElementCount() const
-	{
-		return m_ElementCount;
-	}
 
-	GLenum ElementBuffer::GetElementDataType() const
-	{
-		return m_ElementDataType;
-	}
 
-	Scope<VertexBuffer> VertexBuffer::Create(Ref<Collection<Vertex>> collection, GLenum bufferUsage /*= GL_STATIC_DRAW*/)
+	Ref<VertexBuffer> VertexBuffer::Create(GLsizeiptr size, const GLvoid* data, GLenum bufferUsage /*= GL_STATIC_DRAW*/)
 	{
-		return CreateScope<VertexBuffer>(collection, bufferUsage);
-	}
-
-	Scope<InstanceBuffer> InstanceBuffer::Create(Ref<Collection<Instance>> collection, GLenum bufferUsage /*= GL_STATIC_DRAW*/)
-	{
-		return CreateScope<InstanceBuffer>(collection, bufferUsage);
+		return CreateRef<VertexBuffer>(size, data, bufferUsage);
 	}
 
 }

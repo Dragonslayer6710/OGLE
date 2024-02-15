@@ -7,12 +7,49 @@ namespace OGLE {
 
 	int Block::hiddenFaces = 0;
 	GLuint Block::numBlocks = 0;
+
+	OGLE::Ref<OGLE::TextureAtlas> Block::s_TextureAtlas;
+
+	std::vector<OGLE::TextureGeometry>* Block::MapTexture(GLushort blockID)
+	{
+		GLushort* subTexIDs;
+
+		switch (blockID)
+		{
+		case 0:
+			subTexIDs = new GLushort[6]{ 3, 3, 3, 3, 2, 0 };
+			break;
+		case 1:
+			subTexIDs = new GLushort[6]{ 1, 1, 1, 1, 1, 1 };
+			break;
+		case 2:
+			subTexIDs = new GLushort[6]{ 2, 2, 2, 2, 2, 2 };
+			break;
+		case 3:
+			subTexIDs = new GLushort[6]{ 7, 7, 7, 7, 7, 7 };
+			break;
+		default:
+			return new std::vector<TextureGeometry>
+			{
+				TextureGeometry(),
+				TextureGeometry(),
+				TextureGeometry(),
+				TextureGeometry(),
+				TextureGeometry(),
+				TextureGeometry()
+			};
+		}
+		std::vector<TextureGeometry>* m_SideTexGeoms = new std::vector<TextureGeometry>();
+		for (int side = 0; side < 6; side++)
+			m_SideTexGeoms->push_back(s_TextureAtlas->GetSubTexture(subTexIDs[side]));
+		return m_SideTexGeoms;
+	}
+
 	Block::Block(glm::vec3 position, GLushort id /*= 2*/)
 		: m_Position(position), m_ModelTransform(NewModelMatrix(position)), m_BlockID(id)
 	{
-		m_FaceTexGeoms = GetBlockTextureMap(m_BlockID);
-		World::Get()->AddBlock(m_Position, *m_FaceTexGeoms);
-		auto it = World::Get()->GetWorldGeometry()->GetInstances()->GetElements()->begin();
+		m_FaceTexGeoms = MapTexture(m_BlockID);
+		auto it = World::Get()->AddBlock(m_Position, *m_FaceTexGeoms);
 		m_Faces = new std::vector<Instance>(it+m_WorldBlockID, it+m_WorldBlockID+6);
 		if (m_BlockID == GLushort(-1))
 			for (GLushort face = 0; face < 6; face++)

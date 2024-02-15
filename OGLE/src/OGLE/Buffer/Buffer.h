@@ -22,48 +22,24 @@ namespace OGLE{
 
 		bool m_IsBound = false;
 	};
-	template <typename T>
-	
-	class CollectionBuffer : public Buffer
+
+	class VertexBuffer : public Buffer
 	{
 	public:
-		CollectionBuffer(Ref<Collection<T>> collection, GLenum bufferUsage = GL_STATIC_DRAW)
-			: m_Collection(collection), Buffer(GL_ARRAY_BUFFER, collection->GetSize(), collection->GetData(), bufferUsage){}
-		Ref<Collection<T>> GetCollection() { return m_Collection; }
-	protected:
-		Ref<Collection<T>> m_Collection;
-	};
+		static Ref<VertexBuffer> Create(GLsizeiptr size, const GLvoid* data, GLenum bufferUsage = GL_STATIC_DRAW);
 
-	class VertexBuffer : public CollectionBuffer<Vertex>
-	{
-	public:
-		static Scope<VertexBuffer> Create(Ref<Collection<Vertex>> collection, GLenum bufferUsage = GL_STATIC_DRAW);
-
-		VertexBuffer(Ref<Collection<Vertex>> vertexCollection, GLenum bufferUsage = GL_STATIC_DRAW)
-			: CollectionBuffer(vertexCollection, bufferUsage) {}
+		VertexBuffer(GLsizeiptr size, const GLvoid* data, GLenum bufferUsage)
+			: Buffer(GL_ARRAY_BUFFER, size, data, bufferUsage) {}
 
 	};
-
-	class InstanceBuffer : public CollectionBuffer<Instance>
-	{
-	public:
-		static Scope<InstanceBuffer> Create(Ref<Collection<Instance>> collection, GLenum bufferUsage = GL_STATIC_DRAW);
-
-		InstanceBuffer(Ref<Collection<Instance>> instanceCollection, GLenum bufferUsage = GL_STATIC_DRAW)
-			: CollectionBuffer(instanceCollection, bufferUsage) {}
-	};
-
 
 	class ElementBuffer : public Buffer
 	{
 	public:
+		static Ref<ElementBuffer> Create(std::vector<GLushort>* indices, GLenum bufferTarget = GL_STATIC_DRAW, GLenum elementDataType = GL_UNSIGNED_SHORT);
+
+
 		ElementBuffer(std::vector<GLushort>* indices, GLenum bufferTarget = GL_STATIC_DRAW, GLenum elementDataType = GL_UNSIGNED_SHORT);
 
-		GLuint GetElementCount() const;
-		GLenum GetElementDataType() const;
-
-	private:
-		GLuint m_ElementCount;
-		GLenum m_ElementDataType;
 	};
 }

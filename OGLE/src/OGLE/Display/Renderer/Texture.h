@@ -7,6 +7,12 @@ namespace OGLE{
 	class Texture
 	{
 	public:
+		template<typename T, typename ... Args>
+		constexpr Ref<T> Create(Args&& ... args)
+		{
+			return CreateRef<T>(std::forward<Args>(args)...);
+		}
+
 		Texture(std::string textureFile);
 		~Texture();
 
@@ -61,6 +67,11 @@ namespace OGLE{
 	class UniformTextureAtlas : public TextureAtlas
 	{
 	public:
+		static Ref<UniformTextureAtlas> Create(std::string textureFile, glm::vec2 subTexSize)
+		{
+			return CreateRef<UniformTextureAtlas>(textureFile, subTexSize);
+		}
+
 		UniformTextureAtlas(std::string textureFile, glm::vec2 subTexSize);
 	};
 }

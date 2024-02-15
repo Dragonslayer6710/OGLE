@@ -1,6 +1,5 @@
 #include "oglepch.h"
 #include "OGLE/Display/Layer/HelloLayer.h"
-#include "OGLE/Maths/Geometry/Model.h"
 #include "OGLE/MineClone/World.h"
 
 namespace OGLE {
@@ -100,35 +99,30 @@ namespace OGLE {
 
 	Camera* camera;
 
-	Ref<Mesh> mesh;
 	Ref<World> world;
+	Ref<Model> worldModel;
 
-	glm::vec2* texAtlasSize;
-	glm::vec2* textureOffset;
 	void HelloLayer::OnUpdate(Timestep ts)
 	{
 		if (doInit) {
 			glm::mat4 projMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
 
 			// Apply Translation
-			shaderProgram = new ShaderProgram();
+			shaderProgram = new ShaderProgram();			
 
-			s_TextureAtlas = new UniformTextureAtlas("terrain.png", glm::vec2(16, 16));
-			s_TextureAtlas->Bind();	
-			
+			m_Renderer->ChangeShaderProgram(*shaderProgram);	
 
-			m_Renderer->ChangeShaderProgram(*shaderProgram);
-			
-
-			shaderProgram->SetUniform1i("tex0", s_TextureAtlas->GetTextureSlot());
 			
 			doInit = false;
 			
 		}
 		if (newWorld) {
-			world = CreateScope<World>();
-			mesh = Mesh::Create(world->GetWorldGeometry());
-			m_Renderer->ChangeVAO(*mesh->GetVAO());
+			world = CreateRef<World>();
+			worldModel = Model::Create(world->GetWorldGeometry(), Block::s_TextureAtlas);
+
+			shaderProgram->SetUniform1i("tex0", worldModel->GetTexture()->GetTextureSlot());
+
+			m_Renderer->AddModel(worldModel);
 			newWorld = false;
 		}
 		

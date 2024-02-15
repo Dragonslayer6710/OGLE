@@ -7,8 +7,8 @@ namespace OGLE{
 	{
 	public:
 
-		Collection(std::vector<T>& data, DataLayout dataLayout)
-			: m_Elements(new std::vector(data)), m_DataLayout(dataLayout)
+		Collection(std::vector<T>& data, DataLayout dataLayout, GLenum bufferUsage)
+			: m_Elements(new std::vector(data)), m_DataLayout(dataLayout), m_BufferUsage(bufferUsage)
 		{
 		}
 
@@ -26,6 +26,7 @@ namespace OGLE{
 		GLuint GetLength() { return CompressElements()->size(); }
 		GLuint GetSize() { return GetLength() * sizeof(T); }
 		GLuint GetStride() { return m_Stride; }
+		GLenum GetUsage() { return m_BufferUsage; }
 
 		bool IsEmpty() { return !GetLength(); }
 
@@ -88,6 +89,7 @@ namespace OGLE{
 		GLuint m_Length;
 		GLuint m_Size;
 		GLuint m_Stride = 0;
+		GLenum m_BufferUsage;
 	};
 
 	class VertexCollection : public Collection<Vertex>
@@ -98,15 +100,33 @@ namespace OGLE{
 			return CreateRef <VertexCollection>(data, indices);
 		}
 
-		VertexCollection(std::initializer_list<Vertex>& data, std::vector<GLushort>& indices)
-			: VertexCollection(std::vector(data), indices) {}
+		VertexCollection(std::initializer_list<Vertex>& data, std::vector<GLushort>& indices, GLenum elementDataType = GL_UNSIGNED_SHORT)
+			: VertexCollection(std::vector(data), indices, elementDataType = GL_UNSIGNED_SHORT)
+			{}
 
 		std::vector<Vertex>* GetVertices() { return GetElements(); }
 		std::vector<GLushort>* GetIndices() { return m_Indices; }
 
+		GLuint GetElementCount() const
+		{
+			return m_ElementCount;
+		}
+
+		GLenum GetElementDataType() const
+		{
+			return m_ElementDataType;
+		}
+
 	private:
-		VertexCollection(std::vector<Vertex>& vertices, std::vector<GLushort>& indices)
-			: Collection(vertices, s_VertexLayout), m_Indices(new std::vector<GLushort>(indices)) {}
+		GLuint m_ElementCount;
+		GLenum m_ElementDataType;
+
+	private:
+		VertexCollection(std::vector<Vertex>& vertices, std::vector<GLushort>& indices, GLenum elementDataType = GL_UNSIGNED_SHORT)
+			: Collection(vertices, s_VertexLayout, GL_STATIC_DRAW), 
+			m_Indices(new std::vector<GLushort>(indices)),
+			m_ElementCount(indices.size()),
+			m_ElementDataType(elementDataType) {}
 
 	private:
 		std::vector<GLushort>* m_Indices;
@@ -128,8 +148,8 @@ namespace OGLE{
 		
 		friend class Shape;
 	private:
-		InstanceCollection(std::vector<Instance>& instances)
-			: Collection(instances, s_InstanceLayout) {}
+		InstanceCollection(std::vector<Instance>& instances, GLenum bufferUsage = GL_DYNAMIC_DRAW)
+			: Collection(instances, s_InstanceLayout, bufferUsage) {}
 
 	};
 }

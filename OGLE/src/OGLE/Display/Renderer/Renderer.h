@@ -2,6 +2,7 @@
 
 #include "OGLE/Display/Renderer/Shader.h"
 #include "OGLE/Display/Renderer/Camera.h"
+#include "OGLE/Display/Renderer/Model.h"
 
 static const GLfloat DefFOVDegrees = 60.0f;
 static const GLfloat DefNearPlane = 0.1f;
@@ -17,10 +18,7 @@ namespace OGLE {
 
 		Renderer(ShaderProgram& shaderProgram, VertexArray& vao, GLsizei width, GLsizei height, GLfloat fovDeg = DefFOVDegrees, GLfloat nearPlane = DefNearPlane, GLfloat farPlane = DefFarPlane);
 
-		~Renderer(){
-			DeactivateShaderProgram();
-			UnbindVAO();
-		}
+		~Renderer();
 
 		// left/bottom = lower left corner of viewport rect (initial is 0,0), width/height is the dims of the rect
 		void SetViewPort(GLint left, GLint bottom, GLsizei width, GLsizei height);
@@ -48,20 +46,19 @@ namespace OGLE {
 		void SetClearColor(glm::vec4 clearColor = glm::vec4(0.1, 0.1, 0, 1));
 
 		void ChangeShaderProgram(ShaderProgram& shaderProgram);
-		void ChangeVAO(VertexArray& vao);
 
 		void Draw();
 
-		void DrawInstanced();
-
 		void Clear();
+
+		void AddModel(Ref<Model> model);
+
+		void RemoveModel(Ref<Model> model);
+		void RemoveModel(GLuint modelID);
 		
 	private:
 
 		void UpdateFOV() { m_FOVRadians = glm::radians(m_FOVDegrees); }
-
-		void SetNearPlane(GLfloat nearPlane) { m_NearPlane = nearPlane; }
-		void SetFarPlane(GLfloat farPlane) { m_FarPlane = farPlane; }
 
 		void EnableColorBuffer() { m_UseColorBuffer = true; }
 		void DisableColorBuffer() { m_UseColorBuffer = false; }
@@ -80,11 +77,6 @@ namespace OGLE {
 		void DeactivateShaderProgram();
 		void ClearShaderProgram();
 
-		void InitVAO(VertexArray& vao);
-		void SetVAO(VertexArray& vao);
-		void BindVAO();
-		void UnbindVAO();
-		void ClearVAO();
 	private:
 
 		GLfloat m_FOVDegrees;
@@ -105,7 +97,7 @@ namespace OGLE {
 		bool m_UseStencilBuffer = false;
 
 		ShaderProgram* m_CurrentShaderProgram = nullptr;
-		VertexArray* m_CurrentVAO = nullptr;
+		std::unordered_map<GLuint, Ref<Model>> m_Models;
 
 		GLuint m_ElementCount;
 		GLenum m_ElementDataType;

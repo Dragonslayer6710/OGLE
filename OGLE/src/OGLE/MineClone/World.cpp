@@ -5,14 +5,16 @@
 namespace OGLE {
 
 	World* World::s_CurrentWorld = nullptr;
-	void World::AddBlock(glm::vec3 position, std::vector<TextureGeometry> texGeoms)
+	std::vector<Instance>::iterator World::AddBlock(glm::vec3 position, std::vector<TextureGeometry> texGeoms)
 	{
 	    m_WorldGeometry->AddInstances(NewQuadCuboid(NewModelMatrix(position), texGeoms));
+		return m_WorldGeometry->GetInstances()->GetElements()->begin();
 		//m_WorldGeometry->AddInstances(std::initializer_list(s_QuadCuboidQuadInstances));
 	}
-
 	World::World()
 	{
+		if (Block::s_TextureAtlas == nullptr)
+			Block::s_TextureAtlas = UniformTextureAtlas::Create("terrain.png", glm::vec2(16, 16));
 		Block::ResetBlocks();
 		World::s_CurrentWorld = this;
 		for (int chunkX = 0; chunkX < numChunksOnAxis; chunkX++) {

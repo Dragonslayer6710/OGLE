@@ -37,8 +37,6 @@ namespace OGLE {
 
 		Ref<InstanceCollection> GetInstances() { return m_Instances; };
 
-		bool CheckInstanced() { return !m_Instances->IsEmpty(); }
-
 		template<typename T>
 		static Ref<T> Create()
 		{

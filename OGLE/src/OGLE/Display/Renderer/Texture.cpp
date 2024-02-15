@@ -102,7 +102,10 @@ namespace OGLE {
 		GLuint textureSlot;
 		if (s_FreedTextureSlots.empty())
 		{
-			textureSlot = s_TextureSlots.size();
+			if (s_TextureSlots.empty())
+				textureSlot = 0;
+			else
+				textureSlot = s_TextureSlots.size()-1;
 		}
 		else {
 			textureSlot = s_FreedTextureSlots.back();

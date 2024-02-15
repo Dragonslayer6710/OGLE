@@ -6,6 +6,9 @@ namespace OGLE {
 	class VertexArray
 	{
 	public:
+
+		static Scope<VertexArray> Create(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection);
+
 		VertexArray(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection);
 
 		~VertexArray();
@@ -13,17 +16,15 @@ namespace OGLE {
 		void Bind();
 		void Unbind();
 
-		VertexBuffer& GetVertexBuffer();
-
-		ElementBuffer& GetElementBuffer();
+		Ref<VertexCollection> GetVertices();
+		
+		std::vector<GLushort>* GetIndices();
 		GLuint GetElementCount();
 		GLenum GetElementDataType();
 
-		InstanceBuffer& GetInstanceBuffer();
+		Ref<InstanceCollection> GetInstances();
 		GLuint GetInstanceCount();
 		bool CheckInstanced();
-
-		void SetInstanceBuffer(Ref<InstanceCollection> instanceCollection);
 
 	private:
 		static void SetAttribPointer
@@ -43,8 +44,8 @@ namespace OGLE {
 			GLuint divisor = 0
 		);
 		
-		template<typename T>
-		static void SetAttribPointers(Ref<Collection<T>> collection, GLuint divisor=0) {
+		template<typename T2>
+		static void SetAttribPointers(Ref<T2> collection, GLuint divisor=0) {
 			GLuint stride = collection->GetStride();
 			for (auto& offsetAttrib : collection->GetAttributes())
 				SetAttribPointer(offsetAttrib.second, stride, offsetAttrib.first, divisor);
@@ -53,13 +54,12 @@ namespace OGLE {
 	private:
 		GLuint m_VertexArrayID;
 
-		Scope<VertexBuffer> m_VBO;
-		Scope<InstanceBuffer> m_IBO;
+		Ref<VertexBuffer> m_VBO;
+		Ref<ElementBuffer> m_EBO;
+		Ref<VertexCollection> m_Vertices;
 
-		GLuint m_Instances = 1;
-		bool m_IsInstanced = false;
-
-		ElementBuffer* m_EBO = nullptr;
+		Ref<VertexBuffer> m_IBO;
+		Ref<InstanceCollection> m_Instances;
 
 		bool m_IsBound = false;
 

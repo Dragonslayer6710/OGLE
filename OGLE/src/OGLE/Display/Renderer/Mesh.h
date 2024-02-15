@@ -9,11 +9,7 @@ namespace OGLE {
 	public:
 		static Ref<Mesh> Create(Ref<Shape> shape)
 		{
-
-			if (shape->CheckInstanced())
-				return CreateScope<Mesh>(shape->GetVertices(), shape->GetInstances());
-			else
-				return CreateScope<Mesh>(shape->GetVertices(), nullptr);
+			return CreateRef<Mesh>(shape->GetVertices(), shape->GetInstances());
 		}
 
 		VertexArray* GetVAO() { return m_VAO; }
@@ -35,6 +31,17 @@ namespace OGLE {
 		~Mesh()
 		{
 			DeleteAttributeIDTracker(m_AttributeIDTracker);
+		}
+
+
+		void Bind()
+		{
+			m_VAO->Bind();
+		}
+
+		void Unbind()
+		{
+			m_VAO->Unbind();
 		}
 
 	private:

@@ -4,30 +4,40 @@
 namespace OGLE {
 
 
+	Scope<VertexArray> VertexArray::Create(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection)
+	{
+		return CreateScope<VertexArray>(vertexCollection, instanceCollection);
+	}
+
 	VertexArray::VertexArray(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection)
+		: m_Vertices(vertexCollection), m_Instances(instanceCollection)
 	{
 		// Gen and Bind Vertex Array
 		GLCall(glGenVertexArrays(1, &m_VertexArrayID));
 		Bind();
 
 		// Gen and Bind VBO
-		m_VBO = VertexBuffer::Create(vertexCollection);
+		m_VBO = VertexBuffer::Create(m_Vertices->GetSize(), m_Vertices->GetData(), m_Instances->GetUsage());
 		m_VBO->Bind();
 
 		// Init VBO attrib arrays then unbind vbo
-		SetAttribPointers(m_VBO->GetCollection());
+		SetAttribPointers<VertexCollection>(m_Vertices);
 		m_VBO->Unbind();
 
 		// If instance data given
-		if (instanceCollection)
+		if (m_Instances)
 		{
-			SetInstanceBuffer(instanceCollection);
+			// Init and bind IBO
+			m_IBO = VertexBuffer::Create(m_Instances->GetSize(), m_Instances->GetData(), m_Instances->GetUsage());
+			m_IBO->Bind();
+
+			// Init IBO Attrib Arrays then unbind IBO
+			SetAttribPointers(m_Instances, 1);
+			m_IBO->Unbind();
 		}
-		// Set bool symbolizing instance status
-		m_IsInstanced = m_Instances;
 
 		// Generate Element buffer then unbind VAO to close off VAO initialization
-		m_EBO = new ElementBuffer(vertexCollection->GetIndices());
+		m_EBO = ElementBuffer::Create(vertexCollection->GetIndices());
 		Unbind();
 	}
 
@@ -56,54 +66,21 @@ namespace OGLE {
 			m_EBO->Unbind();
 	}
 
-	VertexBuffer& VertexArray::GetVertexBuffer()
+	Ref<VertexCollection> VertexArray::GetVertices()
 	{
-		return *m_VBO;
-	}
-	
-	ElementBuffer& VertexArray::GetElementBuffer()
-	{
-		return *m_EBO;
+		return m_Vertices;
 	}
 
-	GLuint VertexArray::GetElementCount()
-	{
-		return m_EBO->GetElementCount();
-	}
-
-	GLenum VertexArray::GetElementDataType()
-	{
-		return m_EBO->GetElementDataType();
-	}
-
-	InstanceBuffer& VertexArray::GetInstanceBuffer()
-	{
-		return *m_IBO;
-	}
-
-	GLuint VertexArray::GetInstanceCount()
+	Ref<InstanceCollection> VertexArray::GetInstances()
 	{
 		return m_Instances;
 	}
 
 	bool VertexArray::CheckInstanced()
 	{
-		return m_IsInstanced;
+		return m_IBO != nullptr;
 	}
 
-	void VertexArray::SetInstanceBuffer(Ref<InstanceCollection> instanceCollection)
-	{
-		// Init and bind IBO
-		m_IBO = InstanceBuffer::Create(instanceCollection);
-		m_IBO->Bind();
-
-		// Init IBO Attrib Arrays then unbind IBO
-		SetAttribPointers(m_IBO->GetCollection(), 1);
-		m_IBO->Unbind();
-
-		// Get count of instances
-		m_Instances = m_IBO->GetCollection()->GetLength();
-	}
 
 	void VertexArray::SetAttribPointer
 	(
