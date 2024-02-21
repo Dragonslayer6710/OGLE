@@ -3,14 +3,21 @@
 
 namespace OGLE {
 	//init buffer params
-	Buffer::Buffer(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum bufferUsage)
+	Buffer::Buffer(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum bufferUsage, bool nullInit)
 		:m_BufferTarget(target), m_BufferUsage(bufferUsage)
 	{
 		// Generate buffer then bind
 		GLCall(glGenBuffers(1, &m_BufferID));
 		Bind();
 		// 0 fill the buffer to the dedicated size and set data to buffer if provided
-		GLCall(glBufferData(m_BufferTarget, size, data, bufferUsage));
+		if (nullInit)
+		{
+			GLCall(glBufferData(m_BufferTarget, size, NULL, bufferUsage));
+		}
+		else 
+		{
+			GLCall(glBufferData(m_BufferTarget, size, data, bufferUsage));
+		}
 		Unbind();
 	}
 
@@ -64,9 +71,9 @@ namespace OGLE {
 
 
 
-	Ref<VertexBuffer> VertexBuffer::Create(GLsizeiptr size, const GLvoid* data, GLenum bufferUsage /*= GL_STATIC_DRAW*/)
+	Ref<VertexBuffer> VertexBuffer::Create(GLsizeiptr size, const GLvoid* data, GLenum bufferUsage /*= GL_STATIC_DRAW*/, bool nullInit /*= false*/)
 	{
-		return CreateRef<VertexBuffer>(size, data, bufferUsage);
+		return CreateRef<VertexBuffer>(size, data, bufferUsage, nullInit);
 	}
 
 }

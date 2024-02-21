@@ -88,6 +88,13 @@ namespace OGLE {
 		GLboolean Normalized;
 		DataAttributeInfo(DataAttributeType type, GLboolean normalized = GL_FALSE)
 			: Type(type), Normalized(normalized) {}
+
+		// Define the equality operator
+		bool operator==(const DataAttributeInfo& other) const {
+			// Compare members of this struct with corresponding members of other struct
+			// Return true if they are equal, false otherwise
+			return Type == other.Type && Normalized == other.Type;
+		}
 	
 	};
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "OGLE/Display/Renderer/Shader.h"
 #include "OGLE/Display/Renderer/Camera.h"
 #include "OGLE/Display/Renderer/Model.h"
 

@@ -51,8 +51,7 @@ namespace OGLE {
 	void Renderer::Draw()
 	{
 		for (auto& kv : m_Models) {
-			Ref<Model> model = kv.second;
-			model->Draw();
+			kv.second->Draw(m_CurrentShaderProgram);
 		}
 	}
 
@@ -78,12 +77,13 @@ namespace OGLE {
 
 	void Renderer::AddModel(Ref<Model> model)
 	{
-		m_Models[model->GetID()] = model;
+		m_Models[model->GetID()] = std::move(model);
 	}
 
 	void Renderer::RemoveModel(Ref<Model> model)
 	{
-		RemoveModel(model->GetID());
+		if (m_Models.find(model->GetID()) != m_Models.end())
+			RemoveModel(model->GetID());
 	}
 
 	void Renderer::RemoveModel(GLuint modelID)

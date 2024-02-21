@@ -7,45 +7,29 @@ namespace OGLE {
 	class Mesh 
 	{
 	public:
-		static Ref<Mesh> Create(Ref<Shape> shape)
+		static Scope<Mesh> Create(Ref<Shape> shape)
 		{
-			return CreateRef<Mesh>(shape->GetVertices(), shape->GetInstances());
+			return CreateScope<Mesh>(shape);
 		}
 
-		VertexArray* GetVAO() { return m_VAO; }
 
-		Mesh
-		(
-			Ref<VertexCollection> vertices,
-			Ref<InstanceCollection> instances = nullptr
-		) 
-			: m_AttributeIDTracker(NewAttributeIDTracker())
-		{			
-			vertices->LinkCollection(m_AttributeIDTracker);
-			if (instances != nullptr) {
-				instances->LinkCollection(m_AttributeIDTracker);
-			}
-			m_VAO = new VertexArray(vertices, instances);
-		}
-
-		~Mesh()
+		Mesh(Ref<Shape> shape)
+			: m_Vertices(shape->GetVertices()), m_Instances(shape->GetInstances())
 		{
-			DeleteAttributeIDTracker(m_AttributeIDTracker);
 		}
 
+		Ref<VertexCollection> GetVertices() { return m_Vertices; }
+		Ref<InstanceCollection> GetInstances() { return m_Instances; }
 
-		void Bind()
-		{
-			m_VAO->Bind();
+	protected:
+		Mesh() {
 		}
 
-		void Unbind()
-		{
-			m_VAO->Unbind();
-		}
+		Ref<VertexCollection> m_Vertices;
+		Ref<InstanceCollection> m_Instances;
 
-	private:
-		GLuint m_AttributeIDTracker;
-		VertexArray* m_VAO;
+	private:		
+
+
 	};
 }

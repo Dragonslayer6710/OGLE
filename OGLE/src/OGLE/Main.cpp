@@ -15,6 +15,7 @@ namespace OGLE
 		}
 	};
 
+   
 	Application* CreateApplication(ApplicationCommandLineArgs args)
 	{
 		ApplicationSpecification spec;

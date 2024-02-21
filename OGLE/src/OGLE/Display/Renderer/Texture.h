@@ -7,13 +7,33 @@ namespace OGLE{
 	class Texture
 	{
 	public:
-		template<typename T, typename ... Args>
-		constexpr Ref<T> Create(Args&& ... args)
-		{
-			return CreateRef<T>(std::forward<Args>(args)...);
+		// Define the equality operator
+		bool operator==(const Texture& other) const {
+			return m_TextureID == other.m_TextureID;
 		}
 
+		// Define the equality operator
+		bool operator!=(const Texture& other) const {
+			return !(m_TextureID == other.m_TextureID);
+		}
+
+		static Scope<Texture> Create(const Texture& other) {
+			return CreateScope<Texture>(other);
+		}
+
+		Ref<Texture> Create(std::string textureFile)
+		{
+			return CreateRef<Texture>(textureFile);
+		}
+
+		Texture() = default;
+
 		Texture(std::string textureFile);
+		// Copy constructor
+		Texture(const Texture& other)
+			: m_IsAtlas(other.m_IsAtlas), m_Size(other.m_Size), m_TextureID(other.m_TextureID), m_TextureSlot(other.m_TextureSlot), m_IsBound(other.m_IsBound) {
+			// If any member requires deep copying, perform it here
+		}
 		~Texture();
 
 		bool IsAtlas();
@@ -28,6 +48,7 @@ namespace OGLE{
 		GLsizei GetHeight();
 
 	protected:
+		static Texture s_BoundTexture;
 		static void SetParameterI(GLenum target, GLenum param, GLint value);
 
 	private:
@@ -67,6 +88,7 @@ namespace OGLE{
 	class UniformTextureAtlas : public TextureAtlas
 	{
 	public:
+		Ref<Texture> Create(std::string textureFile) = delete;
 		static Ref<UniformTextureAtlas> Create(std::string textureFile, glm::vec2 subTexSize)
 		{
 			return CreateRef<UniformTextureAtlas>(textureFile, subTexSize);

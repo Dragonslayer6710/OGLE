@@ -5,8 +5,6 @@
 namespace OGLE {
 	class World;
 
-	
-
 	static enum BlockSide {
 		BlockSouth,
 		BlockNorth,
@@ -22,20 +20,27 @@ namespace OGLE {
 	class Block
 	{
 	public:
+		static Ref<Block> Create(glm::vec3 position, GLushort id = 2)
+		{
+			return CreateRef<Block>(position, id);
+		}
+
+		void Load(std::vector<Ref<Instance>>& blockAlloc);
+		void Unload();
+
 		Block(glm::vec3 position, GLushort id = 2);
 
 		void UpdateGeometry();
 
-		void HideFace(GLushort face);
+		void HideFace(int face);
 
-		void ShowFace(GLushort face);
+		void ShowFace(int face);
 
 		glm::vec3 GetPos() { return m_Position; }
 
-		GLushort GetBlockTypeID();
+		GLushort GetBlockID();
 
-		GLuint Block::GetWorldBlockID();
-		static int hiddenFaces;
+		GLuint Block::GetBlockInstanceID();
 
 		static void ResetBlocks() {
 			numBlocks = 0;
@@ -47,14 +52,17 @@ namespace OGLE {
 		glm::vec3 m_Position;
 		glm::mat4 m_ModelTransform;
 		GLushort m_BlockID;
-		GLuint m_WorldBlockID = numBlocks++;
-		std::vector<TextureGeometry>* m_FaceTexGeoms;
+		GLuint m_BlockInstanceID = numBlocks++;
 
-		std::vector<Instance>* m_Faces;
-		bool m_VisibleFaces[6];
+		std::array<Instance, 6> m_Faces;
+
+		std::array<Ref<Instance>, 6> m_LoadedFaces;
+		std::array<Instance, 6> m_HiddenFaces;
+
 
 		static GLuint numBlocks;
 
-		static std::vector<TextureGeometry>* MapTexture(GLushort blockID);
+		static std::vector<TextureGeometry> MapTexture(GLushort blockID);
+		void MapTexture();
 	};
 }

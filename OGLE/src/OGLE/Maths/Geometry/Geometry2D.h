@@ -3,47 +3,38 @@
 #include "OGLE/Maths/Geometry/Shape.h"
 namespace OGLE {
 
-	static const std::initializer_list<Vertex> s_TriangleVertices
-	{
-		Vertex(glm::vec2(-0.5f,  0.5f), glm::vec4(0.5f, 0.0f, 0.0f, 0.5f), glm::vec2(0.0f)),
-		Vertex(glm::vec2(-0.5f, -0.5f), glm::vec4(0.0f, 0.5f, 0.0f, 0.5f), glm::vec2(0.0f)),
-		Vertex(glm::vec2(-0.75f, -0.5f), glm::vec4(0.0f, 0.0f, 0.5f, 0.5f), glm::vec2(0.0f))
-	};
-
-	static const std::vector<GLushort> s_TriangleIndices
-	{
-		0, 1, 2
-	};
-
 	class Triangle : public Shape
 	{
 	public:
-		Ref<VertexCollection> NewVertexCollection() override
+		Scope<VertexCollection> NewVertexCollection() override
 		{
-			return Shape::NewVertexCollection(s_TriangleVertices, s_TriangleIndices);
+			constexpr std::array<Vertex, 3> triangleVertices = {
+				Vertex(glm::vec3{-0.5f,  0.5f, 0.0f}, glm::vec4{0.5f, 0.0f, 0.0f, 0.5f}, glm::vec2{0.0f}),
+				Vertex(glm::vec3{-0.5f, -0.5f, 0.0f}, glm::vec4{0.0f, 0.5f, 0.0f, 0.5f}, glm::vec2{0.0f}),
+				Vertex(glm::vec3{-0.75f,-0.5f, 0.0f}, glm::vec4{0.0f, 0.0f, 0.5f, 0.5f}, glm::vec2{0.0f})
+			};
+
+			constexpr std::array<GLushort, 3> triangleIndices = { 0, 1, 2 };
+
+			return Shape::NewVertexCollection<3, 3>(triangleVertices, triangleIndices);
 		}
-	};
-
-	static const std::initializer_list<Vertex> s_QuadVertices
-	{
-		{ glm::vec2(-0.5, -0.5f), glm::vec4(1.0f), glm::vec2(0.0f, 0.0f) },
-		{ glm::vec2(-0.5, 0.5f), glm::vec4(1.0f), glm::vec2(0.0f, 1.0f) },
-		{ glm::vec2(0.5, 0.5f), glm::vec4(1.0f), glm::vec2(1.0f, 1.0f) },
-		{ glm::vec2(0.5,-0.5f), glm::vec4(1.0f), glm::vec2(1.0f, 0.0f) }
-	};
-
-	static const std::vector<GLushort> s_QuadIndices
-	{
-		0, 1, 2,
-		2, 3, 0
 	};
 
 	class Quad : public Shape
 	{
 	public:
-		Ref<VertexCollection> NewVertexCollection() override
+		Scope<VertexCollection> NewVertexCollection() override
 		{
-			return Shape::NewVertexCollection(s_QuadVertices, s_QuadIndices);
+			constexpr std::array<Vertex, 4> quadVertices = {
+				Vertex(glm::vec3{-0.5f, -0.5f, 0.0f}, glm::vec4{1.0f}, glm::vec2{0.0f, 0.0f}),
+				Vertex(glm::vec3{-0.5f,  0.5f, 0.0f}, glm::vec4{1.0f}, glm::vec2{0.0f, 1.0f}),
+				Vertex(glm::vec3{ 0.5f,  0.5f, 0.0f}, glm::vec4{1.0f}, glm::vec2{1.0f, 1.0f}),
+				Vertex(glm::vec3{ 0.5f, -0.5f, 0.0f}, glm::vec4{1.0f}, glm::vec2{1.0f, 0.0f})
+			};
+
+			constexpr std::array<GLushort, 6> quadIndices = { 0, 1, 2, 2, 3, 0 };
+
+			return Shape::NewVertexCollection<4, 6>(quadVertices, quadIndices);
 		}
 	};
 

@@ -7,14 +7,14 @@ namespace OGLE{
 	{
 	public:
 
-		Collection(std::vector<T>& data, DataLayout dataLayout, GLenum bufferUsage)
-			: m_Elements(new std::vector(data)), m_DataLayout(dataLayout), m_BufferUsage(bufferUsage)
+		Collection(ContVector<T>& data, DataLayout dataLayout, GLenum bufferUsage)
+			: m_Elements(new ContVector<T>(data)), m_CompressedElements(new ContVector<T>(data)), m_DataLayout(dataLayout), m_BufferUsage(bufferUsage)
 		{
 		}
 
 		void LinkCollection(GLuint attributeIDTracker)
 		{
-			for (DataAttributeInfo attribInfo : m_DataLayout.AttributeData)
+			for (const DataAttributeInfo& attribInfo : m_DataLayout.AttributeData)
 			{
 				m_DataAttributes[m_Stride] = GetNewDataAttribute(attributeIDTracker, attribInfo.Type, attribInfo.Normalized);
 				m_Stride += m_DataAttributes[m_Stride]->Size;
@@ -22,72 +22,105 @@ namespace OGLE{
 		}
 
 		std::unordered_map<GLuint, DataAttribute*> GetAttributes() { return m_DataAttributes; };
+		
+		DataLayout GetLayout() { return m_DataLayout; }
 
-		GLuint GetLength() { return CompressElements()->size(); }
+		ContVector<T>& GetElements() { return *m_Elements; }
+
+		std::vector<Ref<Instance>>* GetSubset(size_t startIndex, size_t length, bool autoResize = false)
+		{
+			return m_Elements->GetSubset(startIndex, length, autoResize);
+		}
+
+		GLuint GetLength() { return m_Elements->size(); }
 		GLuint GetSize() { return GetLength() * sizeof(T); }
+		const GLvoid* GetData() {
+			return m_Elements->data();
+		}
+
+		GLuint GetCompressedLength() { return GetCompressedElements()->size(); }
+		GLuint GetCompressedSize() { return GetCompressedLength() * sizeof(T); }
+		const GLvoid* GetCompressedData() {
+			return GetCompressedElements()->data();
+		}
+
 		GLuint GetStride() { return m_Stride; }
 		GLenum GetUsage() { return m_BufferUsage; }
 
-		bool IsEmpty() { return !GetLength(); }
+		bool IsEmpty() { return !GetLength(); }	
+		
+		void ReserveInstances(GLuint size, GLuint compressedSize)
+		{
+			m_Elements->reserve(size);
+			m_CompressedElements->reserve(compressedSize);
+		}
 
-		std::vector<T>* GetElements() { return m_Elements; }
-		const GLvoid* GetData() { 
-			return CompressElements()->data(); }
-	
-	//protected:
-		std::vector<T>* CompressElements() {
-			if (m_Length == m_Elements->size())
-				return m_Elements;
-			std::vector<T>* retVector = new std::vector<T>(*m_Elements);
-			int nonNullIndex = 0;
-			for (int i = 0; i < retVector->size(); ++i) {
-				// If the current element is non-zero
-				if (!(*retVector)[i].IsNull()) {
-					// Shift the non-zero element to the nonZeroIndex position
-					(*retVector)[nonNullIndex] = (*retVector)[i];
-					// Increment the nonZeroIndex
-					++nonNullIndex;
-				}
+		template<std::size_t N>
+		void AddElements(const std::array<Instance, N>& elements)
+		{
+			return m_Elements->insert(elements);
+		}
+
+		void AddElements(std::vector<T>& elements)
+		{
+			m_Elements->insert(elements);
+		}
+
+		void AddElements(ContVector<T>& elements)
+		{
+			m_Elements->insert(elements);
+		}
+
+		void AddElement(T& element)
+		{
+			m_Elements->emplace_back(element);
+		}
+
+		void InsertElement(GLuint index, const T& elements) {
+			if (index >= m_Elements->size()) {
+				m_Elements->resize(index + 1);
 			}
-
-			// Resize the vector to remove the trailing zeros
-			retVector->resize(nonNullIndex);
-			return retVector;
-		}
-
-		void AddElements(std::vector<T>& data)
-		{
-			m_Elements->insert(m_Elements->end(), data.begin(), data.end());
-		}
-		void AddElement(T& data)
-		{
-			m_Elements->push_back(data);
-		}
-
-		void InsertElement(GLuint index, T data) {
-			if (index >= GetElements()->size())
-				m_Elements->resize(index + 1, T());
-			(*m_Elements)[index] = data;
+			(*m_Elements)[index] = elements;
 		}
 
 		void RemoveElement(GLuint index)
 		{
-			(*m_Elements)[index] = T();
+			if (index >= m_Elements->size())
+			{
+				OGLE_CORE_ASSERT("Index out of bounds in RemoveElement()");
+				return;
+			}
+
+			m_Elements->erase(index);
 		}
 
-		T GetElement(GLuint index)
+		Ref<T> GetElement(GLuint index)
 		{
-			return (*m_Elements)[index];
+			return m_Elements[index];
+		}
+	protected:
+		ContVector<T>* GetCompressedElements() {
+			if (!m_CompressedElements->empty())
+				return m_CompressedElements;
+			int culledFaces = 0;
+			for (T& elem : *m_Elements) {
+				// If the current element is non-zero
+				if (!elem.IsNull()) {
+					m_CompressedElements->emplace_back(elem);
+				}
+				else
+					culledFaces++;
+			}
+			return m_CompressedElements;
 		}
 
 	private:		
-		std::vector<T>* m_Elements;	
+		ContVector<T>* m_Elements;
+		ContVector<T>* m_CompressedElements;
 
 		std::unordered_map<GLuint, DataAttribute*> m_DataAttributes;
 		DataLayout m_DataLayout;
 
-		GLuint m_Length;
-		GLuint m_Size;
 		GLuint m_Stride = 0;
 		GLenum m_BufferUsage;
 	};
@@ -95,16 +128,17 @@ namespace OGLE{
 	class VertexCollection : public Collection<Vertex>
 	{
 	public:
-		static Ref<VertexCollection> Create(std::initializer_list<Vertex>& data, std::vector<GLushort>& indices)
-		{
-			return CreateRef <VertexCollection>(data, indices);
+		static Scope<VertexCollection> Create(ContVector<Vertex>& vertices, std::vector<GLushort>& indices) {
+			return CreateScope<VertexCollection>(vertices, indices);
 		}
 
-		VertexCollection(std::initializer_list<Vertex>& data, std::vector<GLushort>& indices, GLenum elementDataType = GL_UNSIGNED_SHORT)
-			: VertexCollection(std::vector(data), indices, elementDataType = GL_UNSIGNED_SHORT)
-			{}
+		VertexCollection(ContVector<Vertex>& vertices, std::vector<GLushort>& indices, GLenum elementDataType = GL_UNSIGNED_SHORT)
+			: Collection(vertices, s_VertexLayout, GL_STATIC_DRAW),
+			m_Indices(new std::vector<GLushort>(indices)),
+			m_ElementCount(indices.size()),
+			m_ElementDataType(elementDataType) {}
 
-		std::vector<Vertex>* GetVertices() { return GetElements(); }
+		ContVector<Vertex>& GetVertices() { return GetElements(); }
 		std::vector<GLushort>* GetIndices() { return m_Indices; }
 
 		GLuint GetElementCount() const
@@ -122,34 +156,22 @@ namespace OGLE{
 		GLenum m_ElementDataType;
 
 	private:
-		VertexCollection(std::vector<Vertex>& vertices, std::vector<GLushort>& indices, GLenum elementDataType = GL_UNSIGNED_SHORT)
-			: Collection(vertices, s_VertexLayout, GL_STATIC_DRAW), 
-			m_Indices(new std::vector<GLushort>(indices)),
-			m_ElementCount(indices.size()),
-			m_ElementDataType(elementDataType) {}
-
-	private:
 		std::vector<GLushort>* m_Indices;
 	};
 
 	class InstanceCollection : public Collection<Instance>
 	{
 	public:
-		static Ref<InstanceCollection> Create(std::initializer_list<Instance>* data = nullptr)
+		static Scope<InstanceCollection> Create(ContVector<Instance>& instances)
 		{
-			return CreateRef <InstanceCollection>(data);
+			return CreateScope<InstanceCollection>(instances);
 		}
 
-		InstanceCollection(std::initializer_list<Instance>* data = nullptr)
-			: InstanceCollection((data != nullptr) ? std::vector(*data) 
-				: std::vector<Instance>()) {}
-
-		std::vector<Instance>* GetInstances() { return GetElements(); }		
-		
-		friend class Shape;
-	private:
-		InstanceCollection(std::vector<Instance>& instances, GLenum bufferUsage = GL_DYNAMIC_DRAW)
+		InstanceCollection(ContVector<Instance>& instances, GLenum bufferUsage = GL_DYNAMIC_DRAW)
 			: Collection(instances, s_InstanceLayout, bufferUsage) {}
 
+		ContVector<Instance>& GetInstances() { return GetElements(); }
+
+		friend class Shape;
 	};
 }

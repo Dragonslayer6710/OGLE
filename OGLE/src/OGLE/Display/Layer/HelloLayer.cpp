@@ -100,8 +100,7 @@ namespace OGLE {
 	Camera* camera;
 
 	Ref<World> world;
-	Ref<Model> worldModel;
-
+	Scope<WorldRenderer> worldRenderer;
 	void HelloLayer::OnUpdate(Timestep ts)
 	{
 		if (doInit) {
@@ -111,18 +110,18 @@ namespace OGLE {
 			shaderProgram = new ShaderProgram();			
 
 			m_Renderer->ChangeShaderProgram(*shaderProgram);	
-
 			
 			doInit = false;
 			
 		}
 		if (newWorld) {
-			world = CreateRef<World>();
-			worldModel = Model::Create(world->GetWorldGeometry(), Block::s_TextureAtlas);
+			world = World::Create();
+			worldRenderer = CreateScope<WorldRenderer>();
+			Ref<Model> worldModel= worldRenderer->GetWorldModel();
 
-			shaderProgram->SetUniform1i("tex0", worldModel->GetTexture()->GetTextureSlot());
-
+			m_Renderer->RemoveModel(worldModel);
 			m_Renderer->AddModel(worldModel);
+
 			newWorld = false;
 		}
 		

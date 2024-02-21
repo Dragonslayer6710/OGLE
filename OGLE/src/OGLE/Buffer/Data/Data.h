@@ -30,7 +30,7 @@ namespace OGLE {
 	private:
 		void TypesToData(std::vector<DataAttributeType>& attributeTypes)
 		{
-			for (DataAttributeType attribType : attributeTypes)
+			for (const DataAttributeType& attribType : attributeTypes)
 				AttributeData.push_back(DataAttributeInfo(attribType));
 			AttribCount = AttributeData.size();
 		}
@@ -39,21 +39,24 @@ namespace OGLE {
 
 
 	struct Vertex {
-		glm::vec3 Position;
-		glm::vec4 Color;
-		glm::vec2 TexUV;
-		//bool isNull = false;
+    glm::vec3 Position;
+    glm::vec4 Color;
+    glm::vec2 TexUV;
 
-		Vertex()
-			: Position(glm::vec3()), Color(glm::vec4()), TexUV(glm::vec2()) {}
-		Vertex(glm::vec2 position, glm::vec4 color, glm::vec2 texUV)
-			: Position(glm::vec3(position, 0.0f)), Color(color), TexUV(texUV) {}
-		Vertex(glm::vec3 position, glm::vec4 color, glm::vec2 texUV)
-			: Position(glm::vec3(position)), Color(color), TexUV(texUV) {}
+    // Default constructor
+    constexpr Vertex() : Position(0.0f), Color(1.0f), TexUV(0.0f) {}
 
-		bool IsNull() { return false; }
+    // Constructor with position, color, and texture UV
+    constexpr Vertex(const glm::vec3& position, const glm::vec4& color, const glm::vec2& texUV)
+        : Position(position), Color(color), TexUV(texUV) {}
 
-	};
+    // Constructor with position and texture UV (color defaults to white)
+    constexpr Vertex(const glm::vec2& position, const glm::vec2& texUV)
+        : Position(glm::vec3(position, 0.0f)), Color(1.0f), TexUV(texUV) {}
+
+    // Check if the vertex is null
+    constexpr bool IsNull() const { return false; }
+};
 
 	static const DataLayout s_VertexLayout = DataLayout({ Float3, Float4, Float2 });
 	
@@ -63,7 +66,7 @@ namespace OGLE {
 
 		TextureGeometry(glm::vec2 position = glm::vec2(1.0f), glm::vec2 size = glm::vec2(1.0f))
 			: Position(position), Size(size)
-		{}
+		{}		
 	};
 
 	
@@ -76,7 +79,17 @@ namespace OGLE {
 		Instance(glm::mat4 modelMatrix=glm::mat4(), TextureGeometry texGeom = TextureGeometry())
 			: ModelMatrix(modelMatrix), TexGeometry(texGeom) {}
 
-		bool IsNull() { return ModelMatrix == glm::mat4(); }
+		// Copy constructor
+		Instance(const Instance& other)
+			: ModelMatrix(other.ModelMatrix), TexGeometry(other.TexGeometry) {
+			// If any member requires deep copying, perform it here
+		}
+
+		Instance(Instance* otherInstance)
+			: ModelMatrix(otherInstance->ModelMatrix), TexGeometry(otherInstance->TexGeometry) {}
+
+		bool IsNull() {
+			return ModelMatrix == glm::mat4(); }
 	};
 	
 

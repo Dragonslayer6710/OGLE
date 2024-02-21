@@ -7,23 +7,21 @@ namespace OGLE {
 	{
 	public:
 
-		static Scope<VertexArray> Create(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection);
+		static Scope<VertexArray> Create(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection, bool nullInstInit = false);
 
-		VertexArray(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection);
+		VertexArray(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection, bool nullInstInit = false);
 
 		~VertexArray();
 
 		void Bind();
 		void Unbind();
 
-		Ref<VertexCollection> GetVertices();
-		
-		std::vector<GLushort>* GetIndices();
-		GLuint GetElementCount();
-		GLenum GetElementDataType();
+		void SetInstanceData(GLuint offset, GLuint size, const GLvoid* data);
 
-		Ref<InstanceCollection> GetInstances();
-		GLuint GetInstanceCount();
+		Ref<VertexBuffer> GetVertexBuffer();
+		Ref<VertexBuffer> GetInstanceBuffer();
+		Ref<ElementBuffer> GetElementBuffer();
+
 		bool CheckInstanced();
 
 	private:
@@ -56,10 +54,7 @@ namespace OGLE {
 
 		Ref<VertexBuffer> m_VBO;
 		Ref<ElementBuffer> m_EBO;
-		Ref<VertexCollection> m_Vertices;
-
 		Ref<VertexBuffer> m_IBO;
-		Ref<InstanceCollection> m_Instances;
 
 		bool m_IsBound = false;
 

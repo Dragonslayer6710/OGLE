@@ -5,11 +5,12 @@ namespace OGLE {
 	
 	std::map<GLuint, bool> Texture::s_TextureSlots;
 	std::vector<GLuint> Texture::s_FreedTextureSlots;
+	Texture Texture::s_BoundTexture;
 
 	Texture::Texture(std::string textureFile)
 	{
 		GLint width, height, numColCh;
-		GLubyte* bytes = stbi_load((cwd + "\\assets\\textures\\" + textureFile).c_str(), &width, &(int&)height, &numColCh, 0);
+		GLubyte* bytes = stbi_load((cwd + "\\assets\\textures\\" + textureFile).c_str(), &width, &height, &numColCh, 0);
 		m_Size = glm::vec2(width, height);
 		GLCall(glGenTextures(1, &m_TextureID));
 		Bind();
@@ -41,6 +42,9 @@ namespace OGLE {
 	{
 		if (m_IsBound)
 			return;
+		if (s_BoundTexture != *this)
+			s_BoundTexture.Unbind();
+		s_BoundTexture = *this;
 		m_TextureSlot = GetNextTextureSlot();
 		GLCall(glActiveTexture(GL_TEXTURE0 + m_TextureSlot));
 		GLCall(glBindTexture(GL_TEXTURE_2D, m_TextureID));

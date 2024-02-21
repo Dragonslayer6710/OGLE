@@ -3,32 +3,71 @@
 
 namespace OGLE {
 
-	OGLE::Ref<OGLE::Model> Model::Create(Ref<Shape> shape, Ref<Texture> texture)
+	Scope<Model> Model::Create(Ref<Mesh> mesh, Ref<Texture> texture)
 	{
-		return CreateRef<Model>(shape, texture);
+		return CreateScope<Model>(mesh, texture);
 	}
 
-	Model::Model(Ref<Shape> shape, Ref<Texture> texture) 
-		: m_Mesh(Mesh::Create(shape)), m_Texture(texture)
+	Model::Model(Ref<Mesh> mesh, Ref<Texture> texture)
+		: m_AttributeIDTracker(NewAttributeIDTracker()),  m_Mesh(mesh), m_Texture(texture)
 	{
-		Ref<VertexCollection> vertices = m_Mesh->GetVAO()->GetVertices();
-		m_ElementCount = vertices->GetElementCount();
-		m_ElementDataType = vertices->GetElementDataType();
-		
-		SetInstanceStats();		
+		InitVAO();
+	}
+
+	Model::~Model()
+	{
+		DeleteAttributeIDTracker(m_AttributeIDTracker);
 	}
 
 	void Model::SetInstanceStats() {
-		Ref<InstanceCollection> instances = m_Mesh->GetVAO()->GetInstances();
+
+		SetInstanceStats();
+		
+	}
+
+	void Model::InitVAO()
+	{
+		Ref<VertexCollection> vertices = m_Mesh->GetVertices();
+		Ref<InstanceCollection> instances = m_Mesh->GetInstances();
+
+		vertices->LinkCollection(m_AttributeIDTracker);
+		if (instances != nullptr) {
+			instances->LinkCollection(m_AttributeIDTracker);
+		}
+
+		m_ElementCount = vertices->GetElementCount();
+		m_ElementDataType = vertices->GetElementDataType();
+
 		if (instances != nullptr) {
 			m_InstanceCount = instances->GetLength();
 			m_IsInstanced = m_InstanceCount;
 		}
+		m_VAO = VertexArray::Create(vertices, instances, true);
+		UpdateVAO();
 	}
 
-	void Model::Draw()
+	void Model::UpdateVAO()
+	{
+		Ref<InstanceCollection> instances = m_Mesh->GetInstances();
+		m_VAO->SetInstanceData(0, instances->GetCompressedSize(), instances->GetCompressedData());
+	}
+
+	void Model::Bind()
+	{
+		m_VAO->Bind();
+		if (m_Texture != nullptr)
+			m_Texture->Bind();
+	}
+
+	void Model::Unbind()
+	{
+		m_VAO->Unbind();
+	}
+
+	void Model::Draw(ShaderProgram* shaderProgram)
 	{
 		Bind();
+		shaderProgram->SetUniform1i("tex0", GetTexture()->GetTextureSlot());
 		if (m_IsInstanced) {
 			GLCall(glDrawElementsInstanced(GL_TRIANGLES, m_ElementCount, m_ElementDataType, nullptr, m_InstanceCount));
 		}
@@ -43,21 +82,8 @@ namespace OGLE {
 		return m_ModelID;
 	}
 
-	OGLE::Ref <OGLE::Texture> Model::GetTexture()
-	{
-		return m_Texture;
-	}
-
-	void Model::Bind()
-	{
-		m_Texture->Bind();
-		m_Mesh->Bind();
-	}
-
-	void Model::Unbind()
-	{
-		m_Texture->Unbind();
-		m_Mesh->Unbind();
+	Ref<Texture> Model::GetTexture() {
+		return m_Texture; 
 	}
 
 	GLuint Model::m_ModelCounter = 0;

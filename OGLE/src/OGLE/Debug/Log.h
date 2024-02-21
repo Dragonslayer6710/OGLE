@@ -1,7 +1,7 @@
 #pragma once
 
 #include "OGLE/Core/Base.h"
-#include "OGLE/Maths/glm.h"
+#include "OGLE/Maths/oglemath.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 
@@ -55,6 +55,8 @@ inline OStream& operator<<(OStream& os, glm::qua<T, Q> quaternion)
 	return os << glm::to_string(quaternion);
 }
 
+#ifndef MACRO_LOG
+
 // Core log macros
 #define OGLE_CORE_TRACE(...)    ::OGLE::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define OGLE_CORE_DEBUG(...)    ::OGLE::Log::GetCoreLogger()->debug(__VA_ARGS__)
@@ -70,3 +72,5 @@ inline OStream& operator<<(OStream& os, glm::qua<T, Q> quaternion)
 #define OGLE_WARN(...)          ::OGLE::Log::GetClientLogger()->warn(__VA_ARGS__)
 #define OGLE_ERROR(...)         ::OGLE::Log::GetClientLogger()->error(__VA_ARGS__)
 #define OGLE_CRITICAL(...)      ::OGLE::Log::GetClientLogger()->critical(__VA_ARGS__)
+#define MACRO_LOG
+#endif

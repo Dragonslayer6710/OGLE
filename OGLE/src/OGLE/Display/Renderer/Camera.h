@@ -1,6 +1,5 @@
 #pragma once
 #include "OGLE/Input/Control.h"
-#include "OGLE/Maths/glm.h"
 
 namespace OGLE {
 

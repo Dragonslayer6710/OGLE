@@ -6,26 +6,19 @@
 #include <variant>
 namespace OGLE {
 
-	static inline glm::mat4 NewModelMatrix(glm::vec3 translation, glm::quat rotation, glm::vec3 scale)
-	{
-		return glm::scale(glm::translate(glm::mat4(1.0), translation) * glm::toMat4(rotation), scale);
-	}
-	static inline glm::mat4 NewModelMatrix(glm::vec3 translation = glm::vec3(1.0f), glm::vec3 rotDeg = glm::vec3(0.0f), glm::vec3 scale = glm::vec3(1.0f))
-	{
-		return NewModelMatrix(translation, glm::quat(glm::radians(rotDeg)), scale);
-	}
+	
+
 
 	template<typename T>
-	static std::initializer_list<T> CopyConstInit(const std::initializer_list<T> vertices)
+	static std::vector<T> CopyConstInit(const std::initializer_list<T>& vertices)
 	{
-		return std::initializer_list(vertices);
+		return std::vector<T>(vertices);
 	}
 
 	static std::vector<GLushort> CopyConstIndices(const std::vector<GLushort> indices)
 	{
 		return std::vector<GLushort>(indices);
 	}
-
 
 
 	class Shape
@@ -35,14 +28,29 @@ namespace OGLE {
 		Ref<VertexCollection> GetVertices() { return m_Vertices; };
 		std::vector<GLushort>* GetIndices() { return m_Vertices->GetIndices(); };
 
-		Ref<InstanceCollection> GetInstances() { return m_Instances; };
+		Ref<InstanceCollection> GetInstances() 
+		{ 
+			return m_Instances;
+		};
 
 		template<typename T>
-		static Ref<T> Create()
+		static Scope<T> Create()
 		{
-			Ref<T> t = CreateRef<T>();
+			Scope<T> t = CreateScope<T>();
 			t->SetVertexCollection();
 			return t;
+		}
+
+		void ReserveInstances(GLuint size, GLuint compressedSize = 0)
+		{
+			if (compressedSize)
+				compressedSize = size;
+			m_Instances->ReserveInstances(size, compressedSize);
+		}
+
+		std::vector<Ref<Instance>>* GetSubset(size_t startIndex, size_t length)
+		{
+			return m_Instances->GetSubset(startIndex, length);
 		}
 
 		void AddInstances(std::vector<Instance>& instances)
@@ -50,12 +58,18 @@ namespace OGLE {
 			return m_Instances->AddElements(instances);
 		}
 
-		void AddInstance(Instance instance)
+		template<std::size_t N>
+		void AddInstances(const std::array<Instance, N>& instances)
+		{
+			return m_Instances->AddElements(instances);
+		}
+
+		void AddInstance(Instance& instance)
 		{
 			m_Instances->AddElement(instance);
 		}
 
-		void InsertInstance(GLuint index, Instance instance)
+		void InsertInstance(GLuint index, Instance& instance)
 		{
 			m_Instances->InsertElement(index, instance);
 		}
@@ -65,22 +79,41 @@ namespace OGLE {
 			m_Instances->RemoveElement(index);
 		}
 
-		Shape
-		() 
-			:m_Instances(InstanceCollection::Create()){}
+		Shape() 
+		{			
+			ContVector<Instance> instances;
+			m_Instances = std::move(InstanceCollection::Create(instances));
+		}
+		~Shape()
+		{
+
+		}
 	protected:
 
-		static Ref<VertexCollection> NewVertexCollection(const std::initializer_list<Vertex> vertices, const std::vector<GLushort> indices)
+		template<std::size_t N, std::size_t M>
+		Scope<VertexCollection> NewVertexCollection(const std::array<Vertex, N>& vertices, const std::array<GLushort, M>& indices)
 		{
-			return VertexCollection::Create(CopyConstInit<Vertex>(vertices), CopyConstIndices(indices));
+			// Convert std::array arguments to std::vector
+			ContVector<Vertex> verticesVector;
+			verticesVector.reserve(N); // Reserve space for N Vertices
+
+			for (const Vertex& vertex : vertices) {
+				verticesVector.emplace_back(vertex); // Store a pointer to the Vertex object
+			}
+
+			std::vector<GLushort> indicesVector(indices.begin(), indices.end());
+
+			// Call VertexCollection::Create with both vectors
+			return VertexCollection::Create(verticesVector, indicesVector);
 		}
 
-		virtual Ref<VertexCollection> NewVertexCollection() {
+
+		virtual Scope<VertexCollection> NewVertexCollection() {
 			return nullptr;
 		}
 
 		void SetVertexCollection() {
-			m_Vertices = NewVertexCollection();
+			m_Vertices = std::move(NewVertexCollection());
 		}
 
 		Ref<VertexCollection> m_Vertices;

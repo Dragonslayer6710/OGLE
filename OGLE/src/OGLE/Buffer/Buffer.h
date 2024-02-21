@@ -5,7 +5,7 @@ namespace OGLE{
 	class Buffer
 	{
 	public:
-		Buffer(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum bufferUsage);
+		Buffer(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum bufferUsage, bool nullInit = false);
 		~Buffer();
 
 		bool IsBound();
@@ -13,6 +13,7 @@ namespace OGLE{
 		void Unbind();
 
 	protected:	
+		friend class VertexArray;
 		void SetData(GLintptr offset, GLsizeiptr size, const GLvoid* data);
 
 	protected:
@@ -26,10 +27,10 @@ namespace OGLE{
 	class VertexBuffer : public Buffer
 	{
 	public:
-		static Ref<VertexBuffer> Create(GLsizeiptr size, const GLvoid* data, GLenum bufferUsage = GL_STATIC_DRAW);
+		static Ref<VertexBuffer> Create(GLsizeiptr size, const GLvoid* data, GLenum bufferUsage = GL_STATIC_DRAW, bool nullInit = false);
 
-		VertexBuffer(GLsizeiptr size, const GLvoid* data, GLenum bufferUsage)
-			: Buffer(GL_ARRAY_BUFFER, size, data, bufferUsage) {}
+		VertexBuffer(GLsizeiptr size, const GLvoid* data, GLenum bufferUsage, bool nullInit = false)
+			: Buffer(GL_ARRAY_BUFFER, size, data, bufferUsage, nullInit) {}
 
 	};
 

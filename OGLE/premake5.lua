@@ -17,6 +17,8 @@ project "OGLE"
 		"vendor/stb_image/**.cpp",
 		"vendor/glm/glm/**.hpp",
 		"vendor/glm/glm/**.inl",
+		
+		"vendor/gcem/include/gcem.hpp",
 
 		"vendor/ImGuizmo/ImGuizmo.h",
 		"vendor/ImGuizmo/ImGuizmo.cpp"
@@ -36,6 +38,7 @@ project "OGLE"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.gcem}",
 		-- "%{IncludeDir.msdfgen}",
 		-- "%{IncludeDir.msdf_atlas_gen}",
 		"%{IncludeDir.stb_image}",

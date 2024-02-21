@@ -5,12 +5,11 @@
 
 namespace OGLE {
 
-	int Block::hiddenFaces = 0;
 	GLuint Block::numBlocks = 0;
 
-	OGLE::Ref<OGLE::TextureAtlas> Block::s_TextureAtlas;
+	OGLE::Ref<TextureAtlas> Block::s_TextureAtlas;
 
-	std::vector<OGLE::TextureGeometry>* Block::MapTexture(GLushort blockID)
+	std::vector<TextureGeometry> Block::MapTexture(GLushort blockID)
 	{
 		GLushort* subTexIDs;
 
@@ -29,7 +28,7 @@ namespace OGLE {
 			subTexIDs = new GLushort[6]{ 7, 7, 7, 7, 7, 7 };
 			break;
 		default:
-			return new std::vector<TextureGeometry>
+			return std::vector<TextureGeometry>
 			{
 				TextureGeometry(),
 				TextureGeometry(),
@@ -39,27 +38,53 @@ namespace OGLE {
 				TextureGeometry()
 			};
 		}
-		std::vector<TextureGeometry>* m_SideTexGeoms = new std::vector<TextureGeometry>();
+		std::vector<TextureGeometry> m_SideTexGeoms = std::vector<TextureGeometry>();
 		for (int side = 0; side < 6; side++)
-			m_SideTexGeoms->push_back(s_TextureAtlas->GetSubTexture(subTexIDs[side]));
+			m_SideTexGeoms.push_back(s_TextureAtlas->GetSubTexture(subTexIDs[side]));
 		return m_SideTexGeoms;
 	}
 
-	Block::Block(glm::vec3 position, GLushort id /*= 2*/)
-		: m_Position(position), m_ModelTransform(NewModelMatrix(position)), m_BlockID(id)
+	void Block::MapTexture()
 	{
-		m_FaceTexGeoms = MapTexture(m_BlockID);
-		auto it = World::Get()->AddBlock(m_Position, *m_FaceTexGeoms);
-		m_Faces = new std::vector<Instance>(it+m_WorldBlockID, it+m_WorldBlockID+6);
+		int cnt = 0;
+		std::vector<TextureGeometry> texGeoms = MapTexture(m_BlockID);
+		for (TextureGeometry& texGeom : texGeoms)
+			m_Faces[cnt++].TexGeometry = texGeom;
+	}
+
+	Block::Block(glm::vec3 position, GLushort id)
+		: m_Position(position),
+		m_ModelTransform(NewModelMatrix(position)),
+		m_BlockID(id), m_Faces(NewQuadCuboid(position))
+	{
 		if (m_BlockID == GLushort(-1))
 			for (GLushort face = 0; face < 6; face++)
 				HideFace(face);
+		else
+			MapTexture();
 	}
+
+	void Block::Load(std::vector<Ref<Instance>>& blockAlloc)
+	{
+		for (int i = 0; i < 6; i++) {
+			// Update blockAlloc with pointers to newly created instances
+			m_LoadedFaces[i] = blockAlloc[i];
+			*m_LoadedFaces[i] = m_Faces[i];
+		}
+	}
+
+	void Block::Unload()
+	{
+		for (int i = 0; i < 6; i++)
+			m_LoadedFaces[i] = nullptr;
+	}
+
+
 	void Block::UpdateGeometry()
 	{
 		if (m_BlockID == GLushort(-1))
 			return;
-		for (GLushort face = 0; face < 6; face++)
+		for (int face = 0; face < 6; face++)
 		{
 			Ref<Block> adjacentBlock = nullptr;
 			glm::vec3 adjPos;
@@ -84,46 +109,40 @@ namespace OGLE {
 				adjPos = glm::vec3(m_Position.x, m_Position.y + 1, m_Position.z);
 				break;
 			};
-
 			adjacentBlock = World::Get()->GetBlock(adjPos);	
-			if (adjacentBlock != nullptr)
-				if (adjPos != adjacentBlock->GetPos())
-				OGLE_CORE_INFO("{0} vs {1}", adjPos, adjacentBlock->GetPos());
 
-			if (m_VisibleFaces[face])
+			if (m_HiddenFaces[face].IsNull())
 				if (adjacentBlock != nullptr)
-					if (adjacentBlock->GetBlockTypeID() != GLushort(-1))
-
+					if (adjacentBlock->GetBlockID() != GLushort(-1))
 					{
 						HideFace(face);
-						hiddenFaces += 1;
 						continue;
 					}
-			if (!m_VisibleFaces[face])
+			if (!m_HiddenFaces[face].IsNull())
 				ShowFace(face);
 		}
 	}
 
-	void Block::HideFace(GLushort face)
+	void Block::HideFace(int face)
 	{
-		m_VisibleFaces[face] = false;
-		World::Get()->HideFace(m_WorldBlockID*6 + face);
+		m_HiddenFaces[face] = m_Faces[face];
+		m_Faces[face] = Instance();
 	}
 
-	void Block::ShowFace(GLushort face)
+	void Block::ShowFace(int face)
 	{
-		m_VisibleFaces[face] = true;
-		World::Get()->ShowFace(m_WorldBlockID + face, (*m_Faces)[face]);
+		m_Faces[face] = m_HiddenFaces[face];
+		m_HiddenFaces[face] = Instance();
 	}
 
-	GLushort Block::GetBlockTypeID()
+	GLushort Block::GetBlockID()
 	{
 		return m_BlockID;
 	}
 
-	GLuint Block::GetWorldBlockID()
+	GLuint Block::GetBlockInstanceID()
 	{
-		return m_WorldBlockID;
+		return m_BlockInstanceID;
 	}
 
 }
