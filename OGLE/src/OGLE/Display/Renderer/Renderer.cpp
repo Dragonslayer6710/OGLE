@@ -50,9 +50,16 @@ namespace OGLE {
 
 	void Renderer::Draw()
 	{
+		std::vector<GLushort> modelsToDelete;
 		for (auto& kv : m_Models) {
-			kv.second->Draw(m_CurrentShaderProgram);
+			if (!kv.second->CheckMFD())
+				kv.second->Draw(m_CurrentShaderProgram);
+			else
+				modelsToDelete.push_back(kv.second->GetID());
 		}
+		if (!modelsToDelete.empty())
+			for (GLushort id : modelsToDelete)
+				RemoveModel(id);
 	}
 
 	void Renderer::UpdateClipPlanes(GLfloat nearPlane /*= NULL*/, GLfloat farPlane /*= NULL*/)

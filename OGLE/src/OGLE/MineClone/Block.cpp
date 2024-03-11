@@ -9,11 +9,13 @@ namespace OGLE {
 
 	OGLE::Ref<TextureAtlas> Block::s_TextureAtlas;
 
-	std::vector<TextureGeometry> Block::MapTexture(GLushort blockID)
+	void Block::MapTexture()
 	{
 		GLushort* subTexIDs;
 
-		switch (blockID)
+		std::vector<TextureGeometry> m_SideTexGeoms = std::vector<TextureGeometry>();
+
+		switch (m_BlockID)
 		{
 		case 0:
 			subTexIDs = new GLushort[6]{ 3, 3, 3, 3, 2, 0 };
@@ -27,41 +29,39 @@ namespace OGLE {
 		case 3:
 			subTexIDs = new GLushort[6]{ 7, 7, 7, 7, 7, 7 };
 			break;
+		case 4:
+			subTexIDs = new GLushort[6]{ 16, 16, 16, 16, 16, 16 };
+			break;
+		case 5:
+			subTexIDs = new GLushort[6]{ 17, 17, 17, 17, 17, 17 };
+			break;
+		case 6:
+			subTexIDs = new GLushort[6]{ 18, 18, 18, 18, 18, 18 };
+			break;
 		default:
-			return std::vector<TextureGeometry>
-			{
-				TextureGeometry(),
-				TextureGeometry(),
-				TextureGeometry(),
-				TextureGeometry(),
-				TextureGeometry(),
-				TextureGeometry()
-			};
+			m_BlockID = -1;
 		}
-		std::vector<TextureGeometry> m_SideTexGeoms = std::vector<TextureGeometry>();
-		for (int side = 0; side < 6; side++)
-			m_SideTexGeoms.push_back(s_TextureAtlas->GetSubTexture(subTexIDs[side]));
-		return m_SideTexGeoms;
+
+		for (int side = 0; side < 6; side++) {
+			if (m_BlockID == GLushort(-1))
+				m_SideTexGeoms.push_back(TextureGeometry());
+			else
+				m_SideTexGeoms.push_back(s_TextureAtlas->GetSubTexture(subTexIDs[side]));
+			m_Faces[side].TexGeometry = m_SideTexGeoms[side];
+
+		}
 	}
 
-	void Block::MapTexture()
-	{
-		int cnt = 0;
-		std::vector<TextureGeometry> texGeoms = MapTexture(m_BlockID);
-		for (TextureGeometry& texGeom : texGeoms)
-			m_Faces[cnt++].TexGeometry = texGeom;
-	}
-
-	Block::Block(glm::vec3 position, GLushort id)
-		: m_Position(position),
+	Block::Block(const glm::vec3& position, GLushort id)
+		:
+		AABB(AABB::FromPos(position)), m_Position(position),
 		m_ModelTransform(NewModelMatrix(position)),
 		m_BlockID(id), m_Faces(NewQuadCuboid(position))
 	{
+		MapTexture();
 		if (m_BlockID == GLushort(-1))
 			for (GLushort face = 0; face < 6; face++)
 				HideFace(face);
-		else
-			MapTexture();
 	}
 
 	void Block::Load(std::vector<Ref<Instance>>& blockAlloc)

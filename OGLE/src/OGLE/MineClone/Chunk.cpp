@@ -6,14 +6,15 @@
 namespace OGLE {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<int> blockDist(-1, 3);
+	std::uniform_int_distribution<int> blockDist(0, 10);
 	static int numChunks = 0;
-	Chunk::Chunk(int chunkX, int chunkZ)
+	Chunk::Chunk(const glm::vec3& chunkPos, int chunkX, int chunkZ)
+		: AABB(AABB::FromPos(chunkPos, c_ChunkSize)), m_ChunkRefData(chunkX, chunkZ)
 	{
+		m_ChunkBlocksOctree = CreateScope<Octree<Block>>(AABB::FromPos(c_ChunkCentre + c_ChunkSize*glm::vec3(chunkX, 0, chunkZ), c_ChunkSize));
 		int worldX = chunkX * c_chunkWidth;
 		int worldZ = chunkZ * c_chunkWidth;
 
-		OGLE_CORE_INFO("X: {0} Z:{1}", chunkX, chunkZ);
 		int blockID = 0;
 		m_Blocks.reserve(c_chunkWidth); // Preallocate memory for x dimension
 		for (int x = 0; x < c_chunkWidth; x++) {
@@ -27,6 +28,7 @@ namespace OGLE {
 				for (int z = 0; z < c_chunkWidth; z++) {
 					glm::vec3 pos = glm::vec3(x + worldX, y, z + worldZ);
 					m_Blocks[x][y].push_back(Block::Create(pos, blockDist(gen)));
+					m_ChunkBlocksOctree->insert(m_Blocks[x][y][z]);
 					blockID += 6;
 					// OGLE_CORE_INFO("Block {0} ({1}, {2}, {3}) Generated at Chunk {4}", m_Blocks[x][y][z]->GetWorldBlockID(), x + worldX, y, z + worldZ, numChunks + 1);
 				}
@@ -61,6 +63,11 @@ namespace OGLE {
 	Ref<Block> Chunk::GetBlock(int x, int y, int z)
 	{
 		return m_Blocks[x][y][z];
+	}
+
+	glm::vec2 Chunk::GetChunkCoords()
+	{
+		return glm::vec2();
 	}
 
 	void Chunk::ChunkUpdate()

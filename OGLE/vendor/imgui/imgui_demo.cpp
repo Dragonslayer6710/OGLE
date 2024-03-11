@@ -129,8 +129,8 @@ Index of this file:
 // We normally try to not use many helpers in imgui_demo.cpp in order to make code easier to copy and paste,
 // but making an exception here as those are largely simplifying code...
 // In other imgui sources we can use nicer internal functions from imgui_internal.h (ImMin/ImMax) but not in the demo.
-#define IM_MIN(A, B)            (((A) < (B)) ? (A) : (B))
-#define IM_MAX(A, B)            (((A) >= (B)) ? (A) : (B))
+#define Imin(A, B)            (((A) < (B)) ? (A) : (B))
+#define Imax(A, B)            (((A) >= (B)) ? (A) : (B))
 #define IM_CLAMP(V, MN, MX)     ((V) < (MN) ? (MN) : (V) > (MX) ? (MX) : (V))
 
 //-----------------------------------------------------------------------------
@@ -4939,7 +4939,7 @@ static void ShowExampleAppConstrainedResize(bool* p_open)
     struct CustomConstraints
     {
         // Helper functions to demonstrate programmatic constraints
-        static void Square(ImGuiSizeCallbackData* data) { data->DesiredSize.x = data->DesiredSize.y = IM_MAX(data->DesiredSize.x, data->DesiredSize.y); }
+        static void Square(ImGuiSizeCallbackData* data) { data->DesiredSize.x = data->DesiredSize.y = Imax(data->DesiredSize.x, data->DesiredSize.y); }
         static void Step(ImGuiSizeCallbackData* data)   { float step = (float)(int)(intptr_t)data->UserData; data->DesiredSize = ImVec2((int)(data->DesiredSize.x / step + 0.5f) * step, (int)(data->DesiredSize.y / step + 0.5f) * step); }
     };
 

@@ -93,7 +93,7 @@ namespace detail
 		GLM_FUNC_QUALIFIER static vec<4, float, Q> call(vec<4, float, Q> const& v1, vec<4, float, Q> const& v2)
 		{
 			vec<4, float, Q> result;
-			result.data = _mm_min_ps(v1.data, v2.data);
+			result.data = _mmin_ps(v1.data, v2.data);
 			return result;
 		}
 	};
@@ -104,7 +104,7 @@ namespace detail
 		GLM_FUNC_QUALIFIER static vec<4, int, Q> call(vec<4, int, Q> const& v1, vec<4, int, Q> const& v2)
 		{
 			vec<4, int, Q> result;
-			result.data = _mm_min_epi32(v1.data, v2.data);
+			result.data = _mmin_epi32(v1.data, v2.data);
 			return result;
 		}
 	};
@@ -115,7 +115,7 @@ namespace detail
 		GLM_FUNC_QUALIFIER static vec<4, uint, Q> call(vec<4, uint, Q> const& v1, vec<4, uint, Q> const& v2)
 		{
 			vec<4, uint, Q> result;
-			result.data = _mm_min_epu32(v1.data, v2.data);
+			result.data = _mmin_epu32(v1.data, v2.data);
 			return result;
 		}
 	};
@@ -126,7 +126,7 @@ namespace detail
 		GLM_FUNC_QUALIFIER static vec<4, float, Q> call(vec<4, float, Q> const& v1, vec<4, float, Q> const& v2)
 		{
 			vec<4, float, Q> result;
-			result.data = _mm_max_ps(v1.data, v2.data);
+			result.data = _mmax_ps(v1.data, v2.data);
 			return result;
 		}
 	};
@@ -137,7 +137,7 @@ namespace detail
 		GLM_FUNC_QUALIFIER static vec<4, int, Q> call(vec<4, int, Q> const& v1, vec<4, int, Q> const& v2)
 		{
 			vec<4, int, Q> result;
-			result.data = _mm_max_epi32(v1.data, v2.data);
+			result.data = _mmax_epi32(v1.data, v2.data);
 			return result;
 		}
 	};
@@ -148,7 +148,7 @@ namespace detail
 		GLM_FUNC_QUALIFIER static vec<4, uint, Q> call(vec<4, uint, Q> const& v1, vec<4, uint, Q> const& v2)
 		{
 			vec<4, uint, Q> result;
-			result.data = _mm_max_epu32(v1.data, v2.data);
+			result.data = _mmax_epu32(v1.data, v2.data);
 			return result;
 		}
 	};
@@ -159,7 +159,7 @@ namespace detail
 		GLM_FUNC_QUALIFIER static vec<4, float, Q> call(vec<4, float, Q> const& x, vec<4, float, Q> const& minVal, vec<4, float, Q> const& maxVal)
 		{
 			vec<4, float, Q> result;
-			result.data = _mm_min_ps(_mm_max_ps(x.data, minVal.data), maxVal.data);
+			result.data = _mmin_ps(_mmax_ps(x.data, minVal.data), maxVal.data);
 			return result;
 		}
 	};
@@ -170,7 +170,7 @@ namespace detail
 		GLM_FUNC_QUALIFIER static vec<4, int, Q> call(vec<4, int, Q> const& x, vec<4, int, Q> const& minVal, vec<4, int, Q> const& maxVal)
 		{
 			vec<4, int, Q> result;
-			result.data = _mm_min_epi32(_mm_max_epi32(x.data, minVal.data), maxVal.data);
+			result.data = _mmin_epi32(_mmax_epi32(x.data, minVal.data), maxVal.data);
 			return result;
 		}
 	};
@@ -181,7 +181,7 @@ namespace detail
 		GLM_FUNC_QUALIFIER static vec<4, uint, Q> call(vec<4, uint, Q> const& x, vec<4, uint, Q> const& minVal, vec<4, uint, Q> const& maxVal)
 		{
 			vec<4, uint, Q> result;
-			result.data = _mm_min_epu32(_mm_max_epu32(x.data, minVal.data), maxVal.data);
+			result.data = _mmin_epu32(_mmax_epu32(x.data, minVal.data), maxVal.data);
 			return result;
 		}
 	};

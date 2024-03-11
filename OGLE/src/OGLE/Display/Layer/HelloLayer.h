@@ -21,10 +21,9 @@ namespace OGLE{
 		virtual void OnDetach() override;
 		virtual void OnImGuiRender() override;
 
-		virtual void OnUpdate(Timestep ts) override;
+		virtual void OnUpdate(double deltaTime) override;
 	private:
 		Renderer* m_Renderer;
-		Camera* m_Camera;
 	};
 
 }

@@ -7,9 +7,10 @@ namespace OGLE {
 		CTRL_MOVE_LEFT,
 		CTRL_MOVE_BACKWARD,
 		CTRL_MOVE_RIGHT,
-		CTRL_MOVE_UP,
-		CTRL_MOVE_DOWN,
-		
+		CTRL_JUMP,
+		CTRL_CROUCH,
+
+		CTRL_CFG_SPRINT,		
 		CTRL_CFG_CAMERA_CONTROL_TOGGLE,
 	};
 
@@ -52,14 +53,15 @@ namespace OGLE {
 		static std::vector<Control*>* s_BoundControls;
 
 		static std::unordered_map<ControlID, ControlType> s_ControlTypes = {
-		{CTRL_MOVE_FORWARD, CTRL_TYPE_MOVEMENT},
-		{CTRL_MOVE_LEFT, CTRL_TYPE_MOVEMENT},
-		{CTRL_MOVE_BACKWARD, CTRL_TYPE_MOVEMENT},
-		{CTRL_MOVE_RIGHT, CTRL_TYPE_MOVEMENT},
-		{CTRL_MOVE_UP, CTRL_TYPE_MOVEMENT},
-		{CTRL_MOVE_DOWN, CTRL_TYPE_MOVEMENT},
+			{CTRL_MOVE_FORWARD, CTRL_TYPE_MOVEMENT},
+			{CTRL_MOVE_LEFT, CTRL_TYPE_MOVEMENT},
+			{CTRL_MOVE_BACKWARD, CTRL_TYPE_MOVEMENT},
+			{CTRL_MOVE_RIGHT, CTRL_TYPE_MOVEMENT},
+			{CTRL_JUMP, CTRL_TYPE_MOVEMENT},
+			{CTRL_CROUCH, CTRL_TYPE_MOVEMENT},
 
-		{CTRL_CFG_CAMERA_CONTROL_TOGGLE, CTRL_TYPE_CONFIG}
+			{CTRL_CFG_SPRINT, CTRL_TYPE_CONFIG},
+			{CTRL_CFG_CAMERA_CONTROL_TOGGLE, CTRL_TYPE_CONFIG}
 		};
 
 		static void InitControls(std::unordered_map<ControlID, unsigned int>* initialControls = nullptr);
@@ -75,10 +77,11 @@ namespace OGLE {
 		{CTRL_MOVE_LEFT, Key::A},
 		{CTRL_MOVE_BACKWARD, Key::S},
 		{CTRL_MOVE_RIGHT, Key::D},
-		{CTRL_MOVE_UP, Key::Space},
-		{CTRL_MOVE_DOWN, Key::LeftControl},
+		{CTRL_JUMP, Key::Space},
+		{CTRL_CROUCH, Key::LeftControl},
 
-		{CTRL_CFG_CAMERA_CONTROL_TOGGLE, Mouse::ButtonLeft}
+		{CTRL_CFG_SPRINT, Key::LeftShift},
+		{ CTRL_CFG_CAMERA_CONTROL_TOGGLE, Mouse::ButtonLeft }
 	};
 
 	void InitControls(std::unordered_map<ControlID, unsigned int> initialControls = s_InitialControls);

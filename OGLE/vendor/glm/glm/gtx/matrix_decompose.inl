@@ -153,15 +153,15 @@ namespace detail
 		// }
 
 		int i, j, k = 0;
-		T root, trace = Row[0].x + Row[1].y + Row[2].z;
+		T m_Root, trace = Row[0].x + Row[1].y + Row[2].z;
 		if(trace > static_cast<T>(0))
 		{
-			root = sqrt(trace + static_cast<T>(1.0));
-			Orientation.w = static_cast<T>(0.5) * root;
-			root = static_cast<T>(0.5) / root;
-			Orientation.x = root * (Row[1].z - Row[2].y);
-			Orientation.y = root * (Row[2].x - Row[0].z);
-			Orientation.z = root * (Row[0].y - Row[1].x);
+			m_Root = sqrt(trace + static_cast<T>(1.0));
+			Orientation.w = static_cast<T>(0.5) * m_Root;
+			m_Root = static_cast<T>(0.5) / m_Root;
+			Orientation.x = m_Root * (Row[1].z - Row[2].y);
+			Orientation.y = m_Root * (Row[2].x - Row[0].z);
+			Orientation.z = m_Root * (Row[0].y - Row[1].x);
 		} // End if > 0
 		else
 		{
@@ -172,13 +172,13 @@ namespace detail
 			j = Next[i];
 			k = Next[j];
 
-			root = sqrt(Row[i][i] - Row[j][j] - Row[k][k] + static_cast<T>(1.0));
+			m_Root = sqrt(Row[i][i] - Row[j][j] - Row[k][k] + static_cast<T>(1.0));
 
-			Orientation[i] = static_cast<T>(0.5) * root;
-			root = static_cast<T>(0.5) / root;
-			Orientation[j] = root * (Row[i][j] + Row[j][i]);
-			Orientation[k] = root * (Row[i][k] + Row[k][i]);
-			Orientation.w = root * (Row[j][k] - Row[k][j]);
+			Orientation[i] = static_cast<T>(0.5) * m_Root;
+			m_Root = static_cast<T>(0.5) / m_Root;
+			Orientation[j] = m_Root * (Row[i][j] + Row[j][i]);
+			Orientation[k] = m_Root * (Row[i][k] + Row[k][i]);
+			Orientation.w = m_Root * (Row[j][k] - Row[k][j]);
 		} // End if <= 0
 
 		return true;

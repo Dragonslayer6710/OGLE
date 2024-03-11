@@ -3,58 +3,68 @@
 #include "OGLE/Maths/Geometry/Shape.h"
 namespace OGLE {
 
-	class Cube : public Shape
+	class Cuboid : public Shape
 	{
 	public:
+		Cuboid(const glm::vec3& dimensions, const glm::vec4& color = glm::vec4(1.0f))
+			: m_Dimensions(dimensions), m_Color(color) {}
+
 		Scope<VertexCollection> NewVertexCollection() override
 		{
-			constexpr std::array<Vertex, 24> cubeVertices = {
-				Vertex(glm::vec3(0.5f,-0.5f, 0.5f), glm::vec4(0.5f, 0.0f, 0.0f, 0.5f), glm::vec2(0.0f)), //0 Right
-				Vertex(glm::vec3(0.5f,-0.5f,-0.5f), glm::vec4(0.0f, 0.5f, 0.0f, 0.5f), glm::vec2(0.0f)), //1
-				Vertex(glm::vec3(0.5f, 0.5f,-0.5f), glm::vec4(0.0f, 0.0f, 0.5f, 0.5f), glm::vec2(0.0f)), //2
-				Vertex(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec4(0.5f, 0.5f, 0.5f, 0.5f), glm::vec2(0.0f)), //3
+			float halfWidth = m_Dimensions.x / 2.0f;
+			float halfHeight = m_Dimensions.y / 2.0f;
+			float halfDepth = m_Dimensions.z / 2.0f;
 
-				Vertex(glm::vec3(-0.5f,-0.5f,-0.5f), glm::vec4(0.5f, 0.0f, 0.0f, 0.5f), glm::vec2(0.0f)), //4 Left
-				Vertex(glm::vec3(-0.5f,-0.5f, 0.5f), glm::vec4(0.0f, 0.5f, 0.0f, 0.5f), glm::vec2(0.0f)), //5
-				Vertex(glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec4(0.0f, 0.0f, 0.5f, 0.5f), glm::vec2(0.0f)), //6
-				Vertex(glm::vec3(-0.5f, 0.5f,-0.5f), glm::vec4(0.5f, 0.5f, 0.5f, 0.5f), glm::vec2(0.0f)), //7
-
-				Vertex(glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec4(0.5f, 0.0f, 0.0f, 0.5f), glm::vec2(0.0f)), //8 Top
-				Vertex(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec4(0.0f, 0.5f, 0.0f, 0.5f), glm::vec2(0.0f)), //9
-				Vertex(glm::vec3(0.5f, 0.5f,-0.5f), glm::vec4(0.0f, 0.0f, 0.5f, 0.5f), glm::vec2(0.0f)), //10
-				Vertex(glm::vec3(-0.5f, 0.5f,-0.5f), glm::vec4(0.5f, 0.5f, 0.5f, 0.5f), glm::vec2(0.0f)), //11
-
-				Vertex(glm::vec3(-0.5f,-0.5f,-0.5f), glm::vec4(0.5f, 0.0f, 0.0f, 0.5f), glm::vec2(0.0f)), //12 Bottom
-				Vertex(glm::vec3(0.5f,-0.5f,-0.5f), glm::vec4(0.0f, 0.5f, 0.0f, 0.5f), glm::vec2(0.0f)), //13
-				Vertex(glm::vec3(0.5f,-0.5f, 0.5f), glm::vec4(0.0f, 0.0f, 0.5f, 0.5f), glm::vec2(0.0f)), //14
-				Vertex(glm::vec3(-0.5f,-0.5f, 0.5f), glm::vec4(0.5f, 0.5f, 0.5f, 0.5f), glm::vec2(0.0f)), //15	
-
-				Vertex(glm::vec3(-0.5f,-0.5f, 0.5f), glm::vec4(0.5f, 0.0f, 0.0f, 0.5f), glm::vec2(0.0f)), //16 Front
-				Vertex(glm::vec3(0.5f,-0.5f, 0.5f), glm::vec4(0.0f, 0.5f, 0.0f, 0.5f), glm::vec2(0.0f)), //17
-				Vertex(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec4(0.0f, 0.0f, 0.5f, 0.5f), glm::vec2(0.0f)), //18
-				Vertex(glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec4(0.5f, 0.5f, 0.5f, 0.5f), glm::vec2(0.0f)), //19
-
-				Vertex(glm::vec3(0.5f,-0.5f,-0.5f), glm::vec4(0.5f, 0.0f, 0.0f, 0.5f), glm::vec2(0.0f)), //20 Back
-				Vertex(glm::vec3(-0.5f,-0.5f,-0.5f), glm::vec4(0.0f, 0.5f, 0.0f, 0.5f), glm::vec2(0.0f)), //21
-				Vertex(glm::vec3(-0.5f, 0.5f,-0.5f), glm::vec4(0.0f, 0.0f, 0.5f, 0.5f), glm::vec2(0.0f)), //22
-				Vertex(glm::vec3(0.5f, 0.5f,-0.5f), glm::vec4(0.5f, 0.5f, 0.5f, 0.5f), glm::vec2(0.0f))  //23
+			std::array<Vertex, 8> cuboidVertices = {
+				Vertex(glm::vec3(-halfWidth,-halfHeight, halfDepth), m_Color, glm::vec2()),
+				Vertex(glm::vec3( halfWidth,-halfHeight, halfDepth), m_Color, glm::vec2()),
+				Vertex(glm::vec3( halfWidth, halfHeight, halfDepth), m_Color, glm::vec2()),
+				Vertex(glm::vec3(-halfWidth, halfHeight, halfDepth), m_Color, glm::vec2()),
+				Vertex(glm::vec3(-halfWidth,-halfHeight,-halfDepth), m_Color, glm::vec2()),
+				Vertex(glm::vec3( halfWidth,-halfHeight,-halfDepth), m_Color, glm::vec2()),
+				Vertex(glm::vec3( halfWidth, halfHeight,-halfDepth), m_Color, glm::vec2()),
+				Vertex(glm::vec3(-halfWidth, halfHeight,-halfDepth), m_Color, glm::vec2())
 			};
 
-			constexpr std::array<GLushort, 36> cubeIndices = {
-				0,  1,  2,  2,  3,  0,
-				4,  5,  6,  6,  7,  4,
-				8,  9, 10, 10, 11,  8,
-				12, 13, 14, 14, 15, 12,
-				16, 17, 18, 18, 19, 16,
-				20, 21, 22, 22, 23, 20
+			constexpr std::array<GLushort, 36> cuboidIndices = {
+				// Front face
+				0, 1, 2, 2, 3, 0,
+				// Back face
+				5, 4, 7, 7, 6, 5,
+				// Top face
+				3, 2, 6, 6, 7, 3,
+				// Bottom face
+				4, 5, 1, 1, 0, 4,
+				// Right face
+				1, 5, 6, 6, 2, 1,
+				// Left face
+				4, 0, 3, 3, 7, 4
 			};
 
-			return Shape::NewVertexCollection(cubeVertices, cubeIndices);
+			return Shape::NewVertexCollection(cuboidVertices, cuboidIndices);
 		}
+
+		static Scope<Cuboid> Create(GLuint numCuboids, const glm::vec3& dimensions, const glm::vec4& color = glm::vec4(1.0f))
+		{
+			Scope<Cuboid> cuboid = CreateScope<Cuboid>(dimensions, color);
+			cuboid->SetVertexCollection();
+			cuboid->ReserveInstances(numCuboids);
+			return cuboid;
+		}
+
+		std::vector<Ref<Instance>>* GetCuboidRefs(GLuint startIndex, GLuint length)
+		{
+			return m_Instances->GetSubset(startIndex, length, true);
+		}
+
+	protected:
+		glm::vec3 m_Dimensions;
+		glm::vec4 m_Color;
 	};
 
-
-	
+	class Cube : public Cuboid
+	{
+		Cube(const GLfloat size, const glm::vec4 color = glm::vec4(1.0f)) : Cuboid(glm::vec3(size), color) {}	};
 
 	//static const glm::mat4 cuboidQuadModelMatricessd[6]
 	//{

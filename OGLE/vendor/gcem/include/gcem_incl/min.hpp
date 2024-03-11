@@ -18,8 +18,8 @@
   ##
   ################################################################################*/
 
-#ifndef _gcem_min_HPP
-#define _gcem_min_HPP
+#ifndef _gcemin_HPP
+#define _gcemin_HPP
 
 /**
  * Compile-time pairwise minimum function

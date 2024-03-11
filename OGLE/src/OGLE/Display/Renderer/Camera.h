@@ -6,30 +6,30 @@ namespace OGLE {
 	class Camera {
 	public:
 
-		Camera();
+		static Scope<Camera> Create(Ref<glm::vec3> position = CreateRef<glm::vec3>(0.0f))
+		{ 
+			return CreateScope<Camera>(position);
+		}
+
+		static Scope<Camera> Create(glm::vec3 position = glm::vec3(0.0f))
+		{
+			return Camera::Create(CreateRef<glm::vec3>(position));
+		}
+
+		Camera(Ref<glm::vec3> position = CreateRef<glm::vec3>(0.0f));
 
 		void Rotate();
 
-		void MoveForward();
-
-		void MoveBackward();
-
-		void StrafeLeft();
-
-		void StrafeRight();
-
-		void MoveUp();
-
-		void MoveDown();
-
+		Ref<glm::vec3> GetPosition();
+		Ref<glm::vec3> GetOrientation();
+		Ref<glm::vec3> GetUp();
 
 		glm::mat4 GetViewMatrix() const;
 	private:
 		float m_CameraSensitivity = 0.5f;
-		float m_MoveSpeed = 0.1f;
 
-		glm::vec3 m_Pos;
-		glm::vec3 m_Orientation;
-		glm::vec3 m_Up;
+		Ref<glm::vec3> m_Position;
+		Ref<glm::vec3> m_Orientation;
+		Ref<glm::vec3> m_Up;
 	};
 }

@@ -119,8 +119,8 @@ namespace OGLE {
         }
 
         // Reserve memory for elements
-        void reserve(size_t capacity) {
-            data_.reserve(capacity);
+        void reserve(size_t m_Capacity) {
+            data_.reserve(m_Capacity);
         }
 
         // Clear all elements and release memory

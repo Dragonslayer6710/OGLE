@@ -6,9 +6,6 @@
 #include <variant>
 namespace OGLE {
 
-	
-
-
 	template<typename T>
 	static std::vector<T> CopyConstInit(const std::initializer_list<T>& vertices)
 	{

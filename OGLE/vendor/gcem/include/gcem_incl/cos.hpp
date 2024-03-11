@@ -18,9 +18,9 @@
   ##
   ################################################################################*/
 
-/*
- * compile-time cosine function using tan(x/2)
- */
+  /*
+   * compile-time cosine function using tan(x/2)
+   */
 
 #ifndef _gcem_cos_HPP
 #define _gcem_cos_HPP
@@ -28,39 +28,39 @@
 namespace internal
 {
 
-template<typename T>
-constexpr
-T
-cos_compute(const T x)
-noexcept
-{
-    return( T(1) - x*x)/(T(1) + x*x );
-}
+    template<typename T>
+    constexpr
+        T
+        cos_compute(const T x)
+        noexcept
+    {
+        return(T(1) - x * x) / (T(1) + x * x);
+    }
 
-template<typename T>
-constexpr
-T
-cos_check(const T x)
-noexcept
-{
-    return( // NaN check
+    template<typename T>
+    constexpr
+        T
+        cos_check(const T x)
+        noexcept
+    {
+        return( // NaN check
             is_nan(x) ? \
-                GCLIM<T>::quiet_NaN() :
+            GCLIM<T>::quiet_NaN() :
             // indistinguishable from 0
-            GCLIM<T>::min() > abs(x) ? 
-                T(1) :
+            GCLIM<T>::min() > abs(x) ?
+            T(1) :
             // special cases: pi/2 and pi
             GCLIM<T>::min() > abs(x - T(GCEM_HALF_PI)) ? \
-                T(0) :
+            T(0) :
             GCLIM<T>::min() > abs(x + T(GCEM_HALF_PI)) ? \
-                T(0) :
+            T(0) :
             GCLIM<T>::min() > abs(x - T(GCEM_PI)) ? \
-                - T(1) :
+            - T(1) :
             GCLIM<T>::min() > abs(x + T(GCEM_PI)) ? \
-                - T(1) :
+            - T(1) :
             // else
-                cos_compute( tan(x/T(2)) ) );
-}
+            cos_compute(tan(x / T(2))));
+    }
 
 }
 
@@ -77,7 +77,7 @@ return_t<T>
 cos(const T x)
 noexcept
 {
-    return internal::cos_check( static_cast<return_t<T>>(x) );
+    return internal::cos_check(static_cast<return_t<T>>(x));
 }
 
 #endif

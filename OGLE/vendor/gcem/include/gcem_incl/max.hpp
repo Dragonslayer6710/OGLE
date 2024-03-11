@@ -18,8 +18,8 @@
   ##
   ################################################################################*/
 
-#ifndef _gcem_max_HPP
-#define _gcem_max_HPP
+#ifndef _gcemax_HPP
+#define _gcemax_HPP
 
 /**
  * Compile-time pairwise maximum function

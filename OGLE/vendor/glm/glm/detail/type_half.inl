@@ -143,7 +143,7 @@ namespace detail
 
 			//
 			// E is between -10 and 0.  F is a normalized float,
-			// whose magnitude is less than __half_NRM_MIN.
+			// whose magnitude is less than __half_NRmin.
 			//
 			// We convert f to a denormalized half.
 			//

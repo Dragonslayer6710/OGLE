@@ -32,7 +32,6 @@ namespace OGLE {
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
-		std::cout;
 	}
 
 	Application::~Application()
@@ -91,22 +90,21 @@ namespace OGLE {
 	{
 		OGLE_PROFILE_FUNCTION();
 
+		Timer timer;
 		while (m_Running)
 		{
 			OGLE_PROFILE_SCOPE("RunLoop");
-			float time = Time::GetTime();
-			Timestep timestep = time - m_LastFrameTime;
-			m_LastFrameTime = time;
 
 			ExecuteMainThreadQueue();
+			double deltaTime = timer.GetDeltaTime();
 
-			if (!m_Minimized)
+			if (!minimized)
 			{
 				{
 					OGLE_PROFILE_SCOPE("LayerStack OnUpdate");
 
 					for (Layer* layer : m_LayerStack)
-						layer->OnUpdate(timestep);
+						layer->OnUpdate(deltaTime);
 				}
 
 				m_ImGuiLayer->Begin();
@@ -135,11 +133,11 @@ namespace OGLE {
 
 		if (e.GetWidth() == 0 || e.GetHeight() == 0)
 		{
-			m_Minimized = true;
+			minimized = true;
 			return false;
 		}
 
-		m_Minimized = false;
+		minimized = false;
 		
 		m_Renderer->OnWindowResize(e.GetWidth(), e.GetHeight());
 		GetWindow().RecalculateCentrePos();

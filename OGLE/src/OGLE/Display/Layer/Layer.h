@@ -14,7 +14,7 @@ namespace OGLE {
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate(Timestep ts) {}
+		virtual void OnUpdate(double deltaTime) {}
 		virtual void OnImGuiRender() {}
 		virtual void OnEvent(Event& event) {}
 

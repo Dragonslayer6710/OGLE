@@ -46,17 +46,20 @@ namespace OGLE {
 		UpdateVAO();
 	}
 
-	void Model::UpdateVAO()
+	void Model::UpdateVAO(bool forceUpdate)
 	{
 		Ref<InstanceCollection> instances = m_Mesh->GetInstances();
-		m_VAO->SetInstanceData(0, instances->GetCompressedSize(), instances->GetCompressedData());
+		m_VAO->SetInstanceData(0, instances->GetCompressedSize(forceUpdate), instances->GetCompressedData(forceUpdate));
 	}
 
 	void Model::Bind()
 	{
 		m_VAO->Bind();
 		if (m_Texture != nullptr)
+		{
+			m_SetTextureUniform = true;
 			m_Texture->Bind();
+		}
 	}
 
 	void Model::Unbind()
@@ -64,10 +67,23 @@ namespace OGLE {
 		m_VAO->Unbind();
 	}
 
+	void Model::MFD()
+	{
+		m_MarkForDelete = true;
+	}
+
+	bool Model::CheckMFD()
+	{
+		return m_MarkForDelete;
+	}
+
 	void Model::Draw(ShaderProgram* shaderProgram)
 	{
 		Bind();
-		shaderProgram->SetUniform1i("tex0", GetTexture()->GetTextureSlot());
+		if (m_SetTextureUniform) {
+			shaderProgram->SetUniform1i("tex0", GetTexture()->GetTextureSlot());
+			m_SetTextureUniform = false;
+		}
 		if (m_IsInstanced) {
 			GLCall(glDrawElementsInstanced(GL_TRIANGLES, m_ElementCount, m_ElementDataType, nullptr, m_InstanceCount));
 		}

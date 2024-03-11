@@ -14,11 +14,15 @@ namespace OGLE {
 
 		void SetInstanceStats();
 
-		void UpdateVAO();
+		void UpdateVAO(bool forceUpdate = false);
 
 		void Bind();
 
 		void Unbind();
+
+		void MFD();
+
+		bool CheckMFD();
 
 		void Draw(ShaderProgram* shaderProgram);
 
@@ -31,6 +35,7 @@ namespace OGLE {
 
 	private:
 		static GLuint m_ModelCounter;
+		bool m_MarkForDelete = false;
 		GLuint m_ModelID = m_ModelCounter++;
 
 		GLuint m_AttributeIDTracker;
@@ -44,6 +49,7 @@ namespace OGLE {
 
 		Scope<VertexArray> m_VAO;
 		Ref<Texture> m_Texture;
+		bool m_SetTextureUniform = false;
 	};
 
 }

@@ -38,10 +38,10 @@ namespace OGLE{
 			return m_Elements->data();
 		}
 
-		GLuint GetCompressedLength() { return GetCompressedElements()->size(); }
-		GLuint GetCompressedSize() { return GetCompressedLength() * sizeof(T); }
-		const GLvoid* GetCompressedData() {
-			return GetCompressedElements()->data();
+		GLuint GetCompressedLength(bool forceUpdate = false) { return GetCompressedElements(forceUpdate)->size(); }
+		GLuint GetCompressedSize(bool forceUpdate = false) { return GetCompressedLength(forceUpdate) * sizeof(T); }
+		const GLvoid* GetCompressedData(bool forceUpdate = false) {
+			return GetCompressedElements(forceUpdate)->data();
 		}
 
 		GLuint GetStride() { return m_Stride; }
@@ -99,7 +99,9 @@ namespace OGLE{
 			return m_Elements[index];
 		}
 	protected:
-		ContVector<T>* GetCompressedElements() {
+		ContVector<T>* GetCompressedElements(bool forceUpdate = false) {
+			if (m_CompressedElements->size() == m_Elements->size())
+				return m_Elements;
 			if (!m_CompressedElements->empty())
 				return m_CompressedElements;
 			int culledFaces = 0;

@@ -1,6 +1,30 @@
 #pragma once
 
 #include "OGLE/Maths/Geometry/Geometry3D.h"
+#include "OGLE/Physics/Physics.h"
+
+constexpr glm::vec3 c_BlockSize = glm::vec3(1.0f);
+constexpr glm::vec3 c_BlockHalfSize = c_BlockSize / 2.0f;
+constexpr glm::vec3 c_BlockHalfSizeNegative = c_BlockHalfSize;
+
+struct BlockRefData
+{
+	const glm::vec3 BlockPos;
+	const glm::vec3 BlockMin;
+	const glm::vec3 BlockMax;
+
+	// Constructor with default values for its arguments
+	constexpr BlockRefData(const glm::vec3& position = glm::vec3(0.0f))
+		: BlockPos(position),
+		BlockMin(position + c_BlockHalfSizeNegative),
+		BlockMax(position + c_BlockHalfSize)
+	{}
+
+	constexpr BlockRefData operator=(const BlockRefData& other) const
+	{
+		return BlockRefData(other.BlockPos);
+	}
+};
 
 namespace OGLE {
 	class World;
@@ -17,7 +41,7 @@ namespace OGLE {
 	class Chunk;
 	class World;
 
-	class Block
+	class Block : public AABB
 	{
 	public:
 		static Ref<Block> Create(glm::vec3 position, GLushort id = 2)
@@ -28,7 +52,7 @@ namespace OGLE {
 		void Load(std::vector<Ref<Instance>>& blockAlloc);
 		void Unload();
 
-		Block(glm::vec3 position, GLushort id = 2);
+		Block(const glm::vec3& position, GLushort id = 2);
 
 		void UpdateGeometry();
 
@@ -36,7 +60,7 @@ namespace OGLE {
 
 		void ShowFace(int face);
 
-		glm::vec3 GetPos() { return m_Position; }
+		glm::vec3 GetPos() { return AABB::getCenter(); }
 
 		GLushort GetBlockID();
 
@@ -59,10 +83,9 @@ namespace OGLE {
 		std::array<Ref<Instance>, 6> m_LoadedFaces;
 		std::array<Instance, 6> m_HiddenFaces;
 
-
 		static GLuint numBlocks;
 
-		static std::vector<TextureGeometry> MapTexture(GLushort blockID);
 		void MapTexture();
+
 	};
 }

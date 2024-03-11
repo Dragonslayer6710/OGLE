@@ -20,7 +20,31 @@
 		return NewModelMatrix(translation, glm::quat(glm::radians(rotDeg)), scale);
 	}*/
 
+namespace std {
+    template <>
+    struct hash<glm::vec3> {
+        size_t operator()(const glm::vec3& v) const {
+            // Combine the hash values of the individual components
+            size_t hashValue = 0;
+            hashValue ^= hash<float>()(v.x);
+            hashValue ^= hash<float>()(v.y) + 0x9e3779b9 + (hashValue << 6) + (hashValue >> 2);
+            hashValue ^= hash<float>()(v.z) + 0x9e3779b9 + (hashValue << 6) + (hashValue >> 2);
+            return hashValue;
+        }
+    };
+}
+
 namespace OGLE {
+
+    inline glm::vec3 roundToNearestHalf(const glm::vec3& vec) {
+        // Round each component to the nearest multiple of 0.5
+        float x = glm::round(vec.x * 2.0f) / 2.0f;
+        float y = glm::round(vec.y * 2.0f) / 2.0f;
+        float z = glm::round(vec.z * 2.0f) / 2.0f;
+
+        return glm::vec3(x, y, z);
+    }
+
     constexpr double pi = 3.14159265358979323846;
 
     struct Quaternion {
@@ -81,6 +105,18 @@ namespace OGLE {
         glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
 
         return translationMatrix * rotationMatrix * scaleMatrix;
+    }
+
+    static glm::vec3 roundToNearestPowerOf2(glm::vec3 vec) {
+        glm::vec3 rounded;
+        for (int i = 0; i < 3; ++i) {
+            float absV = std::abs(vec[i]);
+            int log2V = static_cast<int>(std::log2(absV));
+            float pow2 = std::pow(2, log2V);
+            float p = (absV - pow2 < 2 * pow2 - absV) ? pow2 : pow2 * 2;
+            rounded[i] = (vec[i] < 0) ? -p : p;
+        }
+        return rounded;
     }
 
 }
