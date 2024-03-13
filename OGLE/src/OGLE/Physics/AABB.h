@@ -47,28 +47,91 @@ namespace OGLE
             return glm::compMax(extent) / 2.0f;
         }
 
-        // Function to calculate the direction of collision
-        glm::vec3 calculateCollisionDirection(const AABB& other) const {
-            // Calculate the direction from the center of the other AABB to this AABB
-            glm::vec3 direction = getCenter() - other.getCenter();
-            return glm::normalize(direction);
+        glm::vec3 calculateCollisionCorrection(const AABB& other) const {
+            glm::vec3 otherToThis = m_Max - other.m_Min;
+            glm::vec3 thisToOther = other.m_Max - m_Min;
+
+            glm::vec3 minOverlap = glm::vec3(0.0f);
+
+            // Calculate overlap on each axis
+            for (int i = 0; i < 3; i++) {
+                if (abs(otherToThis[i]) < abs(thisToOther[i])) {
+                    minOverlap[i] = otherToThis[i];
+                }
+                else {
+                    minOverlap[i] = thisToOther[i];                   
+                }
+            }
+            return minOverlap;
+            // Find the axis with the least overlap
+            if (std::abs(minOverlap.x) < std::abs(minOverlap.y) && std::abs(minOverlap.x) < std::abs(minOverlap.z)) {
+                if (!minOverlap.x)
+                    if (minOverlap.x == abs(otherToThis.x))
+                        minOverlap.x = -1.0f;
+                    else
+                        minOverlap.x = 1.0f;
+                return glm::vec3(minOverlap.x, 0.0f, 0.0f);
+            }
+            else if (std::abs(minOverlap.y) < std::abs(minOverlap.z)) {
+                if (!minOverlap.y)
+                    if (minOverlap.y == abs(otherToThis.y))
+                        minOverlap.y = -1.0f;
+                    else
+                        minOverlap.y = 1.0f;
+                return glm::vec3(0.0f, minOverlap.y, 0.0f);
+            }
+            else {
+                if (!minOverlap.z)
+                    if (minOverlap.z == abs(otherToThis.z))
+                        minOverlap.z = -1.0f;
+                    else
+                        minOverlap.z = 1.0f;
+                return glm::vec3(0.0f, 0.0f, minOverlap.z);
+            }
         }
 
+
         // Function to calculate penetration depth
-        float calculatePenetrationDepth(const AABB& other, const glm::vec3& collisionDirection) const {
-            // Calculate overlap along each axis
-            glm::vec3 overlap = glm::vec3(0.0f);
-            overlap.x = std::min(m_Max.x - other.m_Min.x, other.m_Max.x - m_Min.x);
-            overlap.y = std::min(m_Max.y - other.m_Min.y, other.m_Max.y - m_Min.y);
-            overlap.z = std::min(m_Max.z - other.m_Min.z, other.m_Max.z - m_Min.z);
+        glm::vec3 calculateCorrectionDirection (const AABB& other, const glm::vec3& correction) const {
+            glm::vec3 otherToThis = m_Max - other.m_Min;
+            glm::vec3 thisToOther = other.m_Max - m_Min;
 
-            // Calculate the minimum overlap (penetration) among the three axes
-            float penetrationDepth = std::min(std::min(overlap.x, overlap.y), overlap.z);
+            glm::vec3 collisionDirection(0.0f);
 
-            // Ensure the penetration depth is non-negative
-            penetrationDepth = std::max(0.0f, penetrationDepth);
-
-            return penetrationDepth;
+            if (std::abs(correction.x) < std::abs(correction.y) && std::abs(correction.x) < std::abs(correction.z)) {
+                if (correction.x == otherToThis.x && correction.x > 0)
+                    collisionDirection.x = -correction.x;
+                else
+                    collisionDirection.x = correction.x;
+                if (!correction.x)
+                    if (correction.x == abs(otherToThis.x))
+                        collisionDirection.x = -1.0f;
+                    else
+                        collisionDirection.x = 1.0f;
+            }
+            else if (std::abs(correction.y) < std::abs(correction.z)) {
+                if (correction.y == otherToThis.y && correction.y > 0)
+                    collisionDirection.y = -correction.y;
+                else
+                    collisionDirection.y = correction.y;
+                if (!correction.y)
+                    if (correction.y == abs(otherToThis.y))
+                        collisionDirection.y = -1.0f;
+                    else
+                        collisionDirection.y = 1.0f;
+            }
+            else {
+                if (correction.z == otherToThis.z && correction.z > 0)
+                    collisionDirection.z = -correction.z;
+                else
+                    collisionDirection.z = correction.z;
+                if (!correction.z)
+                    if (correction.z == abs(otherToThis.z))
+                        collisionDirection.z = -1.0f;
+                    else
+                        collisionDirection.z = 1.0f;
+            }
+            return glm::normalize(collisionDirection);
         }
     };
 }

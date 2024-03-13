@@ -51,6 +51,8 @@ namespace OGLE
 		Ref<Instance> m_PlayerCuboidInstance;
 
 	public:
+		std::array<float, 6> collisions;
+
 		static Scope<Player> Create()
 		{
 			return CreateScope<Player>();
@@ -122,8 +124,6 @@ namespace OGLE
 		void ApplyGravity();
 
 		void HandleCollision();
-
-		void ResolveCollision(const glm::vec3& totalCorrection);
 
 	};
 

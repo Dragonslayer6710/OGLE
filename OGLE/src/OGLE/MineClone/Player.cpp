@@ -7,7 +7,7 @@
 #include <set>
 namespace OGLE
 {
-	const glm::vec3 Player::s_CameraOffset = glm::vec3(0.0f, -1.0f, -2.0f);
+	const glm::vec3 Player::s_CameraOffset = glm::vec3(0.0f, -0.5f, 0.0f);
 	const glm::vec3 Player::s_CrouchOffset = glm::vec3(0.0f, -0.5f, 0.0f);
 
 	const float Player::s_DampingFactor = 0.99f;
@@ -19,11 +19,11 @@ namespace OGLE
 	const float Player::s_Gravity = -9.8f;  // Standard Earth gravity
 	const float Player::s_TerminalVelocity = -sqrt(2.0f* fabs(s_Gravity));  // Terminal velocity is 2 times the gravitational acceleration
 
-	const float Player::s_JumpHeight = 1.0f;
+	const float Player::s_JumpHeight = 1.1f;
 	const float Player::s_JumpForce = sqrt(2.0f * fabs(s_Gravity) * s_JumpHeight);
 
 
-	constexpr glm::vec3 c_PlayerDims = glm::vec3(0.5f, 2.0f, 0.5f);
+	constexpr glm::vec3 c_PlayerDims = glm::vec3(0.6f, 1.8f, 0.6f);
 
 	Player::Player()
 		: m_Camera(Camera::Create(World::DecentreCoords()+s_CameraOffset+glm::vec3(0.0f, c_buildHeight / 4 * 5, 0.0f))),
@@ -237,20 +237,21 @@ namespace OGLE
 	void Player::HandleMovementInput(std::vector<Control*> movements)
 	{
 		glm::vec3 moveVector(0.0f);
-		for (const Control* ctrl: movements)
+		for (const Control* ctrl : movements) {
+			glm::vec3 extraMovement(0.0f);
 			if (ctrl->GetInputState())
 				switch (ctrl->GetID()) {
 				case CTRL_MOVE_FORWARD:
-					moveVector += MoveForward();
+					extraMovement = MoveForward();
 					break;
 				case CTRL_MOVE_LEFT:
-					moveVector += StrafeLeft();
+					extraMovement = StrafeLeft();
 					break;
 				case CTRL_MOVE_BACKWARD:
-					moveVector += MoveBackward();
+					extraMovement = MoveBackward();
 					break;
 				case CTRL_MOVE_RIGHT:
-					moveVector += StrafeRight();
+					extraMovement = StrafeRight();
 					break;
 				case CTRL_JUMP:
 					moveVector += Jump();
@@ -261,6 +262,12 @@ namespace OGLE
 					moveVector += Crouch();
 					break;
 				}
+			if (extraMovement != glm::vec3(0.0f)) {
+				if (m_IsFlying)
+					moveVector += extraMovement;
+				else
+					moveVector += extraMovement * m_MoveSpeed;
+			}
 			else
 				switch (ctrl->GetID()) {
 				case CTRL_CROUCH:
@@ -268,6 +275,7 @@ namespace OGLE
 						SetWalking();
 					break;
 				}
+		}
 		if (moveVector.x == 0)
 			m_Velocity.x = 0;
 		if (m_IsFlying)
@@ -314,7 +322,6 @@ namespace OGLE
 		m_Acceleration = glm::vec3(0.0f);
 	}
 
-
 	void Player::HandleCollision() {
 		// Obtain the list of blocks colliding with the player's AABB
 		std::vector<Ref<Block>> collidingBlocks = World::Get()->GetCollidingBlocks(m_AABB);
@@ -323,27 +330,55 @@ namespace OGLE
 		bool grounded = false; // Assume not grounded initially
 
 		glm::vec3 correctionVector(0.0f);
-
+		collisions = { 0, 0, 0, 0, 0, 0 };
 		for (const auto& block : collidingBlocks) {
 			// Ignore air blocks
 			if (block->GetBlockID() == GLushort(-1))
 				continue;
 
-			glm::vec3 collisionDirection = roundToNearestHalf(m_AABB.calculateCollisionDirection(*block));
+			glm::vec3 correction = m_AABB.calculateCollisionCorrection(*block);
+			
+			glm::vec3 collisionDirection = m_AABB.calculateCorrectionDirection(*block, correction);
+			
+			correctionVector += correction * collisionDirection;
 
-			float penetrationDepth = m_AABB.calculatePenetrationDepth(*block, collisionDirection);
-			glm::vec3 correction = collisionDirection * penetrationDepth;
+			if (collisionDirection.x)
+				if (collisionDirection.x < 0.0f)
+					collisions[1] = collisionDirection.x;
+				else
+					collisions[0] = collisionDirection.x;
+			if (collisionDirection.y)
+				if (collisionDirection.y < 0.0f)
+					collisions[3] = collisionDirection.y;
+				else
+					collisions[2] = collisionDirection.y;
+			if (collisionDirection.z)
+				if (collisionDirection.z < 0.0f)
+					collisions[5] = collisionDirection.z;
+				else
+					collisions[4] = collisionDirection.z;
 
-			correctionVector += correction;
-
-			// Check if the player is grounded
-			if (collisionDirection.y > 0.0f)
-				grounded = true;
+			if (collisionDirection.y) {
+				// Check if the player is grounded
+				if (collisionDirection.y == 1.0f)
+					grounded = true;
+				else if (collisionDirection.y == -1.0f)
+					if (m_Velocity.y <= 0.0f)
+						correctionVector -= correction.y;
+				m_Velocity.y = 0.0f;
+			}
+			else {
+				//m_Velocity *= 0.1f * collisionDirection;
+				if (collisionDirection.x)
+					m_Velocity.x = 0.0f;
+				else
+					m_Velocity.z = 0.0f;
+				correctionVector += collisionDirection * 0.001f;
+			}
 		}
-
-		// If grounded or moving upward, cancel the y correction to prevent floating above ground
-		if (grounded || m_Velocity.y > 0.0f)
-			correctionVector.y = 0.0f;
+		
+		if (correctionVector != glm::vec3(0.0f))
+			OGLE_CORE_INFO(correctionVector);
 
 		// Apply correction vector to player's position
 		*m_CameraPosition += correctionVector;

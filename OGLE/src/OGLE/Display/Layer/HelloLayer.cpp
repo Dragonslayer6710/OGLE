@@ -85,6 +85,13 @@ namespace OGLE {
 
 		ImGui::Text((player->IsGrounded()) ? "Grounded: True" : "Grounded: False");
 
+		ImGui::Text("WestCollide: %.3f", player->collisions[0]);
+		ImGui::Text("EastCollide: %.3f", player->collisions[1]);
+		ImGui::Text("BottomCollide: %.3f", player->collisions[2]);
+		ImGui::Text("TopCollide: %.3f", player->collisions[3]);
+		ImGui::Text("SouthCollide: %.3f", player->collisions[4]);
+		ImGui::Text("NorthCollide: %.3f", player->collisions[5]);
+
 		ImGui::InputFloat3("Position:", &player->GetPosition()[0]);
 
 		ImGui::InputFloat3("Velocity:", &player->GetVelocity()[0]);
@@ -141,8 +148,8 @@ namespace OGLE {
 			m_Renderer->AddModel(worldModel);
 
 			Ref<Model> playerModel = player->GetPlayerModel();
-			m_Renderer->RemoveModel(playerModel);
-			m_Renderer->AddModel(playerModel);
+			//m_Renderer->RemoveModel(playerModel);
+			//m_Renderer->AddModel(playerModel);
 
 			newWorld = false;
 		}

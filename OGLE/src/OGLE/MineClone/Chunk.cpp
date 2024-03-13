@@ -6,7 +6,7 @@
 namespace OGLE {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<int> blockDist(0, 10);
+	std::uniform_int_distribution<int> blockDist(0, 20);
 	static int numChunks = 0;
 	Chunk::Chunk(const glm::vec3& chunkPos, int chunkX, int chunkZ)
 		: AABB(AABB::FromPos(chunkPos, c_ChunkSize)), m_ChunkRefData(chunkX, chunkZ)
