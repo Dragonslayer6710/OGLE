@@ -31,4 +31,9 @@ namespace OGLE {
 	{
 		return m_Up;
 	}
+
+	Raycast Camera::GetRaycast(float distance)
+	{
+		return Raycast(*m_Position, glm::normalize(*m_Orientation), distance);
+	}
 }

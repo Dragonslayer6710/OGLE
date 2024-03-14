@@ -111,7 +111,6 @@ namespace OGLE {
 		World();
 		~World();
 
-
 		static Ref<Chunk> GetChunk(int chunkX, int chunkZ);
 
 		static Ref<Block> GetBlock(glm::vec3 position);
@@ -121,6 +120,15 @@ namespace OGLE {
 		static glm::vec2 GetChunkCoords(glm::vec3 position);
 
 		static glm::vec2 GetChunkCoords(int x, int z);
+
+		bool GetPaused()
+		{
+			return m_IsPaused;
+		}
+
+		void TogglePause() {
+			m_IsPaused = !m_IsPaused;
+		}
 
 		std::vector<Ref<Chunk>> GetCollidingChunks(const AABB& bounds)
 		{
@@ -137,6 +145,61 @@ namespace OGLE {
 				for (const Ref<Block>& block : chunk->GetCollidingBlocks(bounds))
 					collidingBlocks.emplace_back(block);
 			return collidingBlocks;
+		}
+
+		Ref<Chunk> GetRaycastChunk(const Raycast& raycast)
+		{
+			return m_WorldChunksOctree->querySingle(raycast);
+		}
+
+		Ref<Block> GetRaycastBlock(const Raycast& raycast)
+		{
+			Raycast raycastCopy = raycast;
+			Ref<Block> hitBlock = nullptr;
+			Ref<Chunk> hitChunk = nullptr;
+			std::pair<glm::vec3, glm::vec3> chunkRaycastIntersections;
+			std::vector<glm::vec3> rcVecs = raycastCopy.GetVectors();
+
+			// Log initial raycast information
+			OGLE_CORE_INFO("Initial Raycast: \n\t- Start: {0}\n\t- Direction: {1}\n\t- End: {2}", rcVecs[0], rcVecs[1], rcVecs[2]);
+
+			do
+			{
+				hitChunk = GetRaycastChunk(raycastCopy);
+
+				if (hitChunk != nullptr) {
+					hitBlock = hitChunk->GetRaycastBlock(raycastCopy);
+					if (hitBlock != nullptr) {
+						// Block found, exit loop
+						break;
+					}
+					else {
+						// No block found in the chunk, continue raycasting
+						chunkRaycastIntersections = hitChunk->getRaycastIntersections(raycastCopy);
+						if (chunkRaycastIntersections.second == glm::vec3()) {
+							// No further intersections, exit loop
+							break;
+						}
+						else {
+							// Update raycast to continue from intersection point
+							rcVecs = raycastCopy.GetVectors();
+							glm::vec3 diff = rcVecs[2] - rcVecs[0];
+							float length = glm::length(diff);
+							raycastCopy = Raycast(chunkRaycastIntersections.second + rcVecs[1], rcVecs[1], rcVecs[2]);
+						}
+					}
+				}
+				else {
+					// No chunk hit, exit loop
+					break;
+				}
+			} while (true); // Loop until block found or no further intersections
+
+			if (hitBlock != nullptr) {
+				// Log chunk raycast intersections if block found
+				OGLE_CORE_INFO("Chunk Raycast Intersections: \n\t- Start: {0}\n\t- End: {1}", chunkRaycastIntersections.first, chunkRaycastIntersections.second);
+			}
+			return hitBlock;
 		}
 
 		static glm::vec3 CentreCoords(glm::vec3 pos)
@@ -194,6 +257,8 @@ namespace OGLE {
 
 		// Additional member to store loaded chunks
 		std::vector<Ref<Chunk>> m_LoadedChunks;
+
+		bool m_IsPaused = false;
 	};
 
 

@@ -92,11 +92,24 @@ namespace OGLE {
 	class ShaderProgram
 	{
 	public:
+
+		// Define the equality operator
+		bool operator==(const ShaderProgram& other) const {
+			return m_ProgramID == other.m_ProgramID;
+		}
+
+		// Define the equality operator
+		bool operator!=(const ShaderProgram& other) const {
+			return !(m_ProgramID == other.m_ProgramID);
+		}
+
 		ShaderProgram(std::string shaderList[s_TotalShaderTypes] = NULL);
 		~ShaderProgram();
 
 		void Activate();
 		void Deactivate();
+
+		bool IsActive() { return m_IsActive; }
 
 		void PrintStatus(const char* status) { std::cout << "Shader Program (ID " << m_ProgramID << "): " << status << std::endl; }
 		void PrintInitialized() { PrintStatus("Initialized"); }
@@ -112,6 +125,9 @@ namespace OGLE {
 
 	private:
 		GLuint GetUniformLocation(const std::string& uName);
+	protected:
+		static ShaderProgram* s_ActiveShaderProgram;
+
 	private:
 		GLuint m_ProgramID;
 		ShaderCollection* m_ShaderCollection;

@@ -1,25 +1,26 @@
 #include "oglepch.h"
-#include "OGLE/Display/Layer/HelloLayer.h"
+#include "OGLE/Display/Layer/GameWorldLayer.h"
 #include "OGLE/MineClone/World.h"
 
 namespace OGLE {
 
-	HelloLayer::HelloLayer(Renderer& renderer)
-		: Layer("Hello Layer!"), m_Renderer(&renderer)
+	GameWorldLayer::GameWorldLayer(Renderer& renderer)
+		: Layer("Game World Layer!"), m_Renderer(&renderer)
 	{
 		//testOctree();
 		//delete[] this;
-		glfwGetCursorPos((GLFWwindow*)(Application::Get().GetWindow().GetNativeWindow()),&s_MousePosX, &s_MousePosY);
+		glfwGetCursorPos((GLFWwindow*)(Application::Get().GetWindow().GetNativeWindow()), &s_MousePosX, &s_MousePosY);
 	}
 
-	void HelloLayer::OnAttach()
+	void GameWorldLayer::OnAttach()
 	{
 		InitControls();
+		m_Renderer->AddHUDElement(CreateScope<HUDCrosshair>());
 	}
 
-	void HelloLayer::OnEvent(Event& event)
+	void GameWorldLayer::OnEvent(Event& event)
 	{
-		switch(event.GetEventType())
+		switch (event.GetEventType())
 		{
 		case EventType::MouseButtonPressed:
 		{
@@ -59,7 +60,7 @@ namespace OGLE {
 		}
 	}
 
-	void HelloLayer::OnDetach()
+	void GameWorldLayer::OnDetach()
 	{
 	}
 
@@ -71,7 +72,7 @@ namespace OGLE {
 
 	Scope<WorldRenderer> worldRenderer;
 
-	void HelloLayer::OnImGuiRender()
+	void GameWorldLayer::OnImGuiRender()
 	{
 		GLfloat FOVDegrees = m_Renderer->GetFOVDegrees();
 		GLfloat NearPlane = m_Renderer->GetNearPlane();
@@ -124,48 +125,57 @@ namespace OGLE {
 	float zRot = 0.0f;
 
 
-	void HelloLayer::OnUpdate(double deltaTime)
+	Scope<ShaderProgram> m_HUDShaderProgram;
+
+	void GameWorldLayer::OnUpdate(double deltaTime)
 	{
 		if (doInit) {
 			glm::mat4 projMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
 
 			// Apply Translation
-			shaderProgram = new ShaderProgram();			
+			shaderProgram = new ShaderProgram();
 
-			m_Renderer->ChangeShaderProgram(*shaderProgram);	
-			
+			std::string shaders[2] = { "HUD", "HUD" };
+			m_HUDShaderProgram = CreateScope<ShaderProgram>(shaders);
+
+			m_Renderer->ChangeShaderProgram(*shaderProgram);
+
 			doInit = false;
-			
+
 		}
 		if (newWorld) {
 			world = World::Create();
 			player = world->GetPlayer();
+			m_Renderer->AddHUDElement(CreateScope<HUDViewRaycast>(player->GetCamPos(), player->GetOrientation(), player->GetPlayerReach()));
 
 			worldRenderer = CreateScope<WorldRenderer>(world);
 
-			Ref<Model> worldModel= worldRenderer->GetWorldModel();
+			Ref<Model> worldModel = worldRenderer->GetWorldModel();
 			m_Renderer->RemoveModel(worldModel);
 			m_Renderer->AddModel(worldModel);
 
-			Ref<Model> playerModel = player->GetPlayerModel();
+			//Ref<Model> playerModel = player->GetPlayerModel();
 			//m_Renderer->RemoveModel(playerModel);
 			//m_Renderer->AddModel(playerModel);
 
 			newWorld = false;
 		}
-		
+
 		// Init Projection Matrix
 		glm::mat4 viewMatrix = world->GetViewMatrix();
 		glm::mat4 projMatrix = glm::perspective(m_Renderer->GetFOV(), m_Renderer->GetAspectRatio(), m_Renderer->GetNearPlane(), m_Renderer->GetFarPlane());
 
-
-		shaderProgram->SetUniformMatrix4fv("u_ProjViewMatrix", projMatrix * viewMatrix);
-		
 		player->UpdatePlayer(deltaTime);
 
 		m_Renderer->Clear();
 		//GLCall(glDrawElementsInstanced(GL_TRIANGLES, ebo->GetElementCount(), GL_UNSIGNED_SHORT, 0, 3));
+		m_Renderer->ChangeShaderProgram(*shaderProgram);
+		shaderProgram->SetUniformMatrix4fv("u_ProjViewMatrix", projMatrix * viewMatrix);
 		m_Renderer->Draw();
+
+		m_Renderer->ChangeShaderProgram(*m_HUDShaderProgram);
+		m_HUDShaderProgram->SetUniformMatrix4fv("u_ProjViewMatrix", projMatrix * viewMatrix);
+		m_Renderer->DrawHUD();
 		//GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr));
 	}
 

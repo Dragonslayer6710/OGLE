@@ -7,7 +7,7 @@ namespace OGLE {
 	{
 	public:
 
-		static Scope<VertexArray> Create(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection, bool nullInstInit = false);
+		static Scope<VertexArray> Create(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection = nullptr, bool nullInstInit = false);
 
 		VertexArray(Ref<VertexCollection> vertexCollection, Ref<InstanceCollection> instanceCollection, bool nullInstInit = false);
 

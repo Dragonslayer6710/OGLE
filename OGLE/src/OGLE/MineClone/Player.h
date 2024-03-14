@@ -17,6 +17,11 @@ namespace OGLE
 		bool m_IsSprinting = false;
 		bool m_IsCrouching = false;
 
+		bool m_IsAttacking = false;
+		float m_AttackCooldown = 0.0f;
+
+		bool m_PausePressed = false;
+
 		static const float s_WalkSpeed;
 		static const float s_SprintSpeed;
 		static const float s_CrouchSpeed;
@@ -37,6 +42,8 @@ namespace OGLE
 		Ref<glm::vec3> m_Orientation;
 		Ref<glm::vec3> m_Up;
 
+		glm::vec3 m_AABBPosition;
+
 		glm::vec3 m_Velocity = glm::vec3(0.0f);
 		glm::vec3 m_Acceleration = glm::vec3(0.0f);
 
@@ -49,6 +56,8 @@ namespace OGLE
 		Ref<Model> m_PlayerModel;
 
 		Ref<Instance> m_PlayerCuboidInstance;
+
+		static const float s_PlayerReach;
 
 	public:
 		std::array<float, 6> collisions;
@@ -90,7 +99,8 @@ namespace OGLE
 		glm::mat4 GetViewMatrix() const;
 
 		glm::vec3 GetPosition();
-		void SetPosition();
+
+		void SetPosition(glm::vec3 newPosition);
 
 		glm::vec3 GetVelocity() { return m_Velocity; }
 
@@ -106,24 +116,36 @@ namespace OGLE
 
 		Ref<Model> GetPlayerModel();
 
+		Ref<glm::vec3> GetCamPos() { return m_CameraPosition; }
+		Ref<glm::vec3> GetOrientation() { return m_Orientation; }
+		float GetPlayerReach() { return s_PlayerReach; }
+
 	private:
+		void CalculateAABBPosition();
+
+		void SetAABBPosition();
+
 		void SetSpeed(float moveSpeed);
 
 		void ProcessInputAction(ControlID controlID);
 
-		void ResetPlayerStateIfNeeded(ControlID controlID);
+		bool ResetPlayerStateIfNeeded(ControlID controlID);
 
 		bool Player::NoInputDetected();
 
 		void Player::UpdateMousePosition();
 
-		void HandleInput();
+		bool HandleInput();
 
 		void HandleMovementInput(std::vector<Control*> movements);
 
 		void ApplyGravity();
 
 		void HandleCollision();
+
+		Ref<Block> GetRaycastBlock(const Raycast& raycast);
+
+		void Attack();
 
 	};
 

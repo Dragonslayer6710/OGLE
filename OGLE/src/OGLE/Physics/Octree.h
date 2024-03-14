@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OGLE/Physics/AABB.h"
+
 #include "OGLE/Core/Base.h"
 
 #include <psapi.h>
@@ -121,6 +122,29 @@ namespace OGLE
             }
         }
 
+        // Recursive function to traverse the octree along the raycast
+        void querySingle(const Raycast& raycast, const Scope<Node>& node, Ref<T>& result) const {
+            // Check if the node bounds intersect with the raycast
+            if (!node->bounds.intersects(raycast)) {
+                return;
+            }
+
+            // Check intersection with objects in the current node
+            for (const auto& obj : node->objects) {
+                if (obj->intersects(raycast)) {
+                    // Update result if no object has been found yet
+                    result = obj;
+                }
+            }
+
+            // If the node has children, recursively call queryRecursive for each child
+            if (node->children[0] != nullptr) {
+                for (int i = 0; i < 8; ++i) {
+                    querySingle(raycast, node->children[i], result);
+                }
+            }
+        }
+
     public:
         Octree(const AABB& bounds) : root(CreateScope<Node>(bounds)) {}
 
@@ -142,6 +166,17 @@ namespace OGLE
         std::vector<Ref<T>> query(const AABB& queryBounds) const {
             std::vector<Ref<T>> result;
             query(queryBounds, root, result);
+            return result;
+        }
+
+        Ref<T> querySingle(const Raycast& raycast) const {
+            // Default of nothing found
+            Ref<T> result = nullptr;
+
+            //Call recursive function to traverse octree along raycast
+            querySingle(raycast, root, result);
+
+            // Return first result found
             return result;
         }
     };
@@ -212,6 +247,7 @@ namespace OGLE
         std::chrono::duration<double> insertionTime = insertionEndTime - startTime;
 
         s_TestEnabled = true;
+
         // Perform collision detection test with queryBounds2
         AABB queryBounds2 = AABB::FromMinMax(glm::vec3(0.0f), glm::vec3(1.0f, 2.0f, 1.0f));
         std::vector<Ref<BlockTest>> collidedBlocks2;
@@ -239,11 +275,29 @@ namespace OGLE
         std::cout << "Insertion time: " << insertionTime.count() << " seconds" << std::endl;
         std::cout << "Collision detection time (queryBounds2): " << collisionDetectionTime2.count() << " seconds" << std::endl;
 
+        // Test raycast query
+        // Define a raycast
+        glm::vec3 rayStart(0.0f, 0.0f, 0.0f);
+        glm::vec3 rayDirection(1.0f, 0.0f, 0.0f); // Example direction
+        Raycast raycast(rayStart, rayDirection, 100.0f); // Example length
+
+        // Perform raycast query
+        auto result = octree.querySingle(raycast);
+
+        // Check the result
+        if (result) {
+            std::cout << "Raycast intersected object at position: (" << result->min().x << ", " << result->min().y << ", " << result->min().z << ")" << std::endl;
+        }
+        else {
+            std::cout << "Raycast did not intersect any object." << std::endl;
+        }
+
         // Check memory usage after operations
         std::size_t finalMemoryUsage = getCurrentMemoryUsage();
         std::size_t memoryUsageDifference = finalMemoryUsage - initialMemoryUsage;
         std::cout << "Memory usage difference: " << memoryUsageDifference << " bytes" << std::endl;
     }
+
 
 
 

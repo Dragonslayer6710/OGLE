@@ -6,13 +6,13 @@
 
 #include "OGLE/Core/Application.h"
 
-namespace OGLE{
+namespace OGLE {
 
-	class HelloLayer : public Layer
+	class GameWorldLayer : public Layer
 	{
-	public: 
-		HelloLayer(Renderer& renderer);
-		virtual ~HelloLayer() = default;
+	public:
+		GameWorldLayer(Renderer& renderer);
+		virtual ~GameWorldLayer() = default;
 
 		virtual void OnAttach() override;
 

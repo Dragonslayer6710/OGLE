@@ -7,11 +7,14 @@ namespace OGLE {
 		CTRL_MOVE_LEFT,
 		CTRL_MOVE_BACKWARD,
 		CTRL_MOVE_RIGHT,
+
 		CTRL_JUMP,
 		CTRL_CROUCH,
 
-		CTRL_CFG_SPRINT,		
-		CTRL_CFG_CAMERA_CONTROL_TOGGLE,
+		CTRL_ACTION_SPRINT,
+		CTRL_ACTION_ATTACK,
+
+		CTRL_CFG_PAUSE_TOGGLE
 	};
 
 	enum ControlBindState {
@@ -22,6 +25,7 @@ namespace OGLE {
 	enum ControlType {
 		CTRL_TYPE_MOVEMENT,
 		CTRL_TYPE_CAMERA,
+		CTRL_TYPE_ACTION,
 		CTRL_TYPE_CONFIG,
 	};	
 
@@ -60,8 +64,10 @@ namespace OGLE {
 			{CTRL_JUMP, CTRL_TYPE_MOVEMENT},
 			{CTRL_CROUCH, CTRL_TYPE_MOVEMENT},
 
-			{CTRL_CFG_SPRINT, CTRL_TYPE_CONFIG},
-			{CTRL_CFG_CAMERA_CONTROL_TOGGLE, CTRL_TYPE_CONFIG}
+			{CTRL_ACTION_SPRINT, CTRL_TYPE_ACTION},
+			{CTRL_ACTION_ATTACK, CTRL_TYPE_ACTION},
+
+			{CTRL_CFG_PAUSE_TOGGLE, CTRL_TYPE_CONFIG}
 		};
 
 		static void InitControls(std::unordered_map<ControlID, unsigned int>* initialControls = nullptr);
@@ -80,8 +86,11 @@ namespace OGLE {
 		{CTRL_JUMP, Key::Space},
 		{CTRL_CROUCH, Key::LeftControl},
 
-		{CTRL_CFG_SPRINT, Key::LeftShift},
-		{ CTRL_CFG_CAMERA_CONTROL_TOGGLE, Mouse::ButtonLeft }
+		{CTRL_ACTION_SPRINT, Key::LeftShift},
+		{CTRL_ACTION_ATTACK, Mouse::ButtonLeft},
+
+		{CTRL_CFG_PAUSE_TOGGLE, Key::Escape}
+
 	};
 
 	void InitControls(std::unordered_map<ControlID, unsigned int> initialControls = s_InitialControls);

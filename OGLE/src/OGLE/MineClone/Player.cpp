@@ -7,7 +7,7 @@
 #include <set>
 namespace OGLE
 {
-	const glm::vec3 Player::s_CameraOffset = glm::vec3(0.0f, -0.5f, 0.0f);
+	const glm::vec3 Player::s_CameraOffset = glm::vec3(0.0f, -0.81f, 0.0f);
 	const glm::vec3 Player::s_CrouchOffset = glm::vec3(0.0f, -0.5f, 0.0f);
 
 	const float Player::s_DampingFactor = 0.99f;
@@ -22,6 +22,7 @@ namespace OGLE
 	const float Player::s_JumpHeight = 1.1f;
 	const float Player::s_JumpForce = sqrt(2.0f * fabs(s_Gravity) * s_JumpHeight);
 
+	const float Player::s_PlayerReach = 4.5f;
 
 	constexpr glm::vec3 c_PlayerDims = glm::vec3(0.6f, 1.8f, 0.6f);
 
@@ -34,12 +35,12 @@ namespace OGLE
 		m_CameraPosition = m_Camera->GetPosition();
 		m_Orientation = m_Camera->GetOrientation();
 		m_Up = m_Camera->GetUp();
-
+		
 		m_PlayerCuboidInstance = (*m_PlayerCuboid->GetCuboidRefs(0, 1))[0];
 		m_PlayerMesh = Mesh::Create(m_PlayerCuboid);
 		m_PlayerModel = Model::Create(m_PlayerMesh);
 
-		SetPosition();
+		SetAABBPosition();
 
 	}
 
@@ -129,6 +130,17 @@ namespace OGLE
 		}
 	}
 
+	glm::vec3 Player::GetPosition()
+	{
+		return m_AABBPosition - glm::vec3(0.0f,0.4f,0.0f);
+	}
+
+	void Player::SetPosition(glm::vec3 position)
+	{
+		*m_CameraPosition = position + glm::vec3(0.0f, 0.4f, 0.0f) - s_CameraOffset;
+		SetAABBPosition();
+	}
+
 	void Player::SetSpeed(float moveSpeed)
 	{
 		m_MoveSpeed = moveSpeed;
@@ -162,32 +174,44 @@ namespace OGLE
 	void Player::ProcessInputAction(ControlID controlID)
 	{
 		switch (controlID) {
-		case CTRL_CFG_SPRINT:
+		case CTRL_ACTION_SPRINT:
 			if (!m_IsSprinting)
 				SetSprinting();
 			break;
-		case CTRL_CFG_CAMERA_CONTROL_TOGGLE:
-			Application::Get().GetWindow().HideCursor();
-			Rotate();
+		case CTRL_ACTION_ATTACK:
+			if (!m_IsAttacking)
+				m_IsAttacking = true;
+			break;
+		case CTRL_CFG_PAUSE_TOGGLE:
+			m_PausePressed = true;
 			break;
 		default:
 			break;
 		}
 	}
 
-	void Player::ResetPlayerStateIfNeeded(ControlID controlID)
+	bool Player::ResetPlayerStateIfNeeded(ControlID controlID)
 	{
 		switch (controlID) {
-		case CTRL_CFG_SPRINT:
+		case CTRL_ACTION_SPRINT:
 			if (m_IsSprinting)
 				SetWalking();
 			break;
-		case CTRL_CFG_CAMERA_CONTROL_TOGGLE:
-			Application::Get().GetWindow().RevealCursor();
+		case CTRL_ACTION_ATTACK:
+			if (m_IsAttacking)
+				m_IsAttacking = false;
+			break;
+		case CTRL_CFG_PAUSE_TOGGLE:
+			if (m_PausePressed) {
+				m_PausePressed = false;
+				World::Get()->TogglePause();
+				return World::Get()->GetPaused();
+			}
 			break;
 		default:
 			break;
 		}
+		return false;
 	}
 
 	bool Player::NoInputDetected()
@@ -206,13 +230,14 @@ namespace OGLE
 		s_MousePosY = s_NextMousePosY;
 	}
 
-	void Player::HandleInput()
+	bool Player::HandleInput()
 	{
 		// Calculate mouse delta
 		s_MouseDeltaX = s_NextMousePosX - s_MousePosX;
 		s_MouseDeltaY = s_NextMousePosY - s_MousePosY;
 
 		std::vector<Control*> movements;
+		bool paused = false;
 		// Process input for each bound control
 		for (Control* boundCtrl : GetBoundControls()) {
 			if (boundCtrl->GetType() == CTRL_TYPE_MOVEMENT)
@@ -221,17 +246,34 @@ namespace OGLE
 			}
 			else {
 				if (boundCtrl->GetInputState()) {
-					ProcessInputAction(boundCtrl->GetID());
+					ProcessInputAction(boundCtrl->GetID());					
 				}
 				else {
-					ResetPlayerStateIfNeeded(boundCtrl->GetID());
+					if (ResetPlayerStateIfNeeded(boundCtrl->GetID()))
+					{
+						paused = true;
+					}
 				}
 			}
 		}
+		if (!paused)
+			paused = World::Get()->GetPaused();
+		if (paused)
+		{
+			Application::Get().GetWindow().RevealCursor();
+			return paused;
+		}
+		else
+			Application::Get().GetWindow().HideCursor();
+
+		Rotate();
+
 		if (!movements.empty())
 			HandleMovementInput(movements);
 		// Update mouse position for next frame
 		UpdateMousePosition();
+
+		return false;
 	}
 
 	void Player::HandleMovementInput(std::vector<Control*> movements)
@@ -286,6 +328,47 @@ namespace OGLE
 		m_Acceleration += moveVector * m_MoveSpeed;
 	}
 
+	Ref<Block> Player::GetRaycastBlock(const Raycast& raycast)
+	{
+		return World::Get()->GetRaycastBlock(raycast);
+	}
+
+	void Player::Attack()
+	{
+		m_AttackCooldown = 2.0f;
+		Raycast raycast = m_Camera->GetRaycast(s_PlayerReach);
+
+		Raycast raycastCopy = raycast;
+		Ref<Block> hitBlock;
+		std::pair<glm::vec3, glm::vec3> blockRaycastIntersections;
+		std::vector<glm::vec3> rcVecs = raycast.GetVectors();
+
+		do {
+			hitBlock = GetRaycastBlock(raycastCopy);
+
+			if (hitBlock != nullptr) {
+				if (hitBlock->GetBlockID() != GLushort(-1)) {
+					OGLE_CORE_INFO("Block at {0} Hit!", hitBlock->getCenter());
+					break;
+				}
+				else if (hitBlock->GetBlockID() == GLushort(-1))
+				{
+					blockRaycastIntersections = hitBlock->getRaycastIntersections(raycastCopy);
+					if (blockRaycastIntersections.second == glm::vec3())
+						break;
+					else {
+						rcVecs = raycastCopy.GetVectors();
+						glm::vec3 diff = rcVecs[2] - rcVecs[0];
+						float length = glm::length(diff);
+						raycastCopy = Raycast(blockRaycastIntersections.second + rcVecs[1], rcVecs[1], rcVecs[2]);
+					}
+				}
+			}
+			else
+				OGLE_CORE_INFO("No Block Hit!");
+		} while (hitBlock != nullptr);
+	}
+
 
 	void Player::Move(float deltaTime)
 	{
@@ -308,7 +391,7 @@ namespace OGLE
 		*m_CameraPosition += m_Velocity * deltaTime;
 
 		// Update the player's AABB position
-		SetPosition();
+		SetAABBPosition();
 
 		// Handle collision with the environment
 		HandleCollision();
@@ -376,15 +459,12 @@ namespace OGLE
 				correctionVector += collisionDirection * 0.001f;
 			}
 		}
-		
-		if (correctionVector != glm::vec3(0.0f))
-			OGLE_CORE_INFO(correctionVector);
 
 		// Apply correction vector to player's position
 		*m_CameraPosition += correctionVector;
 
 		// Update the player's AABB position after collision handling
-		SetPosition();
+		SetAABBPosition();
 
 		// Update the player's grounded state
 		m_IsGrounded = grounded;
@@ -420,31 +500,41 @@ namespace OGLE
 			return glm::lookAt(*m_CameraPosition, *m_CameraPosition + *m_Orientation, *m_Up);
 	}
 
-	glm::vec3 Player::GetPosition()
+	void Player::CalculateAABBPosition()
 	{
-		return *m_CameraPosition + s_CameraOffset;
+		m_AABBPosition = *m_CameraPosition + s_CameraOffset;
 	}
 
-	void Player::SetPosition()
+
+	void Player::SetAABBPosition()
 	{
-		m_AABB = AABB::FromPos(GetPosition(), c_PlayerDims);
-		m_PlayerCuboidInstance->ModelMatrix = NewModelMatrix(GetPosition());
+		CalculateAABBPosition();
+		m_AABB = AABB::FromPos(m_AABBPosition, c_PlayerDims);
+		m_PlayerCuboidInstance->ModelMatrix = NewModelMatrix(m_AABBPosition);
 		m_PlayerModel->UpdateVAO(true);
 	}
 
 	int frameCount = 0;
 	void Player::UpdatePlayer(float deltaTime)
 	{
-		OGLE_CORE_INFO("Frame: {0}", ++frameCount);
-		OGLE_CORE_INFO("\t- DeltaTime: {0}", deltaTime);
+		//OGLE_CORE_INFO("Frame: {0}", ++frameCount);
+		//OGLE_CORE_INFO("\t- DeltaTime: {0}", deltaTime);
 
 		// If the player is flying, move them based on velocity without considering gravity
-		if (!m_IsFlying && !m_IsGrounded) {
+		if (!m_IsFlying && !m_IsGrounded && !World::Get()->GetPaused()) {
 			ApplyGravity();
 		}
 
 		// Handle player input
-		HandleInput();
+		if (HandleInput())
+			return;
+
+		if (!m_AttackCooldown) {
+			if (m_IsAttacking)
+				Attack();
+		}
+		else
+			m_AttackCooldown = std::max(0.0f, m_AttackCooldown - deltaTime);
 
 		// Move the player based on input and current state
 		Move(deltaTime);

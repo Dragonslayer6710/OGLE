@@ -91,6 +91,11 @@ namespace OGLE {
 			return collidingBlocks;
 		}
 
+		Ref<Block> GetRaycastBlock(const Raycast& raycast)
+		{
+			return m_ChunkBlocksOctree->querySingle(raycast);
+		}
+
 		glm::vec2 GetChunkCoords();
 
 		inline unsigned short GetX() { return m_ChunkRefData.chunkX; }

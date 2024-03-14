@@ -2,6 +2,7 @@
 #include "OGLE/Display/Renderer/Shader.h"
 
 namespace OGLE {
+	ShaderProgram* ShaderProgram::s_ActiveShaderProgram;
 
 	// Create new shader object and get its ID
 	Shader::Shader(GLenum shaderType, std::string shaderFile)
@@ -87,6 +88,10 @@ namespace OGLE {
 	{
 		if (m_IsActive)
 			return;
+		if (s_ActiveShaderProgram != nullptr)
+			if (s_ActiveShaderProgram != this)
+				s_ActiveShaderProgram->Deactivate();
+		s_ActiveShaderProgram = this;
 		GLCall(glUseProgram(m_ProgramID));
 		m_IsActive = true;
 		//PrintActivationStatus();

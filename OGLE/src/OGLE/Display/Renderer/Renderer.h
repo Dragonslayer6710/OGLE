@@ -3,6 +3,9 @@
 #include "OGLE/Display/Renderer/Camera.h"
 #include "OGLE/Display/Renderer/Model.h"
 
+#include "OGLE/Display/Renderer/HUD/HUDElement.h"
+
+
 static const GLfloat DefFOVDegrees = 60.0f;
 static const GLfloat DefNearPlane = 0.1f;
 static const GLfloat DefFarPlane = 1000.0f;
@@ -54,6 +57,10 @@ namespace OGLE {
 
 		void RemoveModel(Ref<Model> model);
 		void RemoveModel(GLuint modelID);
+
+		void AddHUDElement(Ref<HUDElement> hudElement) { m_HUDElements.push_back(hudElement); }
+
+		void DrawHUD();
 		
 	private:
 
@@ -101,6 +108,9 @@ namespace OGLE {
 		GLuint m_ElementCount;
 		GLenum m_ElementDataType;
 		bool m_IsInstanced;
+
+		std::vector<Ref<HUDElement>> m_HUDElements;
+
 	};
 
 }

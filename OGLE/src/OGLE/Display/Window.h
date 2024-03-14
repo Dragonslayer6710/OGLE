@@ -40,6 +40,8 @@ namespace OGLE {
 		GLsizei GetWidth() const { return m_Data.Width; }
 		GLsizei GetHeight() const { return m_Data.Height; }
 
+		glm::vec2 GetCentre() const { return glm::vec2(m_Data.Width / 2.0f, m_Data.Height / 2.0f); }
+
 		// Window attributes
 		void SetEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
 		void SetVSync(bool enabled);

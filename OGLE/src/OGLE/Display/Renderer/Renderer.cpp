@@ -98,6 +98,12 @@ namespace OGLE {
 		m_Models.erase(modelID);
 	}
 
+	void Renderer::DrawHUD()
+	{
+		for (const Ref<HUDElement>& hudElement : m_HUDElements)
+			hudElement->Draw();
+	}
+
 	void Renderer::SetClearColor(glm::vec4 clearColor /*= glm::vec4(0.1, 0.1, 0, 1)*/)
 	{
 		GLCall(glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a));

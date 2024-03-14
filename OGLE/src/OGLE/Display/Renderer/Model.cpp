@@ -79,6 +79,7 @@ namespace OGLE {
 
 	void Model::Draw(ShaderProgram* shaderProgram)
 	{
+		shaderProgram->Activate();
 		Bind();
 		if (m_SetTextureUniform) {
 			shaderProgram->SetUniform1i("tex0", GetTexture()->GetTextureSlot());

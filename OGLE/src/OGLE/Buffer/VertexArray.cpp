@@ -16,7 +16,7 @@ namespace OGLE {
 		Bind();
 
 		// Gen and Bind VBO
-		m_VBO = VertexBuffer::Create(vertices->GetSize(), vertices->GetData(), instances->GetUsage());
+		m_VBO = VertexBuffer::Create(vertices->GetSize(), vertices->GetData(), vertices->GetUsage());
 		m_VBO->Bind();
 
 		// Init VBO attrib arrays then unbind vbo

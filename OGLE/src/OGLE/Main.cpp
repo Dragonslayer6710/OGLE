@@ -1,7 +1,7 @@
 #include "oglepch.h"
 #include "OGLE/Core/EntryPoint.h"
 
-#include "OGLE/Display/Layer/HelloLayer.h"
+#include "OGLE/Display/Layer/GameWorldLayer.h"
 
 namespace OGLE
 {
@@ -11,7 +11,7 @@ namespace OGLE
 		OGLEApp(const ApplicationSpecification& spec)
 			: Application(spec)
 		{
-			PushLayer(new HelloLayer(*m_Renderer));
+			PushLayer(new GameWorldLayer(*m_Renderer));
 		}
 	};
 

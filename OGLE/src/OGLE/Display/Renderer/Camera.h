@@ -1,5 +1,6 @@
 #pragma once
 #include "OGLE/Input/Control.h"
+#include "OGLE/Physics/Raycast.h"
 
 namespace OGLE {
 
@@ -25,6 +26,8 @@ namespace OGLE {
 		Ref<glm::vec3> GetUp();
 
 		glm::mat4 GetViewMatrix() const;
+
+		Raycast GetRaycast(float distance);
 	private:
 		float m_CameraSensitivity = 0.5f;
 
